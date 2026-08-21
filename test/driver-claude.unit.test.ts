@@ -204,6 +204,19 @@ describe('Claude usage resolution', () => {
   });
 });
 
+/**
+ * Install a `#!/bin/sh` fake CLI. Windows has no shebang support, so the body goes to a sidecar
+ * .sh and a .cmd (what PATHEXT resolution finds) hands it to Git Bash's sh.
+ */
+function writeShFake(fakeBin: string, name: string, body: string) {
+  if (process.platform !== 'win32') {
+    fs.writeFileSync(path.join(fakeBin, name), body, { mode: 0o755 });
+    return;
+  }
+  fs.writeFileSync(path.join(fakeBin, `${name}.sh`), body.replace(/\r?\n/g, '\n'));
+  fs.writeFileSync(path.join(fakeBin, `${name}.cmd`), `@echo off\r\nsh "%~dp0${name}.sh" %*\r\n`);
+}
+
 describe('Claude context fallback', () => {
   const originalPath = process.env.PATH;
 
@@ -218,12 +231,12 @@ describe('Claude context fallback', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-context-'));
     const fakeBin = path.join(tmpDir, 'bin');
     fs.mkdirSync(fakeBin, { recursive: true });
-    process.env.PATH = `${fakeBin}:${process.env.PATH}`;
+    process.env.PATH = `${fakeBin}${path.delimiter}${process.env.PATH}`;
 
     const writeFakeScript = (jsonLines: object[]) => {
       const payload = jsonLines.map(j => JSON.stringify(j)).join('\n');
       const script = `#!/bin/sh\ncat <<'JSONL_EOF'\n${payload}\nJSONL_EOF\n`;
-      fs.writeFileSync(path.join(fakeBin, 'claude'), script, { mode: 0o755 });
+      writeShFake(fakeBin, 'claude', script);
     };
 
     const baseOpts = {
@@ -259,7 +272,7 @@ describe('Claude context fallback', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-turnout-'));
     const fakeBin = path.join(tmpDir, 'bin');
     fs.mkdirSync(fakeBin, { recursive: true });
-    process.env.PATH = `${fakeBin}:${process.env.PATH}`;
+    process.env.PATH = `${fakeBin}${path.delimiter}${process.env.PATH}`;
 
     const jsonLines = [
       { type: 'system', session_id: 's-turnout', model: 'claude-opus-4-8' },
@@ -270,7 +283,7 @@ describe('Claude context fallback', () => {
       { type: 'result', session_id: 's-turnout', usage: { input_tokens: 11_000, output_tokens: 300 } },
     ];
     const payload = jsonLines.map(j => JSON.stringify(j)).join('\n');
-    fs.writeFileSync(path.join(fakeBin, 'claude'), `#!/bin/sh\ncat <<'JSONL_EOF'\n${payload}\nJSONL_EOF\n`, { mode: 0o755 });
+    writeShFake(fakeBin, 'claude', `#!/bin/sh\ncat <<'JSONL_EOF'\n${payload}\nJSONL_EOF\n`);
 
     let lastMeta: any = null;
     await doClaudeStream({

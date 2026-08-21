@@ -6,7 +6,6 @@ import {
   buildCodexTurnInput,
   doClaudeStream,
   doCodexStream,
-  doGeminiStream,
   doStream,
   dropNativeShadowedByProfiles,
   ensureManagedSession,
@@ -34,6 +33,7 @@ import {
   extractClaudeWorkflowRunId,
   claudeEffortAndWorkflowArgs,
 } from '../src/agent/drivers/claude.ts';
+import { encodePathAsDirName } from '../src/core/platform.ts';
 import { makeTmpDir, withTempHome } from './support/env.ts';
 
 const tmpDir = path.join(os.tmpdir(), 'urdr-test-' + process.pid);
@@ -52,6 +52,15 @@ function writeFakeScript(name: string, jsonLines: object[]) {
   fs.writeFileSync(path.join(fakeBin, name), script, { mode: 0o755 });
 }
 
+/**
+ * Interpolate a host path into a `#!/bin/sh` fake. Git Bash's sh reads backslashes as escapes, so
+ * a raw `C:\Users\...` silently collapses into a different path — the fake then wrote its state
+ * file somewhere the assertion never looked. Forward slashes are accepted on both platforms.
+ */
+function shPath(p: string): string {
+  return `"${p.replace(/\\/g, '/')}"`;
+}
+
 /** Quote a JSON line for cmd's `echo`: ^ escapes the shell metacharacters it would eat. */
 function cmdEscape(line: string): string {
   return line.replace(/[\^&<>|()]/g, m => `^${m}`);
@@ -68,7 +77,10 @@ function writeFakeAgent(name: string, body: string) {
     return;
   }
   const isNode = /^#!.*\bnode\b/.test(body);
-  const ext = isNode ? 'mjs' : 'sh';
+  // .cjs, not .mjs: these fakes are CommonJS (`require('node:fs')`), and an .mjs extension makes
+  // Node parse them as ESM, where `require` is undefined — the process died on its first line,
+  // which surfaced as the codex app-server "exited before responding".
+  const ext = isNode ? 'cjs' : 'sh';
   fs.writeFileSync(path.join(fakeBin, `${name}.${ext}`), body.replace(/\r?\n/g, '\n'));
   const runner = isNode ? 'node' : 'sh';
   fs.writeFileSync(
@@ -1040,9 +1052,9 @@ describe('claude stream', () => {
     const stateFile = path.join(tmpDir, 'call_count');
     fs.writeFileSync(stateFile, '0');
     const retryScript = `#!/bin/sh
-COUNT=$(cat ${stateFile})
+COUNT=$(cat ${shPath(stateFile)})
 COUNT=$((COUNT + 1))
-echo $COUNT > ${stateFile}
+echo $COUNT > ${shPath(stateFile)}
 if [ "$COUNT" = "1" ]; then
   echo '${JSON.stringify({ type: 'result', subtype: 'error_during_execution', is_error: true, session_id: 'new-sess', errors: ['No conversation found with session ID: old-sess'] })}'
 else
@@ -1936,8 +1948,8 @@ exit 1`;
     const argsFile = path.join(tmpDir, 'claude-args.txt');
     const stdinFile = path.join(tmpDir, 'claude-stdin.txt');
     const attachmentScript = `#!/bin/sh
-echo "$@" > ${argsFile}
-cat > ${stdinFile}
+echo "$@" > ${shPath(argsFile)}
+cat > ${shPath(stdinFile)}
 echo '{"type":"system","session_id":"s-file"}'
 echo '{"type":"stream_event","event":{"type":"content_block_delta","delta":{"type":"text_delta","text":"ok"}}}'
 echo '{"type":"result","session_id":"s-file"}'`;
@@ -1968,7 +1980,7 @@ echo '{"type":"result","session_id":"s-file"}'`;
 
     const emptyArgsFile = path.join(tmpDir, 'claude-empty-args.txt');
     const emptyScript = `#!/bin/sh
-echo "$@" > ${emptyArgsFile}
+echo "$@" > ${shPath(emptyArgsFile)}
 echo '{"type":"system","session_id":"s-no"}'
 echo '{"type":"stream_event","event":{"type":"content_block_delta","delta":{"type":"text_delta","text":"ok"}}}'
 echo '{"type":"result","session_id":"s-no"}'`;
@@ -1982,7 +1994,7 @@ echo '{"type":"result","session_id":"s-no"}'`;
     {
     const argsFile = path.join(tmpDir, 'claude-wf-args.txt');
     const script = `#!/bin/sh
-echo "$@" > ${argsFile}
+echo "$@" > ${shPath(argsFile)}
 echo '{"type":"system","session_id":"s-wf"}'
 echo '{"type":"result","session_id":"s-wf"}'`;
     writeFakeAgent('claude', script);
@@ -2042,7 +2054,9 @@ describe('listModels, getUsage, and getSessionTail', () => {
           },
         },
       }));
-      const projectDir = path.join(homeDir, '.claude', 'projects', tmpDir.replace(/\//g, '-'));
+      // Use the production encoder rather than hand-rolling it: replacing only `/` leaves a
+      // Windows path's backslashes and drive colon in place, which is not a legal dir name.
+      const projectDir = path.join(homeDir, '.claude', 'projects', encodePathAsDirName(tmpDir));
       fs.mkdirSync(projectDir, { recursive: true });
       fs.writeFileSync(path.join(projectDir, 'sess.jsonl'), [
         JSON.stringify({ type: 'user', message: { content: 'hello' } }),

@@ -556,7 +556,11 @@ export function isSystemInjectedUserText(text: string): boolean {
 export const SESSION_PREVIEW_IMAGE_PLACEHOLDER_RE = /\[Image:[^\]]+\]/gi;
 export const SESSION_PREVIEW_FILE_PLACEHOLDER_RE = /\[Attached file:[^\]]+\]/gi;
 
-export const CLAUDE_AT_MENTION_IMAGE_RE = /(^|\s)@(\/[^\s@\n]+\.(?:png|jpe?g|gif|webp|svg))(?=\s|$)/gi;
+// Absolute paths only, but "absolute" differs per platform: a leading `/`, or a Windows drive
+// letter (`C:\...` / `C:/...`). Matching just `/` meant every @-mentioned image in a Windows
+// transcript stayed a raw path string — never recovered into an image block, never stripped from
+// the displayed text.
+export const CLAUDE_AT_MENTION_IMAGE_RE = /(^|\s)@((?:\/|[a-zA-Z]:[\\/])[^\s@\n]+\.(?:png|jpe?g|gif|webp|svg))(?=\s|$)/gi;
 
 export function extractClaudeAtMentionImagePaths(text: string): string[] {
   if (!text) return [];

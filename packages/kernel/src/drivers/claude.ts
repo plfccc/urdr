@@ -238,6 +238,13 @@ export class ClaudeDriver implements AgentDriver {
         const fire = () => {
           holdCapTimer = null;
           if (settled) return;
+          // Nothing pending means the hold has already done its job: the cap exists to bound a
+          // SILENT STUCK hold, and once every task reported terminal, armQuiet owns the close.
+          // Both timers judged the same thing (lastEventAt older than the quiet window), so
+          // whichever fired first decided the outcome — armQuiet parks the turn, this one stamps
+          // it 'background'. Leaving that race in reported a fully-finished background turn as cut
+          // short whenever the cap's recheck happened to win.
+          if (pendingClaudeBackgroundTasks(state) === 0) return;
           if (Date.now() - (state.lastEventAt ?? 0) < claudeBgSettleQuietMs()) {
             holdCapTimer = setTimeout(fire, claudeBgHoldRecheckMs());
             unref(holdCapTimer);
