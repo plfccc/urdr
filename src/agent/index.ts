@@ -71,7 +71,7 @@ export {
 
 export {
   updateSessionMeta, promoteSessionId, recordFork, resolveCanonicalSessionId, getSessionPromotions,
-  listPikiloomSessions, findPikiloomSession, getSessionStoredConfig,
+  listUrdrSessions, findUrdrSession, getSessionStoredConfig,
   ensureManagedSession, findManagedThreadSession, stageSessionFiles,
   mergeManagedAndNativeSessions, managedRecordToSessionInfo,
   getSessions, getSessionTail, getSessionMessages,

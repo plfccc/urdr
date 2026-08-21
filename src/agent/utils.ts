@@ -207,7 +207,7 @@ export function detectClaudeModelError(text: string | null | undefined): boolean
 
 export function claudeModelErrorMessage(model: string | null | undefined): string {
   const id = (model || '').trim();
-  return `The selected model${id ? ` (${id})` : ''} is unavailable — it may not exist, or this account doesn't have access to it. Switch to a different model in pikiloom settings.`;
+  return `The selected model${id ? ` (${id})` : ''} is unavailable — it may not exist, or this account doesn't have access to it. Switch to a different model in urdr settings.`;
 }
 
 export function appendSystemPrompt(base: string | undefined, extra: string): string {
@@ -539,7 +539,7 @@ const SYSTEM_INJECTED_USER_TAGS = new Set([
   // Kernel claude driver's in-process truncated-turn recovery prompt (see packages/kernel
   // drivers/claude.ts): injected on the CLI's stdin, so it lands in the jsonl as a real user
   // message — hide it from the transcript like other system-injected turns.
-  'pikiloom-recover',
+  'urdr-recover',
 ]);
 
 export function isSystemInjectedUserText(text: string): boolean {

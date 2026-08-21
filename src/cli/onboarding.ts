@@ -120,7 +120,7 @@ export function buildSetupGuide(state: SetupState, version: string, options?: { 
     '',
     doctor ? 'Setup check' : 'First-time setup',
     '',
-    `pikiloom connects ${channelLabel} to a local coding agent running on your machine.`,
+    `urdr connects ${channelLabel} to a local coding agent running on your machine.`,
     'Before the bot can start, make sure these basics are ready:',
     '1. Claude Code, Codex, or Gemini CLI installed locally',
     isTelegram

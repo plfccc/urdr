@@ -44,7 +44,7 @@ export function SystemTab({
             <span className="truncate text-[11px] text-fg-5">{hostSummary || t('status.loading')}</span>
           </div>
           <div className="text-[11px] text-fg-5">
-            {state?.version ? `Pikiloom v${state.version}` : 'Pikiloom'}
+            {state?.version ? `Urdr v${state.version}` : 'Urdr'}
             {state?.nodeVersion ? ` · Node ${state.nodeVersion}` : ''}
           </div>
         </div>

@@ -4,9 +4,9 @@ import path from 'node:path';
 import { makeTmpDir } from './support/env.js';
 
 import {
-  findPikiloomSession,
+  findUrdrSession,
   deleteAgentSession,
-  listPikiloomSessions,
+  listUrdrSessions,
 } from '../src/agent/index.js';
 import { saveSessionRecord } from '../src/agent/session.js';
 import type { ManagedSessionRecord } from '../src/agent/types.js';
@@ -45,16 +45,16 @@ describe('deleteAgentSession', () => {
 
       const sessionDir = path.join(workdir, '.urdr', 'sessions', 'claude', 'sess-1');
       expect(fs.existsSync(sessionDir)).toBe(true);
-      expect(findPikiloomSession(workdir, 'claude', 'sess-1')).not.toBeNull();
+      expect(findUrdrSession(workdir, 'claude', 'sess-1')).not.toBeNull();
 
       const result = await deleteAgentSession({ workdir, agent: 'claude', sessionId: 'sess-1' });
       expect(result.ok).toBe(true);
       expect(result.refusedReason).toBeNull();
       expect(result.recordRemoved).toBe(true);
-      expect(result.pikiloomPathsRemoved.length).toBeGreaterThanOrEqual(1);
+      expect(result.urdrPathsRemoved.length).toBeGreaterThanOrEqual(1);
       expect(result.nativePathsRemoved).toEqual([]);
 
-      expect(findPikiloomSession(workdir, 'claude', 'sess-1')).toBeNull();
+      expect(findUrdrSession(workdir, 'claude', 'sess-1')).toBeNull();
       expect(fs.existsSync(sessionDir)).toBe(false);
     }
 
@@ -65,7 +65,7 @@ describe('deleteAgentSession', () => {
 
       await deleteAgentSession({ workdir, agent: 'claude', sessionId: 'drop' });
 
-      const remaining = listPikiloomSessions(workdir, 'claude');
+      const remaining = listUrdrSessions(workdir, 'claude');
       expect(remaining.map(s => s.sessionId)).toEqual(['keep']);
     }
 
@@ -82,7 +82,7 @@ describe('deleteAgentSession', () => {
       expect(result.refusedReason).toBe('session-running');
       expect(result.recordRemoved).toBe(false);
 
-      expect(findPikiloomSession(workdir, 'claude', 'running')).not.toBeNull();
+      expect(findUrdrSession(workdir, 'claude', 'running')).not.toBeNull();
     }
 
     {
@@ -90,7 +90,7 @@ describe('deleteAgentSession', () => {
       const result = await deleteAgentSession({ workdir, agent: 'claude', sessionId: 'never-existed' });
       expect(result.ok).toBe(true);
       expect(result.recordRemoved).toBe(false);
-      expect(result.pikiloomPathsRemoved).toEqual([]);
+      expect(result.urdrPathsRemoved).toEqual([]);
     }
   });
 });

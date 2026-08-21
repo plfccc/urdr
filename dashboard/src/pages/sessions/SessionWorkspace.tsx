@@ -168,18 +168,18 @@ export const SessionWorkspace = memo(function SessionWorkspace({
   type SessionSlot = { agent: string; sessionId: string; workdir: string; mountKey: string; pendingPrompt?: string | null; pendingImageUrls?: string[] };
 
   const [layoutMode, setLayoutModeRaw] = useState<LayoutMode>(() => {
-    const v = layoutGet('pikiloom-layout-mode');
+    const v = layoutGet('urdr-layout-mode');
     if (v === '1' || v === '2' || v === '3' || v === '6') return Number(v) as LayoutMode;
     return defaultLayoutMode();
   });
   const [floorMode, setFloorModeRaw] = useState<LayoutMode>(() => {
-    const v = layoutGet('pikiloom-layout-floor');
+    const v = layoutGet('urdr-layout-floor');
     if (v === '1' || v === '2' || v === '3' || v === '6') return Number(v) as LayoutMode;
     return defaultLayoutMode();
   });
   const [openSessions, setOpenSessionsRaw] = useState<SessionSlot[]>(() => {
     try {
-      const v = layoutGet('pikiloom-open-sessions');
+      const v = layoutGet('urdr-open-sessions');
       if (v) {
         const parsed = JSON.parse(v);
         if (Array.isArray(parsed)) return parsed.map((s: any) => ({ ...s, mountKey: s.mountKey || nextMountKey() }));
@@ -188,31 +188,31 @@ export const SessionWorkspace = memo(function SessionWorkspace({
     return [];
   });
   const [activeSlotIndex, setActiveSlotIndexRaw] = useState(() => {
-    const v = layoutGet('pikiloom-active-slot');
+    const v = layoutGet('urdr-active-slot');
     if (v != null) { const n = Number(v); if (Number.isFinite(n) && n >= 0) return n; }
     return 0;
   });
 
   const setLayoutMode = useCallback((mode: LayoutMode) => {
     setLayoutModeRaw(mode);
-    layoutSet('pikiloom-layout-mode', String(mode));
+    layoutSet('urdr-layout-mode', String(mode));
   }, []);
   const setFloorMode = useCallback((mode: LayoutMode) => {
     setFloorModeRaw(mode);
-    layoutSet('pikiloom-layout-floor', String(mode));
+    layoutSet('urdr-layout-floor', String(mode));
   }, []);
   const setOpenSessions = useCallback((updater: SessionSlot[] | ((prev: SessionSlot[]) => SessionSlot[])) => {
     setOpenSessionsRaw(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
       const persistable = next.map(({ pendingPrompt: _p, pendingImageUrls: _i, ...rest }) => rest);
-      layoutSet('pikiloom-open-sessions', JSON.stringify(persistable));
+      layoutSet('urdr-open-sessions', JSON.stringify(persistable));
       return next;
     });
   }, []);
   const setActiveSlotIndex = useCallback((updater: number | ((prev: number) => number)) => {
     setActiveSlotIndexRaw(prev => {
       const next = typeof updater === 'function' ? updater(prev) : updater;
-      layoutSet('pikiloom-active-slot', String(next));
+      layoutSet('urdr-active-slot', String(next));
       return next;
     });
   }, []);
@@ -1192,8 +1192,8 @@ export const SessionWorkspace = memo(function SessionWorkspace({
               className="mt-0.5"
             />
             <div className="flex-1">
-              <div className="text-[12px] text-fg-2">{t('session.deletePikiloomOnly')}</div>
-              <div className="text-[11px] text-fg-5 leading-snug mt-0.5">{t('session.deletePikiloomOnlyHint')}</div>
+              <div className="text-[12px] text-fg-2">{t('session.deleteUrdrOnly')}</div>
+              <div className="text-[11px] text-fg-5 leading-snug mt-0.5">{t('session.deleteUrdrOnlyHint')}</div>
             </div>
           </label>
           <label className="flex items-start gap-2 cursor-pointer">

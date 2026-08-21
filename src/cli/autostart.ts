@@ -38,7 +38,7 @@ function detectInvocation(): InvocationCommand | null {
     return { program: npxBin, args: ['-y', 'urdr@latest', ...userArgs] };
   }
 
-  const bin = whichSync('urdr') || whichSync('pikiloom');
+  const bin = whichSync('urdr') || whichSync('urdr');
   if (bin) return { program: bin, args: userArgs };
   return null;
 }
@@ -112,11 +112,11 @@ function plistIsStale(invocation: InvocationCommand): boolean {
 async function showEnableDialog(): Promise<DialogChoice> {
   const script = [
     'display dialog ',
-    '"Start pikiloom automatically when you log in?\\n\\n',
+    '"Start urdr automatically when you log in?\\n\\n',
     'You can change this anytime in:\\n',
     'System Settings → General → Login Items" ',
     'buttons {"Not now", "Enable"} default button "Enable" ',
-    'with title "pikiloom" with icon note',
+    'with title "urdr" with icon note',
   ].join('');
   try {
     const { stdout } = await execFileAsync('osascript', ['-e', script]);
@@ -201,7 +201,7 @@ export function maybePromptAutostart(log: LogFn): void {
         if (choice === 'enable') {
           await installAutostart(log, invocation);
         } else {
-          log('autostart: not enabled this run; will ask again next time `pikiloom --daemon` runs');
+          log('autostart: not enabled this run; will ask again next time `urdr --daemon` runs');
         }
       } catch (err: any) {
         log(`autostart: prompt failed: ${err?.message || err}`);

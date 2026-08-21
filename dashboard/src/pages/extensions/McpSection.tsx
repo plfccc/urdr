@@ -369,7 +369,7 @@ export function McpCatalogSection({
   onOpenBrowserSetup?: () => void;
 }) {
   const toast = useStore(s => s.toast);
-  const cacheKey = `pikiloom.mcp.catalog.${scope}.${workdir || ''}`;
+  const cacheKey = `urdr.mcp.catalog.${scope}.${workdir || ''}`;
   const { data, loading, refresh } = useCachedResource<McpCatalogItem[]>(
     cacheKey,
     async () => (await api.getMcpCatalog(workdir, scope)).items || [],
@@ -530,7 +530,7 @@ export function McpCatalogSection({
             <div>
               <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-fg-5">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--th-accent,#7c3aed)]"></span>
-                {L(locale, '内置（pikiloom 优化）', 'Built-in (optimized by pikiloom)')}
+                {L(locale, '内置（urdr 优化）', 'Built-in (optimized by urdr)')}
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {builtinItems.map((item, i) => (
@@ -542,7 +542,7 @@ export function McpCatalogSection({
                       busy={busy === item.id}
                       index={i}
                       onPrimary={() => handleConnectedPrimary(item)}
-                      onReconfigure={item.id === 'pikiloom-browser' ? onOpenBrowserSetup : undefined}
+                      onReconfigure={item.id === 'urdr-browser' ? onOpenBrowserSetup : undefined}
                     />
                   ) : (
                     <AvailableCard

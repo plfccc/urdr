@@ -20,7 +20,7 @@ import {
   detectClaudeModelError, claudeModelErrorMessage,
   emitSessionIdUpdate,
   IMAGE_EXTS, mimeForExt,
-  listPikiloomSessions, findPikiloomSession, isPendingSessionId,
+  listUrdrSessions, findUrdrSession, isPendingSessionId,
   mergeManagedAndNativeSessions, managedRecordToSessionInfo,
   readTailLines, stripInjectedPrompts, sanitizeSessionUserPreviewText, isSystemInjectedUserText, SESSION_PREVIEW_IMAGE_PLACEHOLDER_RE,
   CLAUDE_AT_MENTION_IMAGE_RE, extractClaudeAtMentionImagePaths, stripClaudeAtMentionImages,
@@ -1268,14 +1268,14 @@ function getNativeClaudeSessions(workdir: string, limit?: number): SessionInfo[]
 
 function getClaudeSessions(workdir: string, limit?: number): SessionListResult {
   const resolvedWorkdir = path.resolve(workdir);
-  const pikiloomSessions = listPikiloomSessions(resolvedWorkdir, 'claude').map(managedRecordToSessionInfo);
+  const urdrSessions = listUrdrSessions(resolvedWorkdir, 'claude').map(managedRecordToSessionInfo);
   const nativeSessions = getNativeClaudeSessions(resolvedWorkdir, limit);
-  const merged = mergeManagedAndNativeSessions(pikiloomSessions, nativeSessions);
+  const merged = mergeManagedAndNativeSessions(urdrSessions, nativeSessions);
   const sessions = typeof limit === 'number' ? merged.slice(0, limit) : merged;
   const projectDir = path.join(getHome(), '.claude', 'projects', claudeProjectDirName(resolvedWorkdir));
   agentLog(
     `[sessions:claude] workdir=${resolvedWorkdir} projectDir=${projectDir} projectDirExists=${fs.existsSync(projectDir)} ` +
-    `pikiloom=${pikiloomSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
+    `pikiloom=${urdrSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
   );
   return { ok: true, sessions, error: null };
 }
@@ -1460,10 +1460,10 @@ function isClaudeSyntheticResumeNoise(text: string): boolean {
 const CLAUDE_INCOMPLETE_TURN_NOTICE =
   '⚠️ This reply ended before a closing message was delivered (interrupted, or the model returned an empty final response).';
 
-// Shown under a reply we restored from pikiloom's delivery snapshot because the agent transcript
+// Shown under a reply we restored from urdr's delivery snapshot because the agent transcript
 // lost it (see turn-snapshot.ts). The content above is what was actually streamed to the user.
 const CLAUDE_RECOVERED_TURN_NOTICE =
-  'ℹ️ Restored by pikiloom from the delivered reply — the agent’s own transcript dropped this turn.';
+  'ℹ️ Restored by urdr from the delivered reply — the agent’s own transcript dropped this turn.';
 
 function getClaudeSessionMessages(opts: SessionMessagesOpts): SessionMessagesResult {
   const projectDir = path.join(getHome(), '.claude', 'projects', claudeProjectDirName(opts.workdir));
@@ -2326,7 +2326,7 @@ function makeOverloadFriendlyResult(result: StreamResult, reason: string, attemp
 }
 
 const CLAUDE_STALL_RESUME_PROMPT =
-  '[pikiloom] The previous agent process stalled mid-turn and was restarted. '
+  '[urdr] The previous agent process stalled mid-turn and was restarted. '
   + 'Continue the task from where it left off — do not start over or repeat work that already completed.';
 
 const CLAUDE_STALL_RESUME_LIMIT = 1;

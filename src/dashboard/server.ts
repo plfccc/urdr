@@ -131,7 +131,7 @@ export async function startDashboard(opts: DashboardOptions = {}): Promise<Dashb
           const actualPort = typeof addr === 'object' && addr ? addr.port : port;
           const dashUrl = `http://localhost:${actualPort}`;
           const ts = new Date().toTimeString().slice(0, 8);
-          process.stdout.write(`[pikiloom ${ts}] dashboard: ${dashUrl}\n`);
+          process.stdout.write(`[urdr ${ts}] dashboard: ${dashUrl}\n`);
 
           preloadAgentStatus();
 

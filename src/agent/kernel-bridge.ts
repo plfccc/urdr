@@ -36,7 +36,7 @@ export function acpAgentConfig(agent: string): { command: string; args: string[]
   return null;
 }
 
-// pikiloom's mcpServers (Record) -> kernel McpServerSpec[] for ACP session/new forwarding.
+// urdr's mcpServers (Record) -> kernel McpServerSpec[] for ACP session/new forwarding.
 function mcpRecordToKernelSpecs(servers?: Record<string, any>): any[] {
   if (!servers) return [];
   const out: any[] = [];
@@ -58,7 +58,7 @@ export function shouldUseKernelPipeline(agent: string): boolean {
   return true;                                                                // default: kernel
 }
 
-// Build the kernel driver instance + the per-agent AgentTurnInput from pikiloom StreamOpts.
+// Build the kernel driver instance + the per-agent AgentTurnInput from urdr StreamOpts.
 function buildKernelDriver(kernel: any, opts: StreamOpts): { driver: any; input: any } {
   const common = {
     prompt: opts.prompt,
@@ -95,12 +95,12 @@ function buildKernelDriver(kernel: any, opts: StreamOpts): { driver: any; input:
   }
 }
 
-// Kernel plan steps key their text as { text }; pikiloom's StreamPlan and the entire dashboard
+// Kernel plan steps key their text as { text }; urdr's StreamPlan and the entire dashboard
 // pipeline (pikichannel adapter -> ws.ts -> PlanProgressCard) key it as { step }. Translate at
 // this seam — the same place we already remap usage fields — so codex/claude task lists render
 // their text. Without it the progress count ("0/4") shows but every row is blank (the card reads
 // step.step, which is undefined on the kernel shape).
-export function toPikiloomPlan(plan: any): StreamPreviewPlan | null {
+export function toUrdrPlan(plan: any): StreamPreviewPlan | null {
   if (!plan || !Array.isArray(plan.steps)) return null;
   const steps = plan.steps
     .map((st: any) => ({
@@ -180,7 +180,7 @@ export async function loadKernel(): Promise<any> {
 }
 
 // A kernel 'artifact' (e.g. a generated image as a data URL) -> write to a temp file and
-// deliver through pikiloom's normal file-delivery seam (same path as im_send_file).
+// deliver through urdr's normal file-delivery seam (same path as im_send_file).
 async function deliverKernelArtifact(artifact: any, opts: StreamOpts): Promise<void> {
   try {
     const send = (opts as any).mcpSendFile;
@@ -204,7 +204,7 @@ export async function kernelStream(opts: StreamOpts): Promise<StreamResult> {
   let seenSid: string | null = null;
 
   // SessionRunner (via runTurn) owns the event accumulation; the bridge only translates
-  // the kernel's UniversalSnapshot onto pikiloom's preview (onText) and delivers any new
+  // the kernel's UniversalSnapshot onto urdr's preview (onText) and delivers any new
   // artifacts through the normal file seam. This is the "product bridge" pattern: map your
   // request -> AgentTurnInput, map snapshot -> your UI, map result -> your result shape.
   const onSnapshot = (s: any) => {
@@ -222,7 +222,7 @@ export async function kernelStream(opts: StreamOpts): Promise<StreamResult> {
       subAgents: s.subAgents?.length ? s.subAgents : undefined,
       providerName: opts.byokProviderName ?? null,
     };
-    try { opts.onText(s.text || '', s.reasoning || '', s.activity || '', m, toPikiloomPlan(s.plan)); } catch { /* isolate */ }
+    try { opts.onText(s.text || '', s.reasoning || '', s.activity || '', m, toUrdrPlan(s.plan)); } catch { /* isolate */ }
   };
 
   let result: any; let snapshot: any = {};
@@ -259,7 +259,7 @@ export async function kernelStream(opts: StreamOpts): Promise<StreamResult> {
     ok: !!result.ok,
     message: presentation.message,
     thinking: (result.reasoning || snapshot.reasoning || '').trim() || null,
-    plan: toPikiloomPlan(snapshot.plan),
+    plan: toUrdrPlan(snapshot.plan),
     sessionId: finalSessionId,
     workspacePath: null,
     model: input.model ?? null,

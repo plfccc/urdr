@@ -21,7 +21,7 @@ const tools: McpToolModule['tools'] = [
         reason: {
           type: 'string',
           description:
-            'Short, human-readable note on what is still running and what you will report back (e.g. "rebuilding + restarting pikiloom, will confirm after it comes back up").',
+            'Short, human-readable note on what is still running and what you will report back (e.g. "rebuilding + restarting urdr, will confirm after it comes back up").',
         },
       },
       required: ['reason'],

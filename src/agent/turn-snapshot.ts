@@ -2,12 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { getUserConfigPath } from '../core/config/user-config.js';
 
-// Durable per-turn snapshot of the content pikiloom actually delivered.
+// Durable per-turn snapshot of the content urdr actually delivered.
 //
 // The agent CLIs are the source of truth for transcript history, but their session jsonl is
 // lossy under two upstream conditions we cannot prevent: (1) a turn's closing reply dies before
 // the CLI flushes it to disk (kill/flush race), and (2) the CLI's resume rewrites the jsonl in
-// place and drops a turn that never got a synthetic-free conclusion. In both cases pikiloom has
+// place and drops a turn that never got a synthetic-free conclusion. In both cases urdr has
 // already streamed the complete reply to the user (turn-audit confirms ok/end_turn), yet a later
 // history render reads only a "No response requested." tombstone — the swallow.
 //
@@ -27,7 +27,7 @@ export interface DeliveredTurn {
   model: string | null;
 }
 
-// Match the raw prompt pikiloom ran against the user text reconstructed from the jsonl. Both
+// Match the raw prompt urdr ran against the user text reconstructed from the jsonl. Both
 // sides normalize identically: collapse whitespace, trim, cap length. Case is preserved (matching
 // is mostly CJK / mixed-script prose).
 export function normalizeSnapshotPrompt(s: string): string {

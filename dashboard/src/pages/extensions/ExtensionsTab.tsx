@@ -98,13 +98,13 @@ export function ExtensionsTab({
   const workdir = state?.config?.workdir || '';
   const [tab, setTab] = useState<ExtensionTab>(() => {
     try {
-      const saved = localStorage.getItem('pikiloom:extensions:tab');
+      const saved = localStorage.getItem('urdr:extensions:tab');
       return (saved === 'mcp' || saved === 'cli' || saved === 'skill') ? saved : 'mcp';
     } catch { return 'mcp'; }
   });
   const switchTab = useCallback((next: ExtensionTab) => {
     setTab(next);
-    try { localStorage.setItem('pikiloom:extensions:tab', next); } catch {  }
+    try { localStorage.setItem('urdr:extensions:tab', next); } catch {  }
   }, []);
 
   return (
@@ -138,13 +138,13 @@ export function WorkspaceExtensionsBody({ workdir }: { workdir: string }) {
   const locale = useStore(s => s.locale);
   const [tab, setTab] = useState<ExtensionTab>(() => {
     try {
-      const saved = localStorage.getItem('pikiloom:extensions-ws:tab');
+      const saved = localStorage.getItem('urdr:extensions-ws:tab');
       return (saved === 'mcp' || saved === 'cli' || saved === 'skill') ? saved : 'mcp';
     } catch { return 'mcp'; }
   });
   const switchTab = useCallback((next: ExtensionTab) => {
     setTab(next);
-    try { localStorage.setItem('pikiloom:extensions-ws:tab', next); } catch {  }
+    try { localStorage.setItem('urdr:extensions-ws:tab', next); } catch {  }
   }, []);
   return (
     <div className="space-y-6">

@@ -9,7 +9,7 @@ import { writeScopedLog } from '../core/logging.js';
 import { loadUserConfig, updateUserConfig } from '../core/config/user-config.js';
 import { PikichannelHost } from './host.js';
 import { prewarmTurn, turnStatus } from './turn.js';
-import { PikiloomSessionSource, type RequestForwarder } from './adapter-pikiloom.js';
+import { UrdrSessionSource, type RequestForwarder } from './adapter-urdr.js';
 import { WebSocketTransport } from './transports/websocket-host.js';
 import { RendezvousBroker } from './rendezvous-broker.js';
 import type { RendezvousHostClient } from './rendezvous-host.js';
@@ -88,7 +88,7 @@ export async function mountPikichannel(app: Hono): Promise<PikichannelHandle> {
     return { status: res.status, headers, body: buf.toString('base64'), encoding: 'base64' };
   };
 
-  const source = new PikiloomSessionSource(forward);
+  const source = new UrdrSessionSource(forward);
   const host = new PikichannelHost(source, authenticate, log);
   host.start();
 

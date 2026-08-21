@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projectSnapshot } from '../src/pikichannel/adapter-pikiloom.ts';
+import { projectSnapshot } from '../src/pikichannel/adapter-urdr.ts';
 
 function snapWithInteraction(): any {
   return {

@@ -152,7 +152,7 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       browserHeadless: false,
     })).toEqual([
       {
-        name: 'pikiloom-browser',
+        name: 'urdr-browser',
         command: userDataExpected.command,
         args: userDataExpected.args,
       },
@@ -169,7 +169,7 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       cdpEndpoint: attachCdpEndpoint,
     })).toEqual([
       {
-        name: 'pikiloom-browser',
+        name: 'urdr-browser',
         command: attachExpected.command,
         args: attachExpected.args,
       },
@@ -202,7 +202,7 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       browserProfileDir: hintProfileDir,
       browserHeadless: true,
     })).toEqual([
-      `managed browser profile mode enabled; runtime sessions reuse ${hintProfileDir}; configured MCP browser mode=headless. This mode keeps automation isolated from your everyday browser. If the managed browser is already open, pikiloom will try to attach to it first. When using browser_tabs, use action="new" to open a tab, not "create".`,
+      `managed browser profile mode enabled; runtime sessions reuse ${hintProfileDir}; configured MCP browser mode=headless. This mode keeps automation isolated from your everyday browser. If the managed browser is already open, urdr will try to attach to it first. When using browser_tabs, use action="new" to open a tab, not "create".`,
     ]);
   });
 

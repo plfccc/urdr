@@ -380,7 +380,7 @@ describe('transcript rendering of a dangling turn', () => {
       expect(allText).not.toContain('No response requested.');
       const notices = rich.flatMap(m => m.blocks || []).filter((b: any) => b.type === 'system_notice');
       expect(notices.length).toBe(1);
-      expect(String(notices[0].content)).toContain('Restored by pikiloom');
+      expect(String(notices[0].content)).toContain('Restored by urdr');
       // The follow-up turn ("结果呢") is untouched and not double-restored.
       const userMsgs = rich.filter(m => m.role === 'user').map(m => m.text);
       expect(userMsgs).toEqual(['你帮我针对这个用户起草一份回复邮件', '结果呢']);

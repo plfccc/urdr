@@ -421,7 +421,7 @@ export class TelegramBot extends Bot {
     const d = await getStatusDataAsync(this, ctx.chatId);
     const gitLine = formatGitStatusLine(d.git);
     const lines = [
-      `<b>pikiloom</b> v${d.version}\n`,
+      `<b>urdr</b> v${d.version}\n`,
       `<b>Uptime:</b> ${fmtUptime(d.uptime)}`,
       `<b>Memory:</b> ${(d.memRss / 1024 / 1024).toFixed(0)}MB RSS / ${(d.memHeap / 1024 / 1024).toFixed(0)}MB heap`,
       `<b>PID:</b> ${d.pid}`,
@@ -497,7 +497,7 @@ export class TelegramBot extends Bot {
 
   private async cmdRestart(ctx: TgContext) {
     await ctx.reply(
-      `<b>Restarting pikiloom...</b>\n\n` +
+      `<b>Restarting urdr...</b>\n\n` +
       `The bot will be back shortly.`,
       { parseMode: 'HTML' },
     );

@@ -667,15 +667,15 @@ export function managedRecordToSessionInfo(record: ManagedSessionRecord): Sessio
   };
 }
 
-export function listPikiloomSessions(workdir: string, agent: Agent, limit?: number): ManagedSessionRecord[] {
+export function listUrdrSessions(workdir: string, agent: Agent, limit?: number): ManagedSessionRecord[] {
   const records = sortByUpdatedAtDesc(
     loadSessionIndex(path.resolve(workdir)).sessions.filter(entry => entry.agent === agent),
   );
   return typeof limit === 'number' ? records.slice(0, limit) : records;
 }
 
-export function findPikiloomSession(workdir: string, agent: Agent, sessionId: string): ManagedSessionRecord | null {
-  return listPikiloomSessions(workdir, agent).find(entry => entry.sessionId === sessionId) || null;
+export function findUrdrSession(workdir: string, agent: Agent, sessionId: string): ManagedSessionRecord | null {
+  return listUrdrSessions(workdir, agent).find(entry => entry.sessionId === sessionId) || null;
 }
 
 export interface DeleteAgentSessionOpts {
@@ -688,7 +688,7 @@ export interface DeleteAgentSessionOpts {
 export interface DeleteAgentSessionResult {
   ok: boolean;
   recordRemoved: boolean;
-  pikiloomPathsRemoved: string[];
+  urdrPathsRemoved: string[];
   nativePathsRemoved: string[];
   refusedReason: 'session-running' | null;
 }
@@ -699,7 +699,7 @@ export async function deleteAgentSession(opts: DeleteAgentSessionOpts): Promise<
   const result: DeleteAgentSessionResult = {
     ok: false,
     recordRemoved: false,
-    pikiloomPathsRemoved: [],
+    urdrPathsRemoved: [],
     nativePathsRemoved: [],
     refusedReason: null,
   };
@@ -724,7 +724,7 @@ export async function deleteAgentSession(opts: DeleteAgentSessionOpts): Promise<
     if (!fs.existsSync(dir)) continue;
     try {
       fs.rmSync(dir, { recursive: true, force: true });
-      result.pikiloomPathsRemoved.push(dir);
+      result.urdrPathsRemoved.push(dir);
     } catch (err) {
       agentLog(`[sessions] failed to remove ${dir}: ${(err as Error).message}`);
     }
@@ -747,7 +747,7 @@ export async function deleteAgentSession(opts: DeleteAgentSessionOpts): Promise<
 }
 
 export function getSessionStoredConfig(workdir: string, agent: Agent, sessionId: string): { model: string | null; thinkingEffort: string | null; workflowEnabled: boolean | null; profileId: string | null; accountId: string | null } {
-  const record = findPikiloomSession(workdir, agent, sessionId);
+  const record = findUrdrSession(workdir, agent, sessionId);
   return {
     model: record?.model ?? null,
     thinkingEffort: record?.thinkingEffort ?? null,

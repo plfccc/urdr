@@ -7,7 +7,7 @@ import {
   deriveUserStatus as _deriveStatusFromOutcome,
   exportSession as _exportSession,
   importSession as _importSession,
-  findPikiloomSession,
+  findUrdrSession,
   updateSessionMeta, resolveCanonicalSessionId, getSessionPromotions,
   deleteAgentSession as _deleteAgentSession,
   type DeleteAgentSessionOpts, type DeleteAgentSessionResult,
@@ -189,7 +189,7 @@ function tailFallbackFromManagedRecord(opts: SessionTailOpts): SessionTailResult
 }
 
 function managedFallbackContent(opts: SessionTailOpts): ManagedFallback | null {
-  const record = findPikiloomSession(opts.workdir, opts.agent, opts.sessionId);
+  const record = findUrdrSession(opts.workdir, opts.agent, opts.sessionId);
   if (!record) return null;
   const messages: TailMessage[] = [];
   const richMessages: RichMessage[] = [];

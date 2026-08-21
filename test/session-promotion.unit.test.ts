@@ -9,7 +9,7 @@ import {
   resolveCanonicalSessionId,
   getSessionPromotions,
 } from '../src/agent/session.js';
-import { findPikiloomSession, deleteAgentSession } from '../src/agent/index.js';
+import { findUrdrSession, deleteAgentSession } from '../src/agent/index.js';
 import type { ManagedSessionRecord } from '../src/agent/types.js';
 
 function makeRecord(workdir: string, sessionId: string, opts: Partial<ManagedSessionRecord> = {}): ManagedSessionRecord {
@@ -53,8 +53,8 @@ describe('durable session promotions', () => {
 
     expect(resolveCanonicalSessionId(workdir, 'claude', 'pending_aaaaaa')).toBe('native-1');
     expect(getSessionPromotions(workdir)['claude:pending_aaaaaa']).toBe('native-1');
-    expect(findPikiloomSession(workdir, 'claude', 'native-1')).not.toBeNull();
-    expect(findPikiloomSession(workdir, 'claude', 'pending_aaaaaa')).toBeNull();
+    expect(findUrdrSession(workdir, 'claude', 'native-1')).not.toBeNull();
+    expect(findUrdrSession(workdir, 'claude', 'pending_aaaaaa')).toBeNull();
   });
 
   it('compacts a multi-hop chain (pending → n1 → n2) so every stale id resolves in one lookup', () => {

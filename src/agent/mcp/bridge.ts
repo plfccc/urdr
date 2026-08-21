@@ -247,7 +247,7 @@ export function buildSupplementalMcpServers(
       cdpEndpoint,
     });
     servers.push({
-      name: 'pikiloom-browser',
+      name: 'urdr-browser',
       command: browserServer.command,
       args: browserServer.args,
     });
@@ -262,7 +262,7 @@ export function buildGuiSetupHints(gui: GuiIntegrationConfig = resolveGuiIntegra
   const hints: string[] = [];
   if (gui.browserEnabled) {
     hints.push(
-      `managed browser profile mode enabled; runtime sessions reuse ${gui.browserProfileDir || getManagedBrowserProfileDir()}; configured MCP browser mode=${gui.browserHeadless ? 'headless' : 'headed'}. This mode keeps automation isolated from your everyday browser. If the managed browser is already open, pikiloom will try to attach to it first. When using browser_tabs, use action="new" to open a tab, not "create".`,
+      `managed browser profile mode enabled; runtime sessions reuse ${gui.browserProfileDir || getManagedBrowserProfileDir()}; configured MCP browser mode=${gui.browserHeadless ? 'headless' : 'headed'}. This mode keeps automation isolated from your everyday browser. If the managed browser is already open, urdr will try to attach to it first. When using browser_tabs, use action="new" to open a tab, not "create".`,
     );
   }
   if (gui.peekabooEnabled && process.platform === 'darwin') {
@@ -475,7 +475,7 @@ export function _matchPeekabooMcpProcessCommand(command: string): boolean {
 function commandLooksLikeLiveMcpController(command: string): boolean {
   if (!command) return false;
   const text = command.toLowerCase();
-  if (/\bpikiloom\b/.test(text) || text.includes('pikiloom@')) return true;
+  if (/\burdr\b/.test(text) || text.includes('urdr@')) return true;
   const first = commandTokenBase(command.split(/\s+/)[0] || '');
   return first === 'claude' || first === 'codex' || first === 'gemini' || first === 'hermes';
 }
@@ -773,7 +773,7 @@ export async function startMcpBridge(opts: McpBridgeOpts): Promise<McpBridgeHand
             const interaction: AgentInteraction = {
               kind: 'user-input',
               id: requestId,
-              title: header || 'Pikiloom needs your input',
+              title: header || 'Urdr needs your input',
               hint: hint || null,
               questions: [interactionQuestion],
               resolveWith: (answers) => {

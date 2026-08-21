@@ -1,9 +1,9 @@
 // Session tool capabilities: each co-locates a session MCP tool group (defined under
 // ./tools/) with the prompt fragment that teaches the agent to use it. This is the local,
 // decoupled analog of a @pikiloom/kernel Plugin (a capability = its tools + its usage
-// prompt, as one unit). pikiloom composes its own system prompt app-side and feeds the
+// prompt, as one unit). urdr composes its own system prompt app-side and feeds the
 // kernel a finished string, so this module intentionally does NOT import the kernel — that
-// is what keeps pikiloom fully decoupled from the kernel's Hub/plugin runtime.
+// is what keeps urdr fully decoupled from the kernel's Hub/plugin runtime.
 
 export interface SessionPromptContext {
   agent: string;

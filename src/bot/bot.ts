@@ -220,7 +220,7 @@ export interface SessionGoalView {
   continuationCount: number | null;
 }
 
-function normalizeFromPikiloom(goal: ThreadGoal): SessionGoalView {
+function normalizeFromUrdr(goal: ThreadGoal): SessionGoalView {
   return {
     source: 'urdr',
     objective: goal.objective,
@@ -1721,7 +1721,7 @@ export class Bot {
       return goal ? normalizeFromClaudeNative(goal) : null;
     }
     const goal = readGoal(workdir, agent, sessionId);
-    return goal ? normalizeFromPikiloom(goal) : null;
+    return goal ? normalizeFromUrdr(goal) : null;
   }
 
   async setSessionGoal(
@@ -1784,7 +1784,7 @@ export class Bot {
         goalContinuation: { kind: 'continuation', goalId: goal.goalId },
       });
     }
-    return normalizeFromPikiloom(goal);
+    return normalizeFromUrdr(goal);
   }
 
   async pauseSessionGoal(workdir: string, agent: Agent, sessionId: string): Promise<SessionGoalView | null> {
@@ -1799,7 +1799,7 @@ export class Bot {
       throw new Error('Claude native /goal does not support pause/resume — only `/goal clear`. Re-issue `/goal <objective>` to start fresh.');
     }
     const goal = pauseGoal(workdir, agent, sessionId);
-    return goal ? normalizeFromPikiloom(goal) : null;
+    return goal ? normalizeFromUrdr(goal) : null;
   }
 
   async resumeSessionGoal(
@@ -1819,7 +1819,7 @@ export class Bot {
       throw new Error('Claude native /goal does not support pause/resume — re-issue `/goal <objective>` to start fresh.');
     }
     const goal = resumeGoal(workdir, agent, sessionId);
-    if (!goal || goal.status !== 'active') return goal ? normalizeFromPikiloom(goal) : null;
+    if (!goal || goal.status !== 'active') return goal ? normalizeFromUrdr(goal) : null;
     if (!isPendingSessionId(sessionId)) {
       const prompt = renderContinuationPrompt(goal);
       this.submitSessionTask({
@@ -1833,7 +1833,7 @@ export class Bot {
         goalContinuation: { kind: 'continuation', goalId: goal.goalId },
       });
     }
-    return normalizeFromPikiloom(goal);
+    return normalizeFromUrdr(goal);
   }
 
   async clearSessionGoal(workdir: string, agent: Agent, sessionId: string, opts: { chatId?: ChatId; modelId?: string | null; thinkingEffort?: string | null } = {}): Promise<void> {
@@ -2473,7 +2473,7 @@ export class Bot {
       const bin = whichSync('systemd-inhibit');
       if (bin) {
         this.keepAliveProc = spawn('systemd-inhibit', [
-          '--what=idle', '--who=pikiloom', '--why=AI coding agent running', 'sleep', 'infinity',
+          '--what=idle', '--who=urdr', '--why=AI coding agent running', 'sleep', 'infinity',
         ], { stdio: 'ignore', detached: true });
         this.keepAliveProc.unref();
         this.log(`keep-alive: systemd-inhibit (PID ${this.keepAliveProc.pid})`);

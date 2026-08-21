@@ -171,7 +171,7 @@ export async function runSetupWizard(options: SetupWizardOptions): Promise<Setup
   };
 
   try {
-    io.write(title(`pikiloom v${options.version} setup`));
+    io.write(title(`urdr v${options.version} setup`));
 
     if (options.channel !== 'telegram') {
       io.write(buildSetupGuide(state, options.version));
@@ -270,7 +270,7 @@ export async function runSetupWizard(options: SetupWizardOptions): Promise<Setup
     io.write(title('Ready'));
     io.write(`Agent: ${selectedAgent}\n`);
     io.write(`Telegram bot: @${tokenCheck?.bot?.username || 'unknown_bot'}\n`);
-    io.write('Starting pikiloom now...\n');
+    io.write('Starting urdr now...\n');
 
     return {
       completed: true,

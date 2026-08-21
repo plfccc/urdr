@@ -1170,9 +1170,9 @@ export async function doClaudeTuiStream(opts: StreamOpts): Promise<StreamResult>
       looksLikePrompt: true, screenState, action: 'terminate-prompt-unanswered', screenSample: sample,
     });
     s.stopReason = 'prompt_unanswered';
-    if (!s.errors) s.errors = ['Claude paused for a confirmation pikiloom could not auto-approve. Your session is intact — re-send your message (or reply "continue") to proceed.'];
+    if (!s.errors) s.errors = ['Claude paused for a confirmation urdr could not auto-approve. Your session is intact — re-send your message (or reply "continue") to proceed.'];
     agentWarn(`[claude-tui] confirm dialog (${screenState}) did not clear after auto-answer — ending turn without auto-resume pid=${proc.pid}`);
-    pushRecentActivity(s.recentActivity, 'Waiting on a confirmation pikiloom could not auto-approve — re-send to continue');
+    pushRecentActivity(s.recentActivity, 'Waiting on a confirmation urdr could not auto-approve — re-send to continue');
     s.activity = s.recentActivity.join('\n');
     emit();
     killProc('SIGTERM');

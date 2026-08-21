@@ -11,7 +11,7 @@ interface CacheEntry {
   providerUpdatedAt: string;
 }
 
-const GLOBAL_KEY = Symbol.for('pikiloom.providerModelsCache');
+const GLOBAL_KEY = Symbol.for('urdr.providerModelsCache');
 const _existing = (globalThis as any)[GLOBAL_KEY] as Map<string, CacheEntry> | undefined;
 const cache: Map<string, CacheEntry> = _existing || new Map<string, CacheEntry>();
 if (!_existing) (globalThis as any)[GLOBAL_KEY] = cache;

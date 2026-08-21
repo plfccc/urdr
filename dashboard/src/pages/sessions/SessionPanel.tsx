@@ -65,7 +65,7 @@ const STREAM_POLL_INTERVAL_MS = 7_000;
 // read a user-only tail. Re-pull history on this backoff until the tail turn carries a
 // renderable assistant. If it never does, the streamed snapshot remains the answer — the reply
 // is never swallowed. (Mirasim gets this for free via a server-side "settled turn always
-// included" guarantee; pikiloom reads the transcript from disk, so it retries instead.)
+// included" guarantee; urdr reads the transcript from disk, so it retries instead.)
 const DONE_RECONCILE_BACKOFF_MS = [300, 650, 1200, 2200, 3600, 5200];
 const historySnapshots = new Map<string, TurnHistoryWindow>();
 function snapshotKey(agent: string, sessionId: string) { return `${agent}:${sessionId}`; }

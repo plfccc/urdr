@@ -508,7 +508,7 @@ export class FeishuBot extends Bot {
   }
 
   private async cmdRestart(ctx: FeishuContext) {
-    await ctx.reply('**Restarting pikiloom...**\n\nPulling latest version. The bot will be back shortly.');
+    await ctx.reply('**Restarting urdr...**\n\nPulling latest version. The bot will be back shortly.');
     void requestProcessRestart({ log: msg => this.log(msg) });
   }
 

@@ -626,7 +626,7 @@ export function SkillsCatalogSection({
   workdir?: string;
   locale: string;
 }) {
-  const cacheKey = `pikiloom.skills.catalog.${scope}.${workdir || ''}`;
+  const cacheKey = `urdr.skills.catalog.${scope}.${workdir || ''}`;
   const { data, loading, refresh } = useCachedResource<{ items: SkillCatalogItem[]; installed: SkillInfo[] }>(
     cacheKey,
     async () => {

@@ -34,7 +34,7 @@ function parseArgs(argv: string[]) {
   return args;
 }
 
-const HELP = `pikiloom run — standalone commands
+const HELP = `urdr run — standalone commands
 
 Usage:
   npm run command -- <command> [options]

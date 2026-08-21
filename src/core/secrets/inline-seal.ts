@@ -23,7 +23,7 @@ function readOrCreateSalt(): Buffer {
 function deriveKey(): Buffer {
   const salt = readOrCreateSalt();
   const material = Buffer.concat([
-    Buffer.from(os.hostname() || 'pikiloom'),
+    Buffer.from(os.hostname() || 'urdr'),
     Buffer.from(os.userInfo().username || ''),
     salt,
   ]);

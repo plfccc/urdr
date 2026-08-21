@@ -18,7 +18,7 @@ import {
   firstNonEmptyLine, shortValue, numberOrNull,
   normalizeStreamPreviewPlan,
   IMAGE_EXTS,
-  listPikiloomSessions, findPikiloomSession, isPendingSessionId,
+  listUrdrSessions, findUrdrSession, isPendingSessionId,
   mergeManagedAndNativeSessions, managedRecordToSessionInfo,
   stripInjectedPrompts, sanitizeSessionUserPreviewText, computeContext, readTailLines, applyTurnWindow,
   roundPercent, toIsoFromEpochSeconds, labelFromWindowMinutes,
@@ -569,7 +569,7 @@ function findCodexManagedPreviewAssistantIndex(
 }
 
 function overlayCodexManagedPreview(workdir: string, sessionId: string, richMessages: RichMessage[]): RichMessage[] {
-  const managed = findPikiloomSession(workdir, 'codex', sessionId);
+  const managed = findUrdrSession(workdir, 'codex', sessionId);
   if (!managed) return richMessages;
   const assistantIndex = findCodexManagedPreviewAssistantIndex(richMessages, managed.lastQuestion);
   if (assistantIndex < 0) return richMessages;
@@ -1577,14 +1577,14 @@ function getCodexSessionTailFromRollout(opts: SessionTailOpts): SessionTailResul
 
 function getCodexSessions(workdir: string, limit?: number): SessionListResult {
   const resolvedWorkdir = path.resolve(workdir);
-  const pikiloomSessions = listPikiloomSessions(resolvedWorkdir, 'codex').map(managedRecordToSessionInfo);
+  const urdrSessions = listUrdrSessions(resolvedWorkdir, 'codex').map(managedRecordToSessionInfo);
   const nativeSessions = getNativeCodexSessions(resolvedWorkdir, limit);
-  const merged = mergeManagedAndNativeSessions(pikiloomSessions, nativeSessions);
+  const merged = mergeManagedAndNativeSessions(urdrSessions, nativeSessions);
   const sessions = typeof limit === 'number' ? merged.slice(0, limit) : merged;
   const sessionsDir = path.join(getHome(), '.codex', 'sessions');
   agentLog(
     `[sessions:codex] workdir=${resolvedWorkdir} sessionsDir=${sessionsDir} sessionsDirExists=${fs.existsSync(sessionsDir)} ` +
-    `pikiloom=${pikiloomSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
+    `pikiloom=${urdrSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
   );
   return { ok: true, sessions, error: null };
 }

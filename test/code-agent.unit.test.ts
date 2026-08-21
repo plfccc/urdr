@@ -16,7 +16,7 @@ import {
   getSessionTail,
   getUsage,
   labelFromWindowMinutes,
-  listPikiloomSessions,
+  listUrdrSessions,
   listModels,
   mergeManagedAndNativeSessions,
   promoteSessionId,
@@ -467,7 +467,7 @@ describe('stageSessionFiles', () => {
       title: '第一行问题前缀\n第二行补充说明\n第三行细节',
     });
 
-    const record = listPikiloomSessions(tmpDir, 'claude').find(entry => entry.sessionId === staged.sessionId);
+    const record = listUrdrSessions(tmpDir, 'claude').find(entry => entry.sessionId === staged.sessionId);
     expect(record?.title).toBe('第一行问题前缀');
     }
 
@@ -493,7 +493,7 @@ describe('stageSessionFiles', () => {
     expect(fs.existsSync(path.join(nativeWorkspace, 'shot.jpg'))).toBe(true);
     expect(fs.existsSync(oldFilePath)).toBe(true);
 
-    const records = listPikiloomSessions(workdir, 'codex');
+    const records = listUrdrSessions(workdir, 'codex');
     expect(records.map(entry => entry.sessionId)).toContain('thread-native');
     expect(records.map(entry => entry.sessionId)).not.toContain(staged.sessionId);
     }
@@ -514,8 +514,8 @@ describe('stageSessionFiles', () => {
       threadId: 'thread-shared',
     });
 
-    const claudeRecord = listPikiloomSessions(tmpDir, 'claude').find(entry => entry.sessionId === 'shared-session');
-    const codexRecord = listPikiloomSessions(tmpDir, 'codex').find(entry => entry.sessionId === 'shared-session');
+    const claudeRecord = listUrdrSessions(tmpDir, 'claude').find(entry => entry.sessionId === 'shared-session');
+    const codexRecord = listUrdrSessions(tmpDir, 'codex').find(entry => entry.sessionId === 'shared-session');
     const codexBinding = findManagedThreadSession(tmpDir, 'thread-shared', 'codex');
 
     expect(claudeRecord?.agent).toBe('claude');
@@ -1802,7 +1802,7 @@ rl.on('line', (line) => {
     expect(result.sessionId).toBe('thread-native');
     expect(result.workspacePath).toBe(path.join(tmpDir, '.urdr', 'sessions', 'codex', 'thread-native', 'workspace'));
 
-    const record = listPikiloomSessions(tmpDir, 'codex').find(entry => entry.sessionId === 'thread-native');
+    const record = listUrdrSessions(tmpDir, 'codex').find(entry => entry.sessionId === 'thread-native');
     expect(record?.title).toBe('给我讲故事');
     expect(record?.workspacePath).toBe(path.join(tmpDir, '.urdr', 'sessions', 'codex', 'thread-native', 'workspace'));
     }
@@ -1874,7 +1874,7 @@ rl.on('line', (line) => {
     expect(result.ok).toBe(true);
     expect(result.sessionId).toBe('thread-forwarded');
 
-    const record = listPikiloomSessions(tmpDir, 'codex').find(entry => entry.sessionId === 'thread-forwarded');
+    const record = listUrdrSessions(tmpDir, 'codex').find(entry => entry.sessionId === 'thread-forwarded');
     expect(record?.workspacePath).toBe(path.join(tmpDir, '.urdr', 'sessions', 'codex', 'thread-forwarded', 'workspace'));
     }
 
@@ -1890,7 +1890,7 @@ rl.on('line', (line) => {
     const completed = await doStream(baseOpts('claude', { prompt: 'first pass' }));
     expect(completed.ok).toBe(true);
 
-    let record = listPikiloomSessions(tmpDir, 'claude').find(entry => entry.sessionId === 'sess-status');
+    let record = listUrdrSessions(tmpDir, 'claude').find(entry => entry.sessionId === 'sess-status');
     expect(record?.runState).toBe('completed');
     expect(record?.runDetail).toBeNull();
 
@@ -1904,7 +1904,7 @@ exit 1`;
     const incomplete = await doStream(baseOpts('claude', { sessionId: 'sess-status', prompt: 'second pass' }));
     expect(incomplete.ok).toBe(false);
 
-    record = listPikiloomSessions(tmpDir, 'claude').find(entry => entry.sessionId === 'sess-status');
+    record = listUrdrSessions(tmpDir, 'claude').find(entry => entry.sessionId === 'sess-status');
     expect(record?.runState).toBe('incomplete');
     expect(record?.runDetail).toContain('quota exceeded');
     }

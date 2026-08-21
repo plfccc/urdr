@@ -44,8 +44,8 @@ function trimSessionText(value: unknown, max = 24_000): string | null {
 export function _detectBrowserMcpFailure(rawLine: string): string | null {
   if (!rawLine) return null;
   if (rawLine.includes('Frame has been detached')) return 'playwright Frame detached';
-  if (rawLine.includes('pikiloom-browser') && rawLine.includes('Connection closed')) {
-    return 'pikiloom-browser MCP stdio closed';
+  if (rawLine.includes('urdr-browser') && rawLine.includes('Connection closed')) {
+    return 'urdr-browser MCP stdio closed';
   }
   return null;
 }

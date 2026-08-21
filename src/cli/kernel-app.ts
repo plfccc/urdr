@@ -42,7 +42,7 @@ export async function runKernelApp(argv: string[]): Promise<void> {
   try { applyUserConfig(loadUserConfig(), undefined, { overwrite: true, clearMissing: true }); }
   catch (e: any) { console.log(`[kernel-app] config load: ${e?.message || e}`); }
 
-  // REAL ModelResolver: delegate to pikiloom's resolveAgentInjection (BYOK / 豆包 / native).
+  // REAL ModelResolver: delegate to urdr's resolveAgentInjection (BYOK / 豆包 / native).
   // null => native CLI login; else map the InjectedSpawnConfig onto the kernel's ModelInjection.
   const modelResolver = {
     async resolve(agent: string, opts: { model?: string | null; profileId?: string | null }) {
@@ -64,7 +64,7 @@ export async function runKernelApp(argv: string[]): Promise<void> {
     },
   };
 
-  // Discovery (C2). A full cutover wires pikiloom's runtime-config / catalog / mcp SSOT
+  // Discovery (C2). A full cutover wires urdr's runtime-config / catalog / mcp SSOT
   // through this port; here a representative catalog proves discovery end to end.
   const catalog = {
     async listModels({ agent }: { agent: string }) { return DEMO_MODELS[agent] || []; },
@@ -74,9 +74,9 @@ export async function runKernelApp(argv: string[]): Promise<void> {
   };
 
   const here = path.dirname(fileURLToPath(import.meta.url));
-  let html = '<!doctype html><meta charset=utf-8><title>pikiloom · kernel</title>'
+  let html = '<!doctype html><meta charset=utf-8><title>urdr · kernel</title>'
     + '<body style="font:14px system-ui;padding:2rem;max-width:42rem">'
-    + '<h1>pikiloom — kernel runtime (new version)</h1>'
+    + '<h1>urdr — kernel runtime (new version)</h1>'
     + '<p>The WebSurface ws host is live on this port. Connect any pikichannel/ws client and speak the UniversalSnapshot wire protocol (hello → subscribe → prompt; getHistory / getCatalog).</p>';
   for (const c of [
     path.resolve(here, '../../packages/kernel/examples/console.html'),
@@ -94,11 +94,11 @@ export async function runKernelApp(argv: string[]): Promise<void> {
 
   // WebSurface serves BOTH lanes: Lane S (Web/structured snapshot) and Lane R (Surface/
   // raw PTY, via the TuiHost the kernel hands it at start). One ws host, two lanes.
-  const web = new WebSurface({ server, name: 'pikiloom-kernel' });
+  const web = new WebSurface({ server, name: 'urdr-kernel' });
   const surfaces: any[] = [web];
 
   const loom = createLoom({
-    appNamespace: 'pikiloom-kernel',
+    appNamespace: 'urdr-kernel',
     // OpenCode (and any other ACP CLI) plugs in via the generic AcpDriver — same registry as the natives.
     drivers: [new EchoDriver(), new ClaudeDriver(), new CodexDriver(), new GeminiDriver(), new HermesDriver(), new AcpDriver({ id: 'opencode', command: 'opencode', args: ['acp'] })],
     defaultAgent: 'claude',

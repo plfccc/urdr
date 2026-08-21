@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { getProjectSkillPaths, listSkills, stageSessionFiles, ensureManagedSession, findPikiloomSession, getDriverCapabilities, isPendingSessionId, type Agent, type HandoverRef } from '../agent/index.js';
+import { getProjectSkillPaths, listSkills, stageSessionFiles, ensureManagedSession, findUrdrSession, getDriverCapabilities, isPendingSessionId, type Agent, type HandoverRef } from '../agent/index.js';
 import { loadUserConfig } from '../core/config/user-config.js';
 import { splitEffortForAgent } from '../core/config/runtime-config.js';
 import { runtime } from './runtime.js';
@@ -67,7 +67,7 @@ function resolveHandoverFrom(request: QueueSessionTaskRequest, targetAgent: Agen
   if (!KNOWN_AGENTS.has(prevAgent as Agent)) return null;
   if (prevAgent === targetAgent) return null;
   if (isPendingSessionId(prevSessionId)) return null;
-  const record = findPikiloomSession(request.workdir, prevAgent as Agent, prevSessionId);
+  const record = findUrdrSession(request.workdir, prevAgent as Agent, prevSessionId);
   if (!record) return null;
   return { agent: prevAgent as Agent, sessionId: prevSessionId };
 }

@@ -8,7 +8,7 @@ import { STATE_DIR_NAME } from './constants.js';
 export const PROCESS_RESTART_EXIT_CODE = 75;
 export const PROCESS_RESTART_STATE_FILE_ENV = 'PIKILOOM_RESTART_STATE_FILE';
 
-const DAEMON_PID_FILENAME = 'pikiloom.pid';
+const DAEMON_PID_FILENAME = 'urdr.pid';
 
 export function getDaemonPidFilePath(): string {
   return path.join(os.homedir(), STATE_DIR_NAME, DAEMON_PID_FILENAME);
@@ -119,7 +119,7 @@ export function getDefaultRestartCmd(): string {
     const parts = isTsxLoader ? ['tsx', argv1] : process.argv.slice(0, 2);
     return parts.map(arg => arg.includes(' ') ? `"${arg}"` : arg).join(' ');
   }
-  if (argv1.endsWith('.js') && (argv1.includes('pikiloom') || argv1.includes('pikiloom'))) {
+  if (argv1.endsWith('.js') && (argv1.includes('urdr') || argv1.includes('urdr'))) {
     const nodeBin = argv0.includes(' ') ? `"${argv0}"` : argv0;
     const entry = argv1.includes(' ') ? `"${argv1}"` : argv1;
     return `${nodeBin} ${entry}`;
@@ -215,7 +215,7 @@ export async function killChildProcesses(rootPid = process.pid, opts: { graceMs?
 }
 
 export function createRestartStateFilePath(ownerPid = process.pid): string {
-  const dir = path.join(os.tmpdir(), 'pikiloom');
+  const dir = path.join(os.tmpdir(), 'urdr');
   fs.mkdirSync(dir, { recursive: true });
   return path.join(dir, `restart-${ownerPid}.json`);
 }

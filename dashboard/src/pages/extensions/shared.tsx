@@ -303,7 +303,7 @@ export function StatePill({ state, locale }: { state: McpCatalogState; locale: s
 
 export function openOAuthPopup(authUrl: string, expectedState: string): Promise<boolean> {
   return new Promise((resolve) => {
-    const popup = window.open(authUrl, 'pikiloom_mcp_oauth', 'width=640,height=780,noopener=no');
+    const popup = window.open(authUrl, 'urdr_mcp_oauth', 'width=640,height=780,noopener=no');
     if (!popup) { resolve(false); return; }
 
     let done = false;

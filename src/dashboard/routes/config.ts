@@ -385,7 +385,7 @@ app.post('/api/browser/setup', async (c) => {
     if (!gui.browserEnabled) {
       return c.json({
         ok: false,
-        error: 'Browser automation is disabled. Enable it first if you want pikiloom to launch the managed browser profile.',
+        error: 'Browser automation is disabled. Enable it first if you want urdr to launch the managed browser profile.',
       }, 400);
     }
     if (getConfiguredRemoteCdpUrl()) {
@@ -400,7 +400,7 @@ app.post('/api/browser/setup', async (c) => {
       browser: {
         ...payload.browser,
         detail: launch.running
-          ? 'Managed browser is open. Sign in to the sites you want pikiloom to reuse. If it is still open later, pikiloom will close it automatically before browser automation starts.'
+          ? 'Managed browser is open. Sign in to the sites you want urdr to reuse. If it is still open later, urdr will close it automatically before browser automation starts.'
           : payload.browser.detail,
       },
     });
@@ -514,7 +514,7 @@ app.post('/api/open-diff', async (c) => {
       return c.json({ ok: true });
     }
 
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-diff-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-diff-'));
     const origPath = path.join(tmpDir, `${relFile}.orig`);
     fs.writeFileSync(origPath, origResult.stdout);
 

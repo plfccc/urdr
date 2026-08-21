@@ -488,7 +488,7 @@ export function renderSkillsCard(d: SkillsListData): FeishuCardView {
 export function renderStatus(d: StatusData): string {
   const gitLine = formatGitStatusLine(d.git);
   const lines = [
-    `**pikiloom** v${d.version}`,
+    `**urdr** v${d.version}`,
     '',
     `**Uptime:** ${fmtUptime(d.uptime)}`,
     `**Memory:** ${(d.memRss / 1024 / 1024).toFixed(0)}MB RSS / ${(d.memHeap / 1024 / 1024).toFixed(0)}MB heap`,

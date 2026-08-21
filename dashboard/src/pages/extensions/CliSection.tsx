@@ -745,7 +745,7 @@ export function CliCatalogSection({
   scope: 'global' | 'workspace';
 }) {
   const { data, loading, refresh } = useCachedResource<CliCatalogItem[]>(
-    `pikiloom:cli:catalog`,
+    `urdr:cli:catalog`,
     async () => {
       const r = await api.getCliCatalog();
       if (!r.ok) throw new Error(r.error || 'failed');

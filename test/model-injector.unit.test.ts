@@ -18,7 +18,7 @@ describe('resolveAgentInjection — Claude BYOK ANTHROPIC_BASE_URL', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-injector-'));
     process.env.PIKILOOM_CONFIG = path.join(tmpDir, 'setting.json');
     fs.writeFileSync(process.env.PIKILOOM_CONFIG, JSON.stringify({ models: {} }));
-    cache = (globalThis as any)[Symbol.for('pikiloom.providerModelsCache')]
+    cache = (globalThis as any)[Symbol.for('urdr.providerModelsCache')]
       || new Map();
   });
 
@@ -118,7 +118,7 @@ describe('resolveAgentInjection — Codex routing (Responses-only)', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-codex-'));
     process.env.PIKILOOM_CONFIG = path.join(tmpDir, 'setting.json');
     fs.writeFileSync(process.env.PIKILOOM_CONFIG, JSON.stringify({ models: {} }));
-    cache = (globalThis as any)[Symbol.for('pikiloom.providerModelsCache')] || new Map();
+    cache = (globalThis as any)[Symbol.for('urdr.providerModelsCache')] || new Map();
   });
   afterEach(() => { fs.rmSync(tmpDir, { recursive: true, force: true }); });
   afterAll(() => { shutdownResponsesBridge(); });

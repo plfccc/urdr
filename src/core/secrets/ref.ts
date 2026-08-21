@@ -4,7 +4,7 @@ export type CredentialRef =
   | { source: 'command';  argv: string[] }
   | { source: 'inline';   sealed: string };
 
-export const KEYCHAIN_SERVICE = 'pikiloom';
+export const KEYCHAIN_SERVICE = 'urdr';
 
 export const LEGACY_KEYCHAIN_SERVICES = ['pikiclaw'];
 

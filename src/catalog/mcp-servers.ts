@@ -2,13 +2,13 @@ import type { RecommendedMcpServer } from '../agent/mcp/registry.js';
 
 export const MCP_SERVERS: RecommendedMcpServer[] = [
   {
-    id: 'pikiloom-browser',
+    id: 'urdr-browser',
     name: 'Browser Automation',
     description: 'Optimized Playwright MCP — managed Chrome with shared profile, CDP attach, and supervisor lifecycle.',
     descriptionZh: '基于 Playwright MCP 的定制版浏览器自动化：受管 Chrome、共享 profile、CDP 附着、进程级 supervisor。',
     category: 'utility',
     recommendedScope: 'global',
-    transport: { type: 'stdio', command: '@playwright/mcp', args: ['(managed by pikiloom)'] },
+    transport: { type: 'stdio', command: '@playwright/mcp', args: ['(managed by urdr)'] },
     auth: { type: 'none' },
     iconSlug: 'playwright',
     homepage: 'https://github.com/microsoft/playwright-mcp',

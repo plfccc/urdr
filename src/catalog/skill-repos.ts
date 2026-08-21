@@ -2,10 +2,10 @@ import type { RecommendedSkillRepo } from '../agent/mcp/registry.js';
 
 export const SKILL_REPOS: RecommendedSkillRepo[] = [
   {
-    id: 'pikiloom-skills',
-    name: 'Pikiloom Skills',
-    description: 'First-party Pikiloom skills — image generation, recorded demo videos, and the embeddable tech-intel signal pipeline',
-    descriptionZh: 'Pikiloom 官方技能 — 生图、产品导览视频、可嵌入的 tech-intel 信号流水线',
+    id: 'urdr-skills',
+    name: 'Urdr Skills',
+    description: 'First-party Urdr skills — image generation, recorded demo videos, and the embeddable tech-intel signal pipeline',
+    descriptionZh: 'Urdr 官方技能 — 生图、产品导览视频、可嵌入的 tech-intel 信号流水线',
     source: 'xiaotonng/pikiloom-skills',
     category: 'productivity',
     recommendedScope: 'both',

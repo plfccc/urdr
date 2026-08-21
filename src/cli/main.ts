@@ -184,7 +184,7 @@ function parseArgs(argv: string[]) {
 
 function processLog(message: string) {
   const ts = new Date().toTimeString().slice(0, 8);
-  process.stdout.write(`[pikiloom ${ts}] ${message}\n`);
+  process.stdout.write(`[urdr ${ts}] ${message}\n`);
 }
 
 const listStartupAgents = () => listAgents().agents;
@@ -200,7 +200,7 @@ async function handleMcpServeMode(): Promise<boolean> {
 
 function printHelp(): never {
   process.stdout.write(
-`pikiloom v${VERSION} — Run local coding agents through IM.
+`urdr v${VERSION} — Run local coding agents through IM.
 
 Run a bot that forwards IM messages to a local AI coding agent
 (Claude Code or Codex CLI), streams responses in real-time, and manages
@@ -275,7 +275,7 @@ Environment variables (Feishu):
 
 Notes:
   - --safe-mode delegates to the agent's own permission model; it does not add
-    a pikiloom-specific approval workflow.
+    a urdr-specific approval workflow.
 
 Prerequisites: Node.js >= 18, and at least one agent CLI installed (claude or codex).
 Docs: https://github.com/xiaotonng/pikiloom
@@ -336,11 +336,11 @@ function installTopLevelShutdownHandler(): void {
 async function handleStopCommand(): Promise<never> {
   const pid = readDaemonPidFile();
   if (!pid) {
-    process.stderr.write('pikiloom stop: no daemon PID file found (is pikiloom running in daemon mode?)\n');
+    process.stderr.write('urdr stop: no daemon PID file found (is urdr running in daemon mode?)\n');
     process.exit(1);
   }
   if (!isProcessAlive(pid)) {
-    process.stdout.write(`pikiloom stop: daemon (pid ${pid}) is not running, clearing stale PID file\n`);
+    process.stdout.write(`urdr stop: daemon (pid ${pid}) is not running, clearing stale PID file\n`);
     clearDaemonPidFile();
     process.exit(0);
   }
@@ -349,26 +349,26 @@ async function handleStopCommand(): Promise<never> {
   } catch (err) {
     const code = (err as NodeJS.ErrnoException)?.code;
     if (code === 'ESRCH') {
-      process.stdout.write(`pikiloom stop: daemon (pid ${pid}) already exited\n`);
+      process.stdout.write(`urdr stop: daemon (pid ${pid}) already exited\n`);
       clearDaemonPidFile();
       process.exit(0);
     }
-    process.stderr.write(`pikiloom stop: failed to signal pid ${pid}: ${err}\n`);
+    process.stderr.write(`urdr stop: failed to signal pid ${pid}: ${err}\n`);
     process.exit(1);
   }
-  process.stdout.write(`pikiloom stop: SIGTERM → pid ${pid}\n`);
+  process.stdout.write(`urdr stop: SIGTERM → pid ${pid}\n`);
 
   const deadline = Date.now() + 8_000;
   while (Date.now() < deadline) {
     if (!isProcessAlive(pid)) {
       clearDaemonPidFile();
-      process.stdout.write(`pikiloom stop: daemon (pid ${pid}) stopped\n`);
+      process.stdout.write(`urdr stop: daemon (pid ${pid}) stopped\n`);
       process.exit(0);
     }
     await new Promise(resolve => setTimeout(resolve, 250));
   }
 
-  process.stderr.write(`pikiloom stop: daemon (pid ${pid}) still alive after 8s, sending SIGKILL\n`);
+  process.stderr.write(`urdr stop: daemon (pid ${pid}) still alive after 8s, sending SIGKILL\n`);
   try { process.kill(pid, 'SIGKILL'); } catch {}
   clearDaemonPidFile();
   process.exit(0);
@@ -392,8 +392,8 @@ async function awaitDashboardConfig(
   ctx: { userConfig: Partial<UserConfig>; configOverrides: Partial<UserConfig>; args: Record<string, any> },
 ): Promise<{ channels: ChannelName[]; channel: ChannelName }> {
   const ts = new Date().toTimeString().slice(0, 8);
-  process.stdout.write(`[pikiloom ${ts}] waiting for configuration via dashboard...\n`);
-  process.stdout.write(`[pikiloom ${ts}] configure at ${dashboard.url}; startup will continue automatically once ready.\n`);
+  process.stdout.write(`[urdr ${ts}] waiting for configuration via dashboard...\n`);
+  process.stdout.write(`[urdr ${ts}] configure at ${dashboard.url}; startup will continue automatically once ready.\n`);
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -413,7 +413,7 @@ async function awaitDashboardConfig(
     const nextNeedsSetup = !hasReadyAgent(nextSetupState);
     if (!nextNeedsSetup) {
       const resumeTs = new Date().toTimeString().slice(0, 8);
-      process.stdout.write(`[pikiloom ${resumeTs}] configuration detected, starting bot channels...\n`);
+      process.stdout.write(`[urdr ${resumeTs}] configuration detected, starting bot channels...\n`);
       return { channels, channel };
     }
   }
@@ -497,7 +497,7 @@ function printServerConnectionCode(dashboard: DashboardServer): void {
     rendezvous: process.env.PIKICHANNEL_RENDEZVOUS || c.pikichannelRendezvous,
   });
   const ts = new Date().toTimeString().slice(0, 8);
-  process.stdout.write(`\n[pikiloom ${ts}] server mode — host running, browser not opened\n`);
+  process.stdout.write(`\n[urdr ${ts}] server mode — host running, browser not opened\n`);
   process.stdout.write(`  local console:  ${dashboard.url}\n`);
   if (sc.mode === 'none') {
     process.stdout.write('  to let others connect: set a public address (env PIKICHANNEL_PUBLIC_HOST,\n');
@@ -631,7 +631,7 @@ export async function main() {
   const args = parseArgs(process.argv.slice(2));
   let userConfig = loadUserConfig();
 
-  if (args.version) { process.stdout.write(`pikiloom ${VERSION}\n`); process.exit(0); }
+  if (args.version) { process.stdout.write(`urdr ${VERSION}\n`); process.exit(0); }
   if (args.help) printHelp();
   if (args.stop) await handleStopCommand();
 

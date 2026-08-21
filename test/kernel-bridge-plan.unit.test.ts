@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { toPikiloomPlan } from '../src/agent/kernel-bridge.js';
+import { toUrdrPlan } from '../src/agent/kernel-bridge.js';
 
 // Regression: the kernel emits plan steps keyed { text }, but pikiloom's StreamPlan and the whole
 // dashboard pipeline (pikichannel adapter -> ws.ts -> PlanProgressCard) key them { step }. The
 // bridge must translate at the seam, else the task list renders the progress count but blank rows
 // (the codex "0/4 项任务已完成" with empty dots bug).
-describe('kernel-bridge toPikiloomPlan (text -> step)', () => {
+describe('kernel-bridge toUrdrPlan (text -> step)', () => {
   it('maps kernel { text } plan steps to pikiloom { step }', () => {
-    const out = toPikiloomPlan({
+    const out = toUrdrPlan({
       explanation: 'doing work',
       steps: [
         { text: 'read code', status: 'completed' },
@@ -26,7 +26,7 @@ describe('kernel-bridge toPikiloomPlan (text -> step)', () => {
   });
 
   it('drops empty-text steps and normalizes unknown status to pending', () => {
-    const out = toPikiloomPlan({
+    const out = toUrdrPlan({
       explanation: null,
       steps: [
         { text: 'keep', status: 'weird' },
@@ -38,14 +38,14 @@ describe('kernel-bridge toPikiloomPlan (text -> step)', () => {
   });
 
   it('returns null for missing / empty / all-blank plans', () => {
-    expect(toPikiloomPlan(null)).toBeNull();
-    expect(toPikiloomPlan({ steps: [] })).toBeNull();
-    expect(toPikiloomPlan({ steps: [{ text: '  ', status: 'pending' }] })).toBeNull();
-    expect(toPikiloomPlan({})).toBeNull();
+    expect(toUrdrPlan(null)).toBeNull();
+    expect(toUrdrPlan({ steps: [] })).toBeNull();
+    expect(toUrdrPlan({ steps: [{ text: '  ', status: 'pending' }] })).toBeNull();
+    expect(toUrdrPlan({})).toBeNull();
   });
 
   it('accepts an already-pikiloom-shaped { step } plan idempotently', () => {
-    const out = toPikiloomPlan({ explanation: null, steps: [{ step: 'already', status: 'completed' }] });
+    const out = toUrdrPlan({ explanation: null, steps: [{ step: 'already', status: 'completed' }] });
     expect(out).toEqual({ explanation: null, steps: [{ step: 'already', status: 'completed' }] });
   });
 });
