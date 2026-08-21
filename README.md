@@ -1,4 +1,4 @@
-# Loomlet
+# Urdr
 
 A layered, open Agent orchestrator — a streamlined fork of
 [pikiloom](https://github.com/xiaotonng/pikiloom).
@@ -7,8 +7,11 @@ Drive Claude Code and Codex from whichever terminal is closest: Telegram, Feishu
 Dashboard, or the CLI. IM is not a bridge bolted onto a coding agent — it is one pluggable
 terminal among several, all sitting on the same orchestration core.
 
+*Urðr is the first of the Norse Norns, who sits at the roots of the world tree and settles what
+becomes of things — a fitting name for the layer that decides what actually runs.*
+
 ```bash
-npx loomlet@latest
+npx urdr@latest
 ```
 
 ## Four layers
@@ -40,9 +43,9 @@ Providers + Profiles credential vault.
 
 ## State directory
 
-Config and session state live in `~/.loomlet/setting.json`. On first launch,
-`migrateLegacyStateDir()` renames an existing `~/.pikiloom` (or `~/.pikiclaw`) into place, so
-existing config, sessions, and credentials carry over untouched.
+Config and session state live in `~/.urdr/setting.json`. On first launch,
+`migrateLegacyStateDir()` renames an existing `~/.loomlet`, `~/.pikiloom` or `~/.pikiclaw` into
+place, so existing config, sessions, and credentials carry over untouched.
 
 Environment variables keep the `PIKILOOM_*` prefix — dozens of reads across the tree spell the
 names out as literals, so renaming the prefix alone would silently break them. `LOOMLET_*` is
@@ -57,15 +60,15 @@ npm i -g @anthropic-ai/claude-code    # or
 npm i -g @openai/codex
 ```
 
-Then run loomlet and open the Dashboard it prints:
+Then run urdr and open the Dashboard it prints:
 
 ```bash
-npx loomlet@latest
+npx urdr@latest
 ```
 
 The Dashboard is part of the normal runtime, not just a setup helper — configure channels,
 providers, models, MCP servers, and skills there. To wire a channel by hand instead, add
-credentials to `~/.loomlet/setting.json`:
+credentials to `~/.urdr/setting.json`:
 
 ```json
 {
@@ -75,13 +78,13 @@ credentials to `~/.loomlet/setting.json`:
 }
 ```
 
-Run `npx loomlet@latest --doctor` any time to re-check the setup.
+Run `npx urdr@latest --doctor` any time to re-check the setup.
 
 ## Development
 
 ```bash
 npm install
-npm run dev                                          # --no-daemon, logs to ~/.loomlet/dev/dev.log
+npm run dev                                          # --no-daemon, logs to ~/.urdr/dev/dev.log
 npm test                                             # Vitest (src + packages/kernel)
 npx tsc --noEmit                                     # server
 npx tsc -p dashboard/tsconfig.json --noEmit          # SPA

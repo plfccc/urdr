@@ -1210,7 +1210,7 @@ export class FeishuBot extends Bot {
   }
 
   async run() {
-    const tmpDir = path.join(os.tmpdir(), 'pikiloom');
+    const tmpDir = path.join(os.tmpdir(), 'urdr');
     fs.mkdirSync(tmpDir, { recursive: true });
 
     this.channel = new FeishuChannel({

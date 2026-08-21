@@ -116,7 +116,7 @@ export function buildSetupGuide(state: SetupState, version: string, options?: { 
       ? 'Feishu'
       : 'your chat app';
   const lines: string[] = [
-    `loomlet v${version}`,
+    `urdr v${version}`,
     '',
     doctor ? 'Setup check' : 'First-time setup',
     '',
@@ -141,18 +141,18 @@ export function buildSetupGuide(state: SetupState, version: string, options?: { 
     lines.push('OK       A Telegram token was provided.');
   } else if (isTelegram) {
     lines.push(
-      'MISSING  No Telegram token configured in ~/.loomlet/setting.json',
-      '         Run `loomlet` to open the dashboard and configure, or:',
+      'MISSING  No Telegram token configured in ~/.urdr/setting.json',
+      '         Run `urdr` to open the dashboard and configure, or:',
       '         1. Open Telegram and search for @BotFather',
       '         2. Send /newbot and copy the token',
-      '         3. Add to ~/.loomlet/setting.json: { "telegramBotToken": "..." }',
+      '         3. Add to ~/.urdr/setting.json: { "telegramBotToken": "..." }',
     );
   } else if (state.channel === 'feishu' && state.tokenProvided) {
     lines.push('OK       Feishu credentials provided (FEISHU_APP_ID + FEISHU_APP_SECRET).');
   } else if (state.channel === 'feishu') {
     lines.push(
-      'MISSING  No Feishu credentials configured in ~/.loomlet/setting.json',
-      '         Run `loomlet` to open the dashboard and configure, or add feishuAppId/feishuAppSecret to setting.json.',
+      'MISSING  No Feishu credentials configured in ~/.urdr/setting.json',
+      '         Run `urdr` to open the dashboard and configure, or add feishuAppId/feishuAppSecret to setting.json.',
     );
   } else if (state.tokenProvided) {
     lines.push('OK       A channel token was provided.');
@@ -163,20 +163,20 @@ export function buildSetupGuide(state: SetupState, version: string, options?: { 
   lines.push('');
   if (state.tokenProvided) {
     lines.push('Start command:');
-    lines.push('  npx loomlet@latest');
+    lines.push('  npx urdr@latest');
   } else if (!isTelegram) {
     lines.push('Start command:');
-    lines.push('  npx loomlet@latest --channel telegram -t <YOUR_BOT_TOKEN>');
+    lines.push('  npx urdr@latest --channel telegram -t <YOUR_BOT_TOKEN>');
   } else {
     lines.push('Start command after you have the token:');
-    lines.push('  npx loomlet@latest -t <YOUR_BOT_TOKEN>');
+    lines.push('  npx urdr@latest -t <YOUR_BOT_TOKEN>');
   }
 
   lines.push(
     '',
     'Tips:',
-    '  - Run `npx loomlet@latest --doctor` any time to re-check your setup.',
-    '  - Run `npx loomlet@latest --help` for the full CLI reference.',
+    '  - Run `npx urdr@latest --doctor` any time to re-check your setup.',
+    '  - Run `npx urdr@latest --help` for the full CLI reference.',
   );
 
   if (!doctor && !hasInstalledAgent(state)) {

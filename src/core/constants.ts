@@ -21,15 +21,16 @@ export const DASHBOARD_TIMEOUTS = {
   runCommand: 30_000,
 };
 
-export const STATE_DIR_NAME = '.loomlet';
+export const STATE_DIR_NAME = '.urdr';
 // The env prefix stays PIKILOOM_: dozens of reads across the tree spell the variable names out
 // as literals (process.env.PIKILOOM_*), so renaming the prefix constant alone would silently
-// break them. LOOMLET_* is accepted as an alias and hydrated onto PIKILOOM_* at startup.
+// break them. URDR_* is accepted as an alias and hydrated onto PIKILOOM_* at startup.
 export const ENV_PREFIX = 'PIKILOOM_';
 // Renaming the state dir is a one-way migration handled by migrateLegacyStateDir(): the first
-// launch renames ~/<legacy> to ~/.loomlet, so existing config/sessions/credentials carry over.
-export const LEGACY_STATE_DIR_NAMES = ['.pikiloom', '.pikiclaw'] as const;
-export const LEGACY_ENV_PREFIXES = ['LOOMLET_', 'PIKICLAW_'] as const;
+// launch renames ~/<legacy> to ~/.urdr, so existing config/sessions/credentials carry over.
+// Newest first — the migration takes the first one that exists.
+export const LEGACY_STATE_DIR_NAMES = ['.loomlet', '.pikiloom', '.pikiclaw'] as const;
+export const LEGACY_ENV_PREFIXES = ['URDR_', 'LOOMLET_', 'PIKICLAW_'] as const;
 
 export const MANAGED_BROWSER_PROFILE_SUBPATH = path.join(STATE_DIR_NAME, 'browser', 'chrome-profile');
 

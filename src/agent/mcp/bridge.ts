@@ -116,7 +116,7 @@ export function resolveMcpServerCommand(runtime: McpServerRuntimeInfo = {
   if (fs.existsSync(cliScript)) {
     return { command: 'node', args: [cliScript, '--mcp-serve'] };
   }
-  return { command: 'loomlet', args: ['--mcp-serve'] };
+  return { command: 'urdr', args: ['--mcp-serve'] };
 }
 
 function parseOptionalBool(value: unknown): boolean | null {
@@ -886,7 +886,7 @@ export async function startMcpBridge(opts: McpBridgeOpts): Promise<McpBridgeHand
       MCP_LOG_URL: `http://127.0.0.1:${port}/log`,
       MCP_TOOLS_AVAILABLE: enabledTools.join(','),
     };
-    servers.unshift({ name: 'pikiloom', command, args, env: envVars });
+    servers.unshift({ name: 'urdr', command, args, env: envVars });
   }
 
   if (!servers.length) {

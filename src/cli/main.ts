@@ -210,9 +210,9 @@ Channels are auto-detected from configured credentials. If multiple
 validated channels are enabled, they launch simultaneously.
 
 Usage:
-  npx loomlet                              # auto-detect from config/env
-  npx loomlet -w ~/project                 # set working directory
-  npx loomlet stop                         # stop the running daemon
+  npx urdr                              # auto-detect from config/env
+  npx urdr -w ~/project                 # set working directory
+  npx urdr stop                         # stop the running daemon
 
 Options:
   -t, --token <token>       Channel auth token (env: PIKILOOM_TOKEN)

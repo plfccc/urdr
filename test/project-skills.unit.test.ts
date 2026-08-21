@@ -30,7 +30,7 @@ describe('project skills', () => {
   it('resolves skill paths, routes per-agent, merges legacy roots, and collapses shorthand', () => {
     {
       const workdir = makeTmpDir('pikiloom-claude-skill-');
-      writeSkill(path.join(workdir, '.loomlet', 'skills'), 'install', '---\nlabel: Install\ndescription: shared\n---\n');
+      writeSkill(path.join(workdir, '.urdr', 'skills'), 'install', '---\nlabel: Install\ndescription: shared\n---\n');
       writeSkill(path.join(workdir, '.claude', 'skills'), 'install', '---\nlabel: Install\ndescription: claude\n---\n');
 
       const bot = new Bot();
@@ -38,7 +38,7 @@ describe('project skills', () => {
       bot.chat(1).agent = 'claude';
 
       expect(getProjectSkillPaths(workdir, 'install')).toEqual({
-        sharedSkillFile: path.join(workdir, '.loomlet', 'skills', 'install', 'SKILL.md'),
+        sharedSkillFile: path.join(workdir, '.urdr', 'skills', 'install', 'SKILL.md'),
         claudeSkillFile: path.join(workdir, '.claude', 'skills', 'install', 'SKILL.md'),
         agentsSkillFile: path.join(workdir, '.agents', 'skills', 'install', 'SKILL.md'),
       });
@@ -53,7 +53,7 @@ describe('project skills', () => {
 
     {
       const workdir = makeTmpDir('pikiloom-codex-skill-');
-      writeSkill(path.join(workdir, '.loomlet', 'skills'), 'fixup', '---\nlabel: Fixup\ndescription: shared\n---\n');
+      writeSkill(path.join(workdir, '.urdr', 'skills'), 'fixup', '---\nlabel: Fixup\ndescription: shared\n---\n');
       writeSkill(path.join(workdir, '.agents', 'skills'), 'fixup', '---\nlabel: Fixup\ndescription: agents\n---\n');
 
       const bot = new Bot();
@@ -69,23 +69,23 @@ describe('project skills', () => {
 
     {
       const workdir = makeTmpDir('pikiloom-migrate-skill-');
-      writeSkill(path.join(workdir, '.loomlet', 'skills'), 'ship', '---\nlabel: Ship\ndescription: shared\n---\n');
-      writeFile(path.join(workdir, '.loomlet', 'skills', 'ship', 'references', 'shared.txt'), 'shared\n');
+      writeSkill(path.join(workdir, '.urdr', 'skills'), 'ship', '---\nlabel: Ship\ndescription: shared\n---\n');
+      writeFile(path.join(workdir, '.urdr', 'skills', 'ship', 'references', 'shared.txt'), 'shared\n');
       writeSkill(path.join(workdir, '.claude', 'skills'), 'ship', '---\nlabel: Ship\ndescription: claude\n---\n');
       writeFile(path.join(workdir, '.claude', 'skills', 'ship', 'references', 'claude.txt'), 'preserved\n');
       writeSkill(path.join(workdir, '.agents', 'skills'), 'package', '---\nlabel: Package\ndescription: agents\n---\n');
 
       initializeProjectSkills(workdir);
 
-      expect(fs.lstatSync(path.join(workdir, '.loomlet', 'skills')).isSymbolicLink()).toBe(false);
-      expect(fs.readFileSync(path.join(workdir, '.loomlet', 'skills', 'ship', 'SKILL.md'), 'utf8')).toContain('description: shared');
-      expect(fs.existsSync(path.join(workdir, '.loomlet', 'skills', 'ship', 'references', 'shared.txt'))).toBe(true);
-      expect(fs.existsSync(path.join(workdir, '.loomlet', 'skills', 'ship', 'references', 'claude.txt'))).toBe(true);
-      expect(fs.existsSync(path.join(workdir, '.loomlet', 'skills', 'package', 'SKILL.md'))).toBe(true);
+      expect(fs.lstatSync(path.join(workdir, '.urdr', 'skills')).isSymbolicLink()).toBe(false);
+      expect(fs.readFileSync(path.join(workdir, '.urdr', 'skills', 'ship', 'SKILL.md'), 'utf8')).toContain('description: shared');
+      expect(fs.existsSync(path.join(workdir, '.urdr', 'skills', 'ship', 'references', 'shared.txt'))).toBe(true);
+      expect(fs.existsSync(path.join(workdir, '.urdr', 'skills', 'ship', 'references', 'claude.txt'))).toBe(true);
+      expect(fs.existsSync(path.join(workdir, '.urdr', 'skills', 'package', 'SKILL.md'))).toBe(true);
       expect(fs.lstatSync(path.join(workdir, '.claude', 'skills')).isSymbolicLink()).toBe(true);
       expect(fs.lstatSync(path.join(workdir, '.agents', 'skills')).isSymbolicLink()).toBe(true);
-      expect(fs.realpathSync(path.join(workdir, '.claude', 'skills'))).toBe(fs.realpathSync(path.join(workdir, '.loomlet', 'skills')));
-      expect(fs.realpathSync(path.join(workdir, '.agents', 'skills'))).toBe(fs.realpathSync(path.join(workdir, '.loomlet', 'skills')));
+      expect(fs.realpathSync(path.join(workdir, '.claude', 'skills'))).toBe(fs.realpathSync(path.join(workdir, '.urdr', 'skills')));
+      expect(fs.realpathSync(path.join(workdir, '.agents', 'skills'))).toBe(fs.realpathSync(path.join(workdir, '.urdr', 'skills')));
     }
 
     {
@@ -100,10 +100,10 @@ describe('project skills', () => {
       // A win32 junction can only store an absolute target, so assert on where the link
       // resolves to; only POSIX keeps the relative form the writer passed in.
       const expectRelinked = () => {
-        expect(fs.realpathSync(claudeSkills)).toBe(fs.realpathSync(path.join(workdir, '.loomlet', 'skills')));
+        expect(fs.realpathSync(claudeSkills)).toBe(fs.realpathSync(path.join(workdir, '.urdr', 'skills')));
         if (process.platform !== 'win32') {
           expect(fs.lstatSync(claudeSkills).isSymbolicLink()).toBe(true);
-          expect(fs.readlinkSync(claudeSkills)).toBe(path.join('..', '.loomlet', 'skills'));
+          expect(fs.readlinkSync(claudeSkills)).toBe(path.join('..', '.urdr', 'skills'));
         }
       };
       expectRelinked();
@@ -114,7 +114,7 @@ describe('project skills', () => {
 
     {
       const workdir = makeTmpDir('pikiloom-collapse-skill-');
-      writeSkill(path.join(workdir, '.loomlet', 'skills'), 'install', '---\nlabel: Install\n---\n');
+      writeSkill(path.join(workdir, '.urdr', 'skills'), 'install', '---\nlabel: Install\n---\n');
       const bot = new Bot();
       bot.switchWorkdir(workdir, { persist: false });
       bot.chat(7).agent = 'claude';

@@ -937,8 +937,8 @@ function LocalSkillCard({
       <div className="relative mt-auto pt-3 flex items-center justify-between text-[10.5px] text-fg-5">
         <span>
           {skill.scope === 'global'
-            ? L(locale, '全局 · ~/.loomlet/skills', 'Global · ~/.loomlet/skills')
-            : L(locale, '项目 · .loomlet/skills', 'Project · .loomlet/skills')}
+            ? L(locale, '全局 · ~/.urdr/skills', 'Global · ~/.urdr/skills')
+            : L(locale, '项目 · .urdr/skills', 'Project · .urdr/skills')}
         </span>
         <Button
           variant="ghost"

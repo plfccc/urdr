@@ -347,12 +347,12 @@ class FeishuChannel extends Channel {
       const info = (resp as any)?.bot;
       this.bot = {
         id: info?.open_id || this.appId,
-        username: info?.app_name || 'pikiloom',
-        displayName: info?.app_name || 'pikiloom',
+        username: info?.app_name || 'urdr',
+        displayName: info?.app_name || 'urdr',
       };
     } catch (e: any) {
       this._log(`[connect] bot info failed: ${e?.message || e}`, 'warn');
-      this.bot = { id: this.appId, username: 'pikiloom', displayName: 'pikiloom' };
+      this.bot = { id: this.appId, username: 'urdr', displayName: 'urdr' };
     }
     return this.bot;
   }

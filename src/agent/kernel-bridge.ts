@@ -13,7 +13,7 @@ import { humanizeCodexError } from './drivers/codex.js';
 // DEFAULT: ON — claude/codex/gemini/hermes turns run on the kernel drivers (via runTurn).
 // Escape hatches to the legacy driver path:
 //   LOOM_KERNEL_PIPELINE=0             (env; force legacy at startup; survives dev.sh scrub)
-//   ~/.loomlet/dev/kernel-legacy.on   (file; hot-toggle legacy without restart)
+//   ~/.urdr/dev/kernel-legacy.on   (file; hot-toggle legacy without restart)
 //   LOOM_KERNEL_PIPELINE=1             (env; force kernel, overriding the file)
 // Tests always run legacy (the unit suite asserts legacy driver behavior). The bridge
 // re-applies app-level parity the pure kernel must not own (claude jsonl entrypoint, codex humanize).

@@ -29,9 +29,9 @@ replied_issues.txt
 # skills un-ignore above (gitignore is last-match-wins) or it gets re-included.
 **/__pycache__/
 *.pyc
-.loomlet/*
-!.loomlet/skills/
-!.loomlet/skills/**
+.urdr/*
+!.urdr/skills/
+!.urdr/skills/**
 
 # Local tooling caches
 .serena/

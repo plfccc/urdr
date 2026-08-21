@@ -9,7 +9,7 @@ const ARTIFACT_RETURN =
   'To hand a file to the user — a screenshot, report, archive, generated asset, anything they asked you to "send" — call the `im_send_file` tool with the file path and a short caption. It is delivered through whatever terminal the user is on (an IM chat or the web dashboard) and stays retrievable even when they are connected remotely. Do NOT just print a local filesystem path: a remote user cannot open paths on this machine.';
 const ASK_USER =
   '[Asking the user]\n' +
-  'The built-in `AskUserQuestion` tool is disabled here and will fail. If you would otherwise call it, call `mcp__pikiloom__im_ask_user` instead — same intent (a question plus optional choices), it blocks until the user replies via the IM/dashboard channel. Default behaviour is unchanged: infer obvious decisions yourself and only ask when you genuinely cannot proceed.';
+  'The built-in `AskUserQuestion` tool is disabled here and will fail. If you would otherwise call it, call `mcp__urdr__im_ask_user` instead — same intent (a question plus optional choices), it blocks until the user replies via the IM/dashboard channel. Default behaviour is unchanged: infer obvious decisions yourself and only ask when you genuinely cannot proceed.';
 
 describe('session tool capabilities (co-located tool + prompt)', () => {
   it('claude + HITL wired → artifact-delivery then ask-user (byte-identical to the old inline assembly)', () => {

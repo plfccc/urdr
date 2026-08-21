@@ -129,7 +129,7 @@ export class CodexAppServer {
       });
 
       this.call('initialize', {
-        clientInfo: { name: 'pikiloom', version: '0.2.0' },
+        clientInfo: { name: 'urdr', version: '0.2.0' },
         capabilities: { experimentalApi: true },
       })
         .then(resp => {

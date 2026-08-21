@@ -16,6 +16,9 @@ export function ensureGitignore(dir: string) {
     ];
     // Entries the previous state-dir names left behind, pruned on the next pass.
     const legacyLines = new Set([
+      '.loomlet/*',
+      '!.loomlet/skills/',
+      '!.loomlet/skills/**',
       '.pikiloom/',
       '.pikiloom/*',
       '!.pikiloom/skills/',

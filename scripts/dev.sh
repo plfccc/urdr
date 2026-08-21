@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DEV_DIR="${HOME}/.loomlet/dev"
+DEV_DIR="${HOME}/.urdr/dev"
 LOG_FILE="${DEV_DIR}/dev.log"
 
 # Dev dashboard always binds this port. dev.sh frees it before (re)starting so a
@@ -83,7 +83,7 @@ mkdir -p "${DEV_DIR}"
 # Decide whether to detach early.
 #
 # Why this happens FIRST, before any kill / build:
-# dev.sh restarts the running loomlet runtime, and when invoked from inside an
+# dev.sh restarts the running urdr runtime, and when invoked from inside an
 # agent session (Codex app-server, Claude `-p`, …) that runtime IS the host
 # process for the agent. If we kill the runtime while still living in the
 # agent's bash subtree, the agent's stdio breaks mid-script: Codex cancels the
@@ -160,7 +160,7 @@ fi
 
 # ---------------------------------------------------------------------------
 # Below runs either as the TTY foreground process, or as the detached worker.
-# Both are now safe to kill the running loomlet runtime — neither shares a
+# Both are now safe to kill the running urdr runtime — neither shares a
 # stdio/process-group dependency with the agent that invoked us.
 # ---------------------------------------------------------------------------
 
@@ -212,10 +212,10 @@ _is_detached_worker=0
 [[ "${PIKILOOM_DEV_DETACHED:-0}" == "1" ]] && _is_detached_worker=1
 
 # Dev isolates setting.json only. The managed browser profile intentionally
-# stays at ~/.loomlet/browser/chrome-profile so dev and the main runtime reuse
+# stays at ~/.urdr/browser/chrome-profile so dev and the main runtime reuse
 # the same browser login state.
 #
-# Clean inherited env vars that leak when launched from inside a running loomlet
+# Clean inherited env vars that leak when launched from inside a running urdr
 # or Claude Code session. Without this, the dev process inherits agent permissions,
 # channel credentials, daemon flags, workdir overrides, etc. from the parent.
 # Use pattern-based unset to catch everything rather than maintaining an explicit list.

@@ -12,7 +12,7 @@ export const IS_LINUX = process.platform === 'linux';
  *
  * os.homedir() reads USERPROFILE on Windows and ignores HOME entirely, so a test (or a
  * sandbox) that redirects HOME to a temp dir still gets the real profile there. Tests that
- * did exactly that were writing fixtures into the user's real ~/.loomlet and accumulating
+ * did exactly that were writing fixtures into the user's real ~/.urdr and accumulating
  * them across runs, which is what made several suites fail only on Windows.
  */
 export function getHome(): string {

@@ -1,10 +1,10 @@
 {
-  "name": "loomlet",
+  "name": "urdr",
   "version": "0.1.0",
-  "description": "A layered, open Agent orchestrator — streamlined fork of pikiloom. Telegram + Feishu terminals, Claude Code / Codex / claude-tui agents.",
+  "description": "A layered, open Agent orchestrator — Telegram + Feishu terminals, Claude Code / Codex agents. Streamlined fork of pikiloom.",
   "type": "module",
   "bin": {
-    "loomlet": "dist/cli/main.js"
+    "urdr": "dist/cli/main.js"
   },
   "files": [
     "dist/",
@@ -30,7 +30,7 @@
   "packageManager": "npm@11.6.2",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/plfccc/loomlet.git"
+    "url": "git+https://github.com/plfccc/urdr.git"
   },
   "scripts": {
     "verify:toolchain": "node scripts/verify-toolchain.mjs",

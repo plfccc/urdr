@@ -211,7 +211,7 @@ export interface RunningTask {
 }
 
 export interface SessionGoalView {
-  source: 'pikiloom' | 'codex' | 'claude';
+  source: 'urdr' | 'codex' | 'claude';
   objective: string;
   status: GoalStatus;
   tokenBudget: number | null;
@@ -222,7 +222,7 @@ export interface SessionGoalView {
 
 function normalizeFromPikiloom(goal: ThreadGoal): SessionGoalView {
   return {
-    source: 'pikiloom',
+    source: 'urdr',
     objective: goal.objective,
     status: goal.status,
     tokenBudget: goal.tokenBudget,
@@ -770,7 +770,7 @@ export class Bot {
   }
 
   log(msg: string, level: LogLevel = 'info') {
-    writeScopedLog('pikiloom', msg, { level });
+    writeScopedLog('urdr', msg, { level });
   }
 
   debug(msg: string) {

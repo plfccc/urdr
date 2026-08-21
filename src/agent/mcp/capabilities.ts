@@ -23,7 +23,7 @@ const ARTIFACT_RETURN = [
 
 const ASK_USER = [
   '[Asking the user]',
-  'The built-in `AskUserQuestion` tool is disabled here and will fail. If you would otherwise call it, call `mcp__pikiloom__im_ask_user` instead — same intent (a question plus optional choices), it blocks until the user replies via the IM/dashboard channel. Default behaviour is unchanged: infer obvious decisions yourself and only ask when you genuinely cannot proceed.',
+  'The built-in `AskUserQuestion` tool is disabled here and will fail. If you would otherwise call it, call `mcp__urdr__im_ask_user` instead — same intent (a question plus optional choices), it blocks until the user replies via the IM/dashboard channel. Default behaviour is unchanged: infer obvious decisions yourself and only ask when you genuinely cannot proceed.',
 ].join('\n');
 
 export const SESSION_TOOL_CAPABILITIES: SessionToolCapability[] = [

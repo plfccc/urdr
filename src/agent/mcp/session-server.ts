@@ -137,7 +137,7 @@ function handleMessage(msg: any) {
       respond(id, {
         protocolVersion: params?.protocolVersion || '2024-11-05',
         capabilities: { tools: {} },
-        serverInfo: { name: 'pikiloom-session', version: '1.0.0' },
+        serverInfo: { name: 'urdr-session', version: '1.0.0' },
       });
       break;
 

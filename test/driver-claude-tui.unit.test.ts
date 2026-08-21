@@ -827,11 +827,11 @@ describe('Claude TUI driver — decideClaudeTuiStop + decideClaudeTuiStall watch
 describe('Claude TUI driver — isAskUserToolName (im_ask_user detection)', () => {
   it('matches the bare + MCP-namespaced im_ask_user tool, nothing else', async () => {
     const { isAskUserToolName } = await import('../src/agent/drivers/claude-tui.ts');
-    expect(isAskUserToolName('mcp__pikiloom__im_ask_user')).toBe(true);
+    expect(isAskUserToolName('mcp__urdr__im_ask_user')).toBe(true);
     expect(isAskUserToolName('mcp__something__im_ask_user')).toBe(true);
     expect(isAskUserToolName('im_ask_user')).toBe(true);
-    expect(isAskUserToolName('mcp__pikiloom__im_send_file')).toBe(false);
-    expect(isAskUserToolName('mcp__pikiloom__await_background')).toBe(false);
+    expect(isAskUserToolName('mcp__urdr__im_send_file')).toBe(false);
+    expect(isAskUserToolName('mcp__urdr__await_background')).toBe(false);
     expect(isAskUserToolName('im_ask_user_extra')).toBe(false);
     expect(isAskUserToolName('Bash')).toBe(false);
     expect(isAskUserToolName('')).toBe(false);
