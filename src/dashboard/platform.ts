@@ -34,7 +34,7 @@ function runJxa(script: string, timeout = DASHBOARD_PERMISSION_TIMEOUTS.jxaDefau
 }
 
 function checkScreenRecordingPermission(): boolean | null {
-  const screenshotPath = path.join(os.tmpdir(), `.pikiloom_perm_test_${process.pid}_${Date.now()}.png`);
+  const screenshotPath = path.join(os.tmpdir(), `.urdr_perm_test_${process.pid}_${Date.now()}.png`);
   try {
     execFileSync('screencapture', ['-x', screenshotPath], { stdio: 'ignore', timeout: DASHBOARD_PERMISSION_TIMEOUTS.screenRecordingProbe });
     return true;

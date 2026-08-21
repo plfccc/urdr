@@ -8,7 +8,7 @@ import { resolveAgentInjection } from '../model/injector.js';
 
 // ── The "new version": pikiloom's backend booted ON @pikiloom/kernel ────────────
 //
-// Gated by LOOM_KERNEL_APP=1 (non-PIKILOOM_ prefix so it survives dev.sh's env scrub).
+// Gated by LOOM_KERNEL_APP=1 (non-URDR_ prefix so it survives dev.sh's env scrub).
 //   LOOM_KERNEL_APP=1 npm run dev   -> this kernel runtime on the dashboard port
 //   npm run dev                      -> the legacy app (old version), untouched
 //

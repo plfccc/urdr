@@ -17,17 +17,17 @@ import { reapChild } from './shared.js';
 //  - only CLEAN settles pool (no error / abort / timeout / background hold); everything
 //    else keeps today's kill semantics, so pooling can never leak a wedged process.
 
-// Idle TTL before a parked process is destroyed. Override with PIKILOOM_CLAUDE_WARM_IDLE_MS.
+// Idle TTL before a parked process is destroyed. Override with URDR_CLAUDE_WARM_IDLE_MS.
 const CLAUDE_WARM_IDLE_TTL_DEFAULT_MS = 10 * 60_000;
 export function claudeWarmIdleTtlMs(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_WARM_IDLE_MS);
+  const raw = Number(process.env.URDR_CLAUDE_WARM_IDLE_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : CLAUDE_WARM_IDLE_TTL_DEFAULT_MS;
 }
 // Max parked processes (each holds a full CLI + its MCP servers — roughly 0.5–1 GB).
-// Override with PIKILOOM_CLAUDE_WARM_MAX.
+// Override with URDR_CLAUDE_WARM_MAX.
 const CLAUDE_WARM_MAX_DEFAULT = 4;
 export function claudeWarmMaxProcesses(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_WARM_MAX);
+  const raw = Number(process.env.URDR_CLAUDE_WARM_MAX);
   return Number.isFinite(raw) && raw >= 0 ? Math.floor(raw) : CLAUDE_WARM_MAX_DEFAULT;
 }
 // After ending a parked process's stdin, escalate to SIGTERM only if it hasn't exited on its

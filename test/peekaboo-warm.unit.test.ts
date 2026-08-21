@@ -44,7 +44,7 @@ describe('Peekaboo npx warm', () => {
       expect(args).toEqual(PEEKABOO_WARM_ARGV);
       expect(opts).toMatchObject({ detached: true, stdio: 'ignore' });
       expect((opts.env as Record<string, string>).OPENAI_API_KEY).toBeUndefined();
-      expect((opts.env as Record<string, string>).PIKILOOM_MCP_SERVER).toBe('peekaboo');
+      expect((opts.env as Record<string, string>).URDR_MCP_SERVER).toBe('peekaboo');
     } finally {
       Object.defineProperty(process, 'platform', { value: original, configurable: true });
       if (originalOpenAi == null) delete process.env.OPENAI_API_KEY;

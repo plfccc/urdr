@@ -20,15 +20,15 @@ beforeEach(() => { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'kernel-ws-')); }
 afterEach(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* ignore */ } });
 
 describe('workspace/paths — the top-level directory', () => {
-  it('defaults to .pikiloom and resolves global + workspace roots', () => {
+  it('defaults to .urdr and resolves global + workspace roots', () => {
     const p = resolveLoomPaths({ home: '/home/u' });
-    expect(p.stateDirName).toBe('pikiloom');
-    expect(p.dirName).toBe('.pikiloom');
-    expect(p.globalRoot).toBe(path.join('/home/u', '.pikiloom'));
-    expect(p.workspaceRoot('/work/proj')).toBe(path.join('/work/proj', '.pikiloom'));
-    expect(p.sessionsDir('global')).toBe(path.join('/home/u', '.pikiloom', 'sessions'));
-    expect(p.skillsDir('workspace', '/work/proj')).toBe(path.join('/work/proj', '.pikiloom', 'skills'));
-    expect(p.mcpConfigPath('global')).toBe(path.join('/home/u', '.pikiloom', 'mcp.json'));
+    expect(p.stateDirName).toBe('urdr');
+    expect(p.dirName).toBe('.urdr');
+    expect(p.globalRoot).toBe(path.join('/home/u', '.urdr'));
+    expect(p.workspaceRoot('/work/proj')).toBe(path.join('/work/proj', '.urdr'));
+    expect(p.sessionsDir('global')).toBe(path.join('/home/u', '.urdr', 'sessions'));
+    expect(p.skillsDir('workspace', '/work/proj')).toBe(path.join('/work/proj', '.urdr', 'skills'));
+    expect(p.mcpConfigPath('global')).toBe(path.join('/home/u', '.urdr', 'mcp.json'));
     expect(p.agentHome('global')).toBe('/home/u');
     expect(p.agentHome('workspace', '/work/proj')).toBe('/work/proj');
   });
@@ -38,9 +38,9 @@ describe('workspace/paths — the top-level directory', () => {
     expect(resolveLoomPaths({ stateDirName: '.apodex', home: '/h' }).dirName).toBe('.apodex');
   });
 
-  it('createLoom exposes paths (default pikiloom)', () => {
+  it('createLoom exposes paths (default urdr)', () => {
     const loom = createLoom({ drivers: [new EchoDriver()] });
-    expect(loom.paths.stateDirName).toBe('pikiloom');
+    expect(loom.paths.stateDirName).toBe('urdr');
     const custom = createLoom({ drivers: [new EchoDriver()], stateDirName: 'apodex' });
     expect(custom.paths.dirName).toBe('.apodex');
   });
@@ -200,7 +200,7 @@ describe('workspace/sessions — unified managed + native list', () => {
 describe('workspace/skills — canonical registry + agent symlinks', () => {
   it('lists skills and symlinks agent dirs to the canonical dir', () => {
     const workdir = path.join(tmp, 'proj');
-    const paths = resolveLoomPaths({ stateDirName: 'pikiloom', home: tmp });
+    const paths = resolveLoomPaths({ stateDirName: 'urdr', home: tmp });
     const skills = new SkillsManager({ paths });
     const canonical = skills.canonicalDir('workspace', workdir);
     fs.mkdirSync(path.join(canonical, 'deploy'), { recursive: true });

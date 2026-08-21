@@ -104,9 +104,9 @@ export type ClaudeAccessMode = 'subscription' | 'api';
 export const DEFAULT_CLAUDE_ACCESS_MODE: ClaudeAccessMode = 'api';
 
 export function claudeAccessModeEnv(env: Record<string, string | undefined> = process.env): ClaudeAccessMode | null {
-  const print = parseBoolish(trimmed(env.PIKILOOM_CLAUDE_PRINT));
+  const print = parseBoolish(trimmed(env.URDR_CLAUDE_PRINT));
   if (print != null) return print ? 'api' : 'subscription';
-  const tui = parseBoolish(trimmed(env.PIKILOOM_CLAUDE_TUI));
+  const tui = parseBoolish(trimmed(env.URDR_CLAUDE_TUI));
   if (tui != null) return tui ? 'subscription' : 'api';
   return null;
 }
@@ -118,7 +118,7 @@ export function resolveClaudeAccessMode(config: Partial<UserConfig> | Record<str
 }
 
 export function setClaudeAccessModeEnv(value: ClaudeAccessMode, env: NodeJS.ProcessEnv = process.env): void {
-  env.PIKILOOM_CLAUDE_PRINT = value === 'api' ? '1' : '0';
+  env.URDR_CLAUDE_PRINT = value === 'api' ? '1' : '0';
 }
 
 export function setAgentModelEnv(agent: Agent, value: string, env: NodeJS.ProcessEnv = process.env): void {

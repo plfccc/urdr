@@ -103,8 +103,8 @@ interface SyncUserConfigOptions {
 type UserConfigChangeListener = (config: Partial<UserConfig>, changedKeys: string[]) => void;
 
 const MANAGED_ENV_KEYS = [
-  'PIKILOOM_CHANNEL',
-  'PIKILOOM_WORKDIR',
+  'URDR_CHANNEL',
+  'URDR_WORKDIR',
   'DEFAULT_AGENT',
   'TELEGRAM_BOT_TOKEN',
   'TELEGRAM_ALLOWED_CHAT_IDS',
@@ -185,7 +185,7 @@ export function getDevUserConfigPath(): string {
 }
 
 export function getUserConfigPath(): string {
-  const custom = (process.env.PIKILOOM_CONFIG || '').trim();
+  const custom = (process.env.URDR_CONFIG || '').trim();
   if (custom) return path.resolve(custom);
   return path.join(os.homedir(), USER_CONFIG_DIRNAME, USER_CONFIG_FILENAME);
 }
@@ -282,7 +282,7 @@ export function resolveUserWorkdir(opts: {
   const raw = String(
     opts.workdir
     || opts.config?.workdir
-    || process.env.PIKILOOM_WORKDIR
+    || process.env.URDR_WORKDIR
     || opts.cwd
     || process.cwd(),
   ).trim();
@@ -292,8 +292,8 @@ export function resolveUserWorkdir(opts: {
 function buildManagedEnv(config: Partial<UserConfig>): Record<(typeof MANAGED_ENV_KEYS)[number], string> {
   const configuredWorkdir = config.workdir || '';
   return {
-    PIKILOOM_CHANNEL: String(config.channel || '').trim(),
-    PIKILOOM_WORKDIR: configuredWorkdir ? resolveUserWorkdir({ workdir: configuredWorkdir }) : '',
+    URDR_CHANNEL: String(config.channel || '').trim(),
+    URDR_WORKDIR: configuredWorkdir ? resolveUserWorkdir({ workdir: configuredWorkdir }) : '',
     DEFAULT_AGENT: String(config.defaultAgent || '').trim(),
     TELEGRAM_BOT_TOKEN: String(config.telegramBotToken || '').trim(),
     TELEGRAM_ALLOWED_CHAT_IDS: String(config.telegramAllowedChatIds || '').trim(),

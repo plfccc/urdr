@@ -63,23 +63,23 @@ function trimSessionText(value: unknown, max = 24_000): string | null {
   return `${text.slice(0, Math.max(0, max - 3)).trimEnd()}...`;
 }
 
-const PIKILOOM_DIR = STATE_DIR_NAME;
-const PIKILOOM_SESSIONS_DIR = path.join(PIKILOOM_DIR, 'sessions');
-const PIKILOOM_SESSION_INDEX = path.join(PIKILOOM_SESSIONS_DIR, 'index.json');
-const PIKILOOM_LEGACY_WORKSPACES_DIR = path.join(PIKILOOM_DIR, 'workspaces');
+const URDR_DIR = STATE_DIR_NAME;
+const URDR_SESSIONS_DIR = path.join(URDR_DIR, 'sessions');
+const URDR_SESSION_INDEX = path.join(URDR_SESSIONS_DIR, 'index.json');
+const URDR_LEGACY_WORKSPACES_DIR = path.join(URDR_DIR, 'workspaces');
 const SESSION_WORKSPACE_DIR = 'workspace';
 const SESSION_META_FILE = 'session.json';
 
-function sessionIndexPath(workdir: string): string { return path.join(workdir, PIKILOOM_SESSION_INDEX); }
-function sessionDirPath(workdir: string, agent: Agent, sessionId: string): string { return path.join(workdir, PIKILOOM_SESSIONS_DIR, agent, sessionId); }
-function legacySessionWorkspacePath(workdir: string, agent: Agent, sessionId: string): string { return path.join(workdir, PIKILOOM_LEGACY_WORKSPACES_DIR, agent, sessionId); }
+function sessionIndexPath(workdir: string): string { return path.join(workdir, URDR_SESSION_INDEX); }
+function sessionDirPath(workdir: string, agent: Agent, sessionId: string): string { return path.join(workdir, URDR_SESSIONS_DIR, agent, sessionId); }
+function legacySessionWorkspacePath(workdir: string, agent: Agent, sessionId: string): string { return path.join(workdir, URDR_LEGACY_WORKSPACES_DIR, agent, sessionId); }
 function sessionWorkspacePath(workdir: string, agent: Agent, sessionId: string): string { return path.join(sessionDirPath(workdir, agent, sessionId), SESSION_WORKSPACE_DIR); }
 function sessionRootFromWorkspacePath(workspacePath: string): string {
   const resolved = path.resolve(workspacePath);
   return path.basename(resolved) === SESSION_WORKSPACE_DIR ? path.dirname(resolved) : resolved;
 }
 function sessionMetaPath(workspacePath: string): string { return path.join(sessionRootFromWorkspacePath(workspacePath), SESSION_META_FILE); }
-function legacySessionMetaPath(workspacePath: string): string { return path.join(workspacePath, PIKILOOM_DIR, SESSION_META_FILE); }
+function legacySessionMetaPath(workspacePath: string): string { return path.join(workspacePath, URDR_DIR, SESSION_META_FILE); }
 
 function nextPendingSessionId(): string { return `pending_${crypto.randomBytes(6).toString('hex')}`; }
 function nextThreadId(): string { return `thread_${crypto.randomBytes(6).toString('hex')}`; }
@@ -424,7 +424,7 @@ function migrateSessionLayout(workdir: string, record: ManagedSessionRecord): Ma
     if (sourceWorkspacePath === targetWorkspacePath || !fs.existsSync(sourceWorkspacePath)) continue;
     if (!fs.statSync(sourceWorkspacePath).isDirectory()) continue;
     for (const entry of fs.readdirSync(sourceWorkspacePath)) {
-      if (entry === PIKILOOM_DIR) continue;
+      if (entry === URDR_DIR) continue;
       copyPath(path.join(sourceWorkspacePath, entry), path.join(targetWorkspacePath, entry));
     }
     if (sourceWorkspacePath === legacyWp) fs.rmSync(sourceWorkspacePath, { recursive: true, force: true });

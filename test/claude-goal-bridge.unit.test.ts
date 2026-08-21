@@ -29,8 +29,8 @@ function writeTranscript(lines: string[]): void {
 
 beforeEach(() => {
   envSnap = captureEnv(HOME_KEYS);
-  tmpHome = makeTmpDir('pikiloom-claude-goal-home-');
-  tmpWorkdir = makeTmpDir('pikiloom-claude-goal-wd-');
+  tmpHome = makeTmpDir('urdr-claude-goal-home-');
+  tmpWorkdir = makeTmpDir('urdr-claude-goal-wd-');
   process.env.HOME = tmpHome;
   process.env.USERPROFILE = tmpHome;
 });

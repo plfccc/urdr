@@ -142,18 +142,18 @@ export function resolveGuiIntegrationConfig(
 ): GuiIntegrationConfig {
   const browserEnabled = boolFromConfigEnv(
     typeof config.browserEnabled === 'boolean' ? config.browserEnabled : (config as Record<string, unknown>).browserUseProfile,
-    env.PIKILOOM_BROWSER_ENABLED ?? env.PIKILOOM_BROWSER_USE_PROFILE,
+    env.URDR_BROWSER_ENABLED ?? env.URDR_BROWSER_USE_PROFILE,
     !!getConfiguredRemoteCdpUrl(env),
   );
   const peekabooEnabled = boolFromConfigEnv(
     config.peekabooEnabled,
-    env.PIKILOOM_PEEKABOO_ENABLED,
+    env.URDR_PEEKABOO_ENABLED,
     false,
   );
   return {
     browserEnabled,
     browserProfileDir: getManagedBrowserProfileDir(),
-    browserHeadless: boolFromConfigEnv(config.browserHeadless, env.PIKILOOM_BROWSER_HEADLESS, false),
+    browserHeadless: boolFromConfigEnv(config.browserHeadless, env.URDR_BROWSER_HEADLESS, false),
     peekabooEnabled,
   };
 }
@@ -200,7 +200,7 @@ export function buildPeekabooChildEnv(
   }
   safe.PATH ||= PEEKABOO_DEFAULT_PATH;
   safe.HOME ||= os.homedir();
-  safe.PIKILOOM_MCP_SERVER = 'peekaboo';
+  safe.URDR_MCP_SERVER = 'peekaboo';
   safe.npm_config_yes = 'true';
   return safe;
 }
@@ -316,7 +316,7 @@ function extractBearerToken(headers?: Record<string, string>): string | null {
 
 function codexBearerEnvName(serverName: string): string {
   const safe = serverName.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  return `PIKILOOM_MCP_BEARER_${safe || 'UNNAMED'}`;
+  return `URDR_MCP_BEARER_${safe || 'UNNAMED'}`;
 }
 
 const REDACTED = '[REDACTED]';
@@ -679,7 +679,7 @@ export async function startMcpBridge(opts: McpBridgeOpts): Promise<McpBridgeHand
     browserCdpEndpoint = endpoint;
     if (endpoint) {
       opts.onLog?.(mode === 'remote'
-        ? `attaching to remote CDP endpoint ${endpoint} (PIKILOOM_BROWSER_CDP_URL); local Chrome launch disabled.`
+        ? `attaching to remote CDP endpoint ${endpoint} (URDR_BROWSER_CDP_URL); local Chrome launch disabled.`
         : `attaching to existing managed browser at ${endpoint}.`);
       const { reaped, spared } = reapStalePlaywrightMcpProcesses(endpoint);
       if (reaped.length) {

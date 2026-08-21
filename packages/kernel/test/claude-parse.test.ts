@@ -151,7 +151,7 @@ describe('claude stream-json parser (kernel ClaudeDriver parity)', () => {
       ] } },
     ]);
     const calls = events.filter(e => e.type === 'tool').map(e => (e as any).call);
-    // running summaries carry the input detail (the activity vocabulary pikiloom already parses)
+    // running summaries carry the input detail (the activity vocabulary urdr already parses)
     expect(calls.find(c => c.id === 'rd' && c.status === 'running').summary).toBe('Read /repo/src/foo.ts');
     expect(calls.find(c => c.id === 'sh' && c.status === 'running').summary).toBe('Run shell: npm test');
     // results close the call out: file tool -> no detail, shell -> first line of output

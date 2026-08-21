@@ -6,7 +6,7 @@ import { collapseSkillPrompt, getProjectSkillPaths, initializeProjectSkills } fr
 import { resolveSkillPrompt } from '../src/bot/commands.ts';
 import { captureEnv, makeTmpDir, restoreEnv } from './support/env.ts';
 
-const envSnapshot = captureEnv(['PIKILOOM_CONFIG', 'PIKILOOM_WORKDIR']);
+const envSnapshot = captureEnv(['URDR_CONFIG', 'URDR_WORKDIR']);
 
 function writeFile(filePath: string, content: string) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -19,7 +19,7 @@ function writeSkill(root: string, name: string, body: string) {
 
 beforeEach(() => {
   restoreEnv(envSnapshot);
-  process.env.PIKILOOM_CONFIG = path.join(makeTmpDir('pikiloom-config-'), 'setting.json');
+  process.env.URDR_CONFIG = path.join(makeTmpDir('urdr-config-'), 'setting.json');
 });
 
 afterEach(() => {
@@ -29,7 +29,7 @@ afterEach(() => {
 describe('project skills', () => {
   it('resolves skill paths, routes per-agent, merges legacy roots, and collapses shorthand', () => {
     {
-      const workdir = makeTmpDir('pikiloom-claude-skill-');
+      const workdir = makeTmpDir('urdr-claude-skill-');
       writeSkill(path.join(workdir, '.urdr', 'skills'), 'install', '---\nlabel: Install\ndescription: shared\n---\n');
       writeSkill(path.join(workdir, '.claude', 'skills'), 'install', '---\nlabel: Install\ndescription: claude\n---\n');
 
@@ -52,7 +52,7 @@ describe('project skills', () => {
     }
 
     {
-      const workdir = makeTmpDir('pikiloom-codex-skill-');
+      const workdir = makeTmpDir('urdr-codex-skill-');
       writeSkill(path.join(workdir, '.urdr', 'skills'), 'fixup', '---\nlabel: Fixup\ndescription: shared\n---\n');
       writeSkill(path.join(workdir, '.agents', 'skills'), 'fixup', '---\nlabel: Fixup\ndescription: agents\n---\n');
 
@@ -68,7 +68,7 @@ describe('project skills', () => {
     }
 
     {
-      const workdir = makeTmpDir('pikiloom-migrate-skill-');
+      const workdir = makeTmpDir('urdr-migrate-skill-');
       writeSkill(path.join(workdir, '.urdr', 'skills'), 'ship', '---\nlabel: Ship\ndescription: shared\n---\n');
       writeFile(path.join(workdir, '.urdr', 'skills', 'ship', 'references', 'shared.txt'), 'shared\n');
       writeSkill(path.join(workdir, '.claude', 'skills'), 'ship', '---\nlabel: Ship\ndescription: claude\n---\n');
@@ -89,7 +89,7 @@ describe('project skills', () => {
     }
 
     {
-      const workdir = makeTmpDir('pikiloom-relink-skill-');
+      const workdir = makeTmpDir('urdr-relink-skill-');
       const claudeSkills = path.join(workdir, '.claude', 'skills');
       fs.mkdirSync(path.dirname(claudeSkills), { recursive: true });
       fs.symlinkSync('../.pikiclaw/skills', claudeSkills, process.platform === 'win32' ? 'junction' : 'dir');
@@ -113,7 +113,7 @@ describe('project skills', () => {
     }
 
     {
-      const workdir = makeTmpDir('pikiloom-collapse-skill-');
+      const workdir = makeTmpDir('urdr-collapse-skill-');
       writeSkill(path.join(workdir, '.urdr', 'skills'), 'install', '---\nlabel: Install\n---\n');
       const bot = new Bot();
       bot.switchWorkdir(workdir, { persist: false });

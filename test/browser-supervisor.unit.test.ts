@@ -186,7 +186,7 @@ describe('browser-supervisor', () => {
     forceCloseMock.mockResolvedValue([]);
     vi.unstubAllGlobals();
 
-    process.env.PIKILOOM_BROWSER_CDP_URL = 'http://chromium:9222/';
+    process.env.URDR_BROWSER_CDP_URL = 'http://chromium:9222/';
     try {
       vi.stubGlobal('fetch', vi.fn(async (input: any) => {
         const url = typeof input === 'string' ? input : input.url;
@@ -208,14 +208,14 @@ describe('browser-supervisor', () => {
       expect(forceCloseMock).not.toHaveBeenCalled();
       expect(supervisor.getCachedManagedBrowserEndpoint()).toBeNull();
     } finally {
-      delete process.env.PIKILOOM_BROWSER_CDP_URL;
+      delete process.env.URDR_BROWSER_CDP_URL;
     }
 
     supervisor._resetManagedBrowserSupervisor();
     prepareMock.mockReset();
     vi.unstubAllGlobals();
 
-    process.env.PIKILOOM_BROWSER_CDP_URL = 'http://chromium:9222';
+    process.env.URDR_BROWSER_CDP_URL = 'http://chromium:9222';
     try {
       vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 500 })));
       const unreachableSnap = await supervisor.ensureManagedBrowser();
@@ -223,7 +223,7 @@ describe('browser-supervisor', () => {
       expect(unreachableSnap.cdpEndpoint).toBeNull();
       expect(prepareMock).not.toHaveBeenCalled();
     } finally {
-      delete process.env.PIKILOOM_BROWSER_CDP_URL;
+      delete process.env.URDR_BROWSER_CDP_URL;
     }
   });
 });

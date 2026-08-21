@@ -30,7 +30,7 @@ function codexFileChangeSummary(item: any): string {
   return 'Edit files';
 }
 
-// Normalize a codex app-server item -> {id, name, summary}. The summary mirrors pikiloom's
+// Normalize a codex app-server item -> {id, name, summary}. The summary mirrors urdr's
 // vocabulary ("Run shell: <cmd>", "Edit <path>") so the activity projection reads naturally.
 // Only ACTUAL tool calls become Activity rows. agentMessage (the answer text) and reasoning
 // (thinking) are CONTENT — they render below as message text / thinking, never as tools. The old
@@ -661,7 +661,7 @@ function buildTurnInput(prompt: string, attachments: string[]): any[] {
   return input;
 }
 
-// ── Token usage / context projection (ported from pikiloom's codex driver) ──────
+// ── Token usage / context projection (ported from urdr's codex driver) ──────
 // Codex reports usage as a nested {info:{last, total, model_context_window}} (and
 // sometimes a flat shape). The live UI wants contextUsedTokens / context% / this-turn
 // output — none of which the raw input/output counts carry. This is the codex-side

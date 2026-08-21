@@ -27,7 +27,7 @@ function writeFile(filePath: string, content = '') {
 
 describe('resolveMcpServerCommand', () => {
   it('reuses the current CLI entrypoint from source and falls back to the compiled session server', () => {
-    const root1 = makeTmpDir('pikiloom-mcp-bridge-');
+    const root1 = makeTmpDir('urdr-mcp-bridge-');
     const cliPath = path.join(root1, 'src', 'cli', 'main.ts');
     writeFile(cliPath, 'console.log("cli");\n');
 
@@ -43,7 +43,7 @@ describe('resolveMcpServerCommand', () => {
       args: ['--loader', 'tsx', cliPath, '--mcp-serve'],
     });
 
-    const root2 = makeTmpDir('pikiloom-mcp-bridge-');
+    const root2 = makeTmpDir('urdr-mcp-bridge-');
     const mcpDir = path.join(root2, 'dist', 'agent', 'mcp');
     const serverPath = path.join(mcpDir, 'session-server.js');
     writeFile(serverPath, 'console.log("server");\n');
@@ -64,7 +64,7 @@ describe('resolveMcpServerCommand', () => {
 
 describe('resolveSendFilePath', () => {
   it('prefers workspace-relative files and falls back to workdir-relative files', () => {
-    const root1 = makeTmpDir('pikiloom-send-file-');
+    const root1 = makeTmpDir('urdr-send-file-');
     const workspacePath1 = path.join(root1, 'workspace');
     const workdir1 = path.join(root1, 'project');
     const workspaceFile = path.join(workspacePath1, 'desktop-screenshot.png');
@@ -74,7 +74,7 @@ describe('resolveSendFilePath', () => {
 
     expect(resolveSendFilePath('desktop-screenshot.png', workspacePath1, [], workdir1).path).toBe(workspaceFile);
 
-    const root2 = makeTmpDir('pikiloom-send-file-');
+    const root2 = makeTmpDir('urdr-send-file-');
     const workspacePath2 = path.join(root2, 'workspace');
     const workdir2 = path.join(root2, 'project');
     const workdirFile2 = path.join(workdir2, 'desktop-screenshot.png');
@@ -95,8 +95,8 @@ describe('resolveGuiIntegrationConfig', () => {
     });
 
     expect(resolveGuiIntegrationConfig({ browserEnabled: false } as any, {
-      PIKILOOM_BROWSER_ENABLED: 'true',
-      PIKILOOM_BROWSER_HEADLESS: 'true',
+      URDR_BROWSER_ENABLED: 'true',
+      URDR_BROWSER_HEADLESS: 'true',
     })).toEqual({
       browserEnabled: true,
       browserProfileDir: getManagedBrowserProfileDir(),
@@ -105,32 +105,32 @@ describe('resolveGuiIntegrationConfig', () => {
     });
 
     expect(resolveGuiIntegrationConfig({} as any, {
-      PIKILOOM_BROWSER_USE_PROFILE: 'true',
+      URDR_BROWSER_USE_PROFILE: 'true',
     }).browserEnabled).toBe(true);
 
     expect(resolveGuiIntegrationConfig({} as any, {
-      PIKILOOM_BROWSER_CDP_URL: 'http://chromium:9223',
+      URDR_BROWSER_CDP_URL: 'http://chromium:9223',
     }).browserEnabled).toBe(true);
 
     expect(resolveGuiIntegrationConfig({} as any, {
-      PIKILOOM_BROWSER_CDP_URL: 'http://chromium:9223',
-      PIKILOOM_BROWSER_ENABLED: 'false',
+      URDR_BROWSER_CDP_URL: 'http://chromium:9223',
+      URDR_BROWSER_ENABLED: 'false',
     }).browserEnabled).toBe(false);
   });
 });
 
 describe('CDP endpoint resolution', () => {
   it('normalizes configured remote URLs and resolves the bridge endpoint without probing local Chrome', async () => {
-    expect(getConfiguredRemoteCdpUrl({ PIKILOOM_BROWSER_CDP_URL: 'http://chromium:9223/' })).toBe('http://chromium:9223');
-    expect(getConfiguredRemoteCdpUrl({ PIKILOOM_BROWSER_CDP_URL: 'http://chromium:9223' })).toBe('http://chromium:9223');
+    expect(getConfiguredRemoteCdpUrl({ URDR_BROWSER_CDP_URL: 'http://chromium:9223/' })).toBe('http://chromium:9223');
+    expect(getConfiguredRemoteCdpUrl({ URDR_BROWSER_CDP_URL: 'http://chromium:9223' })).toBe('http://chromium:9223');
 
     expect(getConfiguredRemoteCdpUrl({})).toBeNull();
-    expect(getConfiguredRemoteCdpUrl({ PIKILOOM_BROWSER_CDP_URL: '   ' })).toBeNull();
+    expect(getConfiguredRemoteCdpUrl({ URDR_BROWSER_CDP_URL: '   ' })).toBeNull();
 
     expect(await resolveBridgeBrowserEndpoint('/nonexistent/profile/dir', 'http://chromium:9223'))
       .toEqual({ endpoint: 'http://chromium:9223', mode: 'remote' });
 
-    const emptyProfile = makeTmpDir('pikiloom-no-chrome-');
+    const emptyProfile = makeTmpDir('urdr-no-chrome-');
     expect(await resolveBridgeBrowserEndpoint(emptyProfile, null))
       .toEqual({ endpoint: null, mode: 'none' });
   });
@@ -158,7 +158,7 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       },
     ]);
 
-    const attachProfileDir = path.join('/tmp', 'pikiloom', 'browser', 'chrome-profile');
+    const attachProfileDir = path.join('/tmp', 'urdr', 'browser', 'chrome-profile');
     const attachCdpEndpoint = 'http://127.0.0.1:39222';
     const attachExpected = resolveManagedBrowserMcpCommand(attachProfileDir, { headless: true, cdpEndpoint: attachCdpEndpoint });
     expect(buildSupplementalMcpServers({
@@ -178,11 +178,11 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
     expect(attachExpected.args).toContain(attachCdpEndpoint);
 
     const remote = 'http://chromium:9223';
-    const { endpoint, mode } = await resolveBridgeBrowserEndpoint('/tmp/pikiloom/profile', remote);
+    const { endpoint, mode } = await resolveBridgeBrowserEndpoint('/tmp/urdr/profile', remote);
     expect(mode).toBe('remote');
     const remoteServers = buildSupplementalMcpServers({
       browserEnabled: true,
-      browserProfileDir: '/tmp/pikiloom/profile',
+      browserProfileDir: '/tmp/urdr/profile',
       browserHeadless: false,
     }, { cdpEndpoint: endpoint });
     const remoteArgs = remoteServers[0]?.args ?? [];
@@ -196,7 +196,7 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       browserHeadless: false,
     })).toEqual([]);
 
-    const hintProfileDir = path.join('/tmp', 'pikiloom', 'browser', 'chrome-profile');
+    const hintProfileDir = path.join('/tmp', 'urdr', 'browser', 'chrome-profile');
     expect(buildGuiSetupHints({
       browserEnabled: true,
       browserProfileDir: hintProfileDir,
@@ -213,7 +213,7 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       USER: 'tester',
       OPENAI_API_KEY: 'sk-should-not-leak',
       ANTHROPIC_API_KEY: 'ak-should-not-leak',
-      PIKILOOM_CHANNEL: 'telegram',
+      URDR_CHANNEL: 'telegram',
       LANG: 'en_US.UTF-8',
     });
     expect(env).toMatchObject({
@@ -221,12 +221,12 @@ describe('buildSupplementalMcpServers & buildGuiSetupHints', () => {
       PATH: '/opt/homebrew/bin:/usr/bin',
       USER: 'tester',
       LANG: 'en_US.UTF-8',
-      PIKILOOM_MCP_SERVER: 'peekaboo',
+      URDR_MCP_SERVER: 'peekaboo',
       npm_config_yes: 'true',
     });
     expect(env.OPENAI_API_KEY).toBeUndefined();
     expect(env.ANTHROPIC_API_KEY).toBeUndefined();
-    expect(env.PIKILOOM_CHANNEL).toBeUndefined();
+    expect(env.URDR_CHANNEL).toBeUndefined();
 
     const original = process.platform;
     Object.defineProperty(process, 'platform', { value: 'darwin', configurable: true });
@@ -307,7 +307,7 @@ describe('_matchPeekabooMcpProcessCommand', () => {
 
 describe('redactMcpConfigForLog', () => {
   it('redacts MCP credentials before config content is logged', () => {
-    const root = makeTmpDir('pikiloom-redact-mcp-');
+    const root = makeTmpDir('urdr-redact-mcp-');
     const configPath = path.join(root, 'mcp-config.json');
     writeFile(configPath, JSON.stringify({
       mcpServers: {

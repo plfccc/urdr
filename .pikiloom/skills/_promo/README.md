@@ -72,8 +72,8 @@ The orchestrator is LLM-driven (`orchestrate.md`), so the cron invokes the `auto
 ## Health checks
 
 ```bash
-cd /Users/admin/Desktop/project/pikiloom
-python3 .pikiloom/skills/_promo/registry.py stats     # touchpoints by channel/status
-python3 .pikiloom/skills/_promo/guard.py caps          # today's usage vs caps
-python3 .pikiloom/skills/_promo/measure.py report      # npm/stars/referrers + effective touchpoints
+cd /Users/admin/Desktop/project/urdr
+python3 .urdr/skills/_promo/registry.py stats     # touchpoints by channel/status
+python3 .urdr/skills/_promo/guard.py caps          # today's usage vs caps
+python3 .urdr/skills/_promo/measure.py report      # npm/stars/referrers + effective touchpoints
 ```

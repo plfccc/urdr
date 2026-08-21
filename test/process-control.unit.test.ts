@@ -23,9 +23,9 @@ async function loadModule() {
 
 function resetEnv() {
   process.env = { ...ORIGINAL_ENV };
-  delete process.env.PIKILOOM_DAEMON_CHILD;
-  delete process.env.PIKILOOM_RESTART_STATE_FILE;
-  delete process.env.PIKILOOM_RESTART_CMD;
+  delete process.env.URDR_DAEMON_CHILD;
+  delete process.env.URDR_RESTART_STATE_FILE;
+  delete process.env.URDR_RESTART_CMD;
   delete process.env.TELEGRAM_ALLOWED_CHAT_IDS;
   delete process.env.FEISHU_ALLOWED_CHAT_IDS;
   delete process.env.npm_config_yes;
@@ -47,10 +47,10 @@ afterEach(() => {
 describe('process-control restart flow', () => {
   it('restarts without consulting task counts and hands off to the supervisor in daemon mode', async () => {
     const mod = await loadModule();
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-restart-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-restart-'));
     const stateFile = path.join(tmpDir, 'restart.json');
-    process.env.PIKILOOM_DAEMON_CHILD = '1';
-    process.env.PIKILOOM_RESTART_STATE_FILE = stateFile;
+    process.env.URDR_DAEMON_CHILD = '1';
+    process.env.URDR_RESTART_STATE_FILE = stateFile;
 
     const cleanupSpy = vi.fn();
     const unregister = mod.registerProcessRuntime({
@@ -121,8 +121,8 @@ describe('process-control restart flow', () => {
         }),
       }));
       const env = spawnMock.mock.calls[0]?.[2]?.env ?? {};
-      expect(env.PIKILOOM_DAEMON_CHILD).toBeUndefined();
-      expect(env.PIKILOOM_RESTART_STATE_FILE).toBeUndefined();
+      expect(env.URDR_DAEMON_CHILD).toBeUndefined();
+      expect(env.URDR_RESTART_STATE_FILE).toBeUndefined();
     } finally {
       unregisterFeishu();
       unregisterTelegram();

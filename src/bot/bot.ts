@@ -763,8 +763,8 @@ export class Bot {
     };
 
     this.defaultAgent = normalizeAgent('codex');
-    this.runTimeout = envInt('PIKILOOM_TIMEOUT', DEFAULT_RUN_TIMEOUT_S);
-    this.allowedChatIds = parseAllowedChatIds(process.env.PIKILOOM_ALLOWED_IDS || '');
+    this.runTimeout = envInt('URDR_TIMEOUT', DEFAULT_RUN_TIMEOUT_S);
+    this.allowedChatIds = parseAllowedChatIds(process.env.URDR_ALLOWED_IDS || '');
     this.refreshManagedConfig(getActiveUserConfig(), { initial: true });
     this.userConfigUnsubscribe = onUserConfigChange(config => this.refreshManagedConfig(config));
   }
@@ -2210,7 +2210,7 @@ export class Bot {
     if (opts.persist !== false) {
       setUserWorkdir(resolvedPath, { notify: false });
     } else {
-      process.env.PIKILOOM_WORKDIR = resolvedPath;
+      process.env.URDR_WORKDIR = resolvedPath;
     }
     this.workdir = resolvedPath;
     for (const [, cs] of this.chats) {

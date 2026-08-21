@@ -9,14 +9,14 @@ import { STATE_DIR_NAME } from '../core/constants.js';
 
 const execFileAsync = promisify(execFile);
 
-const PLIST_LABEL = 'ai.pikiloom.gateway';
+const PLIST_LABEL = 'ai.urdr.gateway';
 const PLIST_DIR = path.join(os.homedir(), 'Library', 'LaunchAgents');
 const PLIST_PATH = path.join(PLIST_DIR, `${PLIST_LABEL}.plist`);
-const PIKILOOM_HOME = path.join(os.homedir(), STATE_DIR_NAME);
-const LEGACY_PLIST_LABELS = ['ai.pikiclaw.gateway'];
+const URDR_HOME = path.join(os.homedir(), STATE_DIR_NAME);
+const LEGACY_PLIST_LABELS = ['ai.pikiloom.gateway', 'ai.pikiclaw.gateway'];
 const PROMPT_DELAY_MS = 3000;
 
-export const FROM_LAUNCHD_ENV = 'PIKILOOM_FROM_LAUNCHD';
+export const FROM_LAUNCHD_ENV = 'URDR_FROM_LAUNCHD';
 
 interface InvocationCommand {
   program: string;
@@ -63,8 +63,8 @@ function buildPlistXml(invocation: InvocationCommand): string {
   const programArgs = [invocation.program, ...invocation.args]
     .map(arg => `    <string>${escapeXml(arg)}</string>`)
     .join('\n');
-  const stdoutPath = path.join(PIKILOOM_HOME, 'launchd-stdout.log');
-  const stderrPath = path.join(PIKILOOM_HOME, 'launchd-stderr.log');
+  const stdoutPath = path.join(URDR_HOME, 'launchd-stdout.log');
+  const stderrPath = path.join(URDR_HOME, 'launchd-stderr.log');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -164,7 +164,7 @@ async function cleanupLegacyAutostart(log: LogFn): Promise<void> {
 async function installAutostart(log: LogFn, invocation: InvocationCommand): Promise<boolean> {
   try {
     fs.mkdirSync(PLIST_DIR, { recursive: true });
-    fs.mkdirSync(PIKILOOM_HOME, { recursive: true });
+    fs.mkdirSync(URDR_HOME, { recursive: true });
     fs.writeFileSync(PLIST_PATH, buildPlistXml(invocation));
   } catch (err: any) {
     log(`autostart: failed to write plist: ${err?.message || err}`);

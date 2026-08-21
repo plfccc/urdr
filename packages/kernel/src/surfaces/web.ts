@@ -24,7 +24,7 @@ export interface WebSurfaceOptions {
 }
 
 // The built-in Web/remote terminal: a ws host speaking the UniversalSnapshot wire
-// protocol over LoomIO. Any pikichannel client (incl. the existing pikiloom dashboard
+// protocol over LoomIO. Any pikichannel client (incl. the existing urdr dashboard
 // SPA) can connect: hello -> subscribe -> receive `session` patches -> prompt/stop/steer.
 export class WebSurface implements Surface {
   readonly id = 'web';

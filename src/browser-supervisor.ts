@@ -4,7 +4,7 @@ import {
   getManagedBrowserProfileDir,
   prepareManagedBrowserForAutomation,
 } from './browser-profile.js';
-import { PIKILOOM_BROWSER_CDP_URL_ENV } from './core/constants.js';
+import { URDR_BROWSER_CDP_URL_ENV } from './core/constants.js';
 import { writeScopedLog } from './core/logging.js';
 
 export type ManagedBrowserConnectionMode = 'attach' | 'launch' | 'unavailable';
@@ -48,7 +48,7 @@ async function snapshotRemote(remoteUrl: string, now: number): Promise<ManagedBr
     return { cdpEndpoint: null, connectionMode: 'unavailable' };
   }
   cached = { cdpEndpoint: remoteUrl, connectionMode: 'attach', validatedAt: now };
-  log(`using remote CDP endpoint ${remoteUrl} (from ${PIKILOOM_BROWSER_CDP_URL_ENV})`);
+  log(`using remote CDP endpoint ${remoteUrl} (from ${URDR_BROWSER_CDP_URL_ENV})`);
   return snapshotFromCache(cached);
 }
 

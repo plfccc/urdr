@@ -14,7 +14,7 @@ const TASK_NOTIFICATION = [
   '<tool-use-id>toolu_013VEgMTbMgStg3PNb2taGtQ</tool-use-id>',
   '<output-file>/private/tmp/claude-501/tasks/a9e6baa2fb0728355.output</output-file>',
   '<status>completed</status>',
-  '<summary>Agent "Map pikiloom server-side src/" finished</summary>',
+  '<summary>Agent "Map urdr server-side src/" finished</summary>',
   '<note>A task-notification fires each time this agent stops.</note>',
   '</task-notification>',
 ].join('\n');

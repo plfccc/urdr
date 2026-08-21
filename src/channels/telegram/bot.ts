@@ -138,7 +138,7 @@ export class TelegramBot extends Bot {
       if (!opts.initial) this.log('telegram token reloaded from setting.json');
     }
 
-    const mergedAllowed = parseAllowedChatIds(process.env.PIKILOOM_ALLOWED_IDS || '');
+    const mergedAllowed = parseAllowedChatIds(process.env.URDR_ALLOWED_IDS || '');
     for (const id of parseAllowedChatIds(String(config.telegramAllowedChatIds || ''))) mergedAllowed.add(id);
     this.allowedChatIds = mergedAllowed;
   }

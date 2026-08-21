@@ -128,8 +128,8 @@ describe('TelegramChannel', () => {
     {
       const { ch, apiCalls } = createTestChannel();
       const writeSpy = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
-      const originalLogLevel = process.env.PIKILOOM_LOG_LEVEL;
-      process.env.PIKILOOM_LOG_LEVEL = 'debug';
+      const originalLogLevel = process.env.URDR_LOG_LEVEL;
+      process.env.URDR_LOG_LEVEL = 'debug';
 
       try {
         const msgId = await ch.send(123, 'line 1\nline 2', {
@@ -154,8 +154,8 @@ describe('TelegramChannel', () => {
         expect(logged).toContain('[send] sendMessage chat=123 chunk=1/1');
         expect(logged).toContain('line 1\nline 2');
       } finally {
-        if (originalLogLevel == null) delete process.env.PIKILOOM_LOG_LEVEL;
-        else process.env.PIKILOOM_LOG_LEVEL = originalLogLevel;
+        if (originalLogLevel == null) delete process.env.URDR_LOG_LEVEL;
+        else process.env.URDR_LOG_LEVEL = originalLogLevel;
         writeSpy.mockRestore();
       }
     }
@@ -289,8 +289,8 @@ describe('TelegramChannel', () => {
     {
       const { ch, apiCalls } = createTestChannel();
       const writeSpy = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
-      const originalLogLevel = process.env.PIKILOOM_LOG_LEVEL;
-      process.env.PIKILOOM_LOG_LEVEL = 'debug';
+      const originalLogLevel = process.env.URDR_LOG_LEVEL;
+      process.env.URDR_LOG_LEVEL = 'debug';
 
       try {
         await ch.editMessage(123, 99, 'Updated text');
@@ -318,8 +318,8 @@ describe('TelegramChannel', () => {
         expect(draftLog).toContain('[send] sendMessageDraft chat=123 draft_id=5 thread=99 chars=14');
         expect(draftLog).not.toContain('Partial answer');
       } finally {
-        if (originalLogLevel == null) delete process.env.PIKILOOM_LOG_LEVEL;
-        else process.env.PIKILOOM_LOG_LEVEL = originalLogLevel;
+        if (originalLogLevel == null) delete process.env.URDR_LOG_LEVEL;
+        else process.env.URDR_LOG_LEVEL = originalLogLevel;
         writeSpy.mockRestore();
       }
     }

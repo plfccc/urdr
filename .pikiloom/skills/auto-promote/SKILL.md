@@ -2,7 +2,7 @@
 name: auto-promote
 description: 无人值守推广总入口。按 _promo/orchestrate.md 跨所有启用渠道（GitHub / Twitter / Reddit）跑一轮：发现→去重→起草→自我批判→护栏→按 posture 发布→记录→度量。供每日 cron（schedule / loop）调用，也可手动运行。传 "post-approved" 只执行 batch 待发队列。
 user-invocable: true
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, mcp__pikiloom-browser__browser_navigate, mcp__pikiloom-browser__browser_take_screenshot, mcp__pikiloom-browser__browser_snapshot, mcp__pikiloom-browser__browser_press_key, mcp__pikiloom-browser__browser_click, mcp__pikiloom-browser__browser_evaluate, mcp__pikiloom-browser__browser_type, mcp__pikiloom-browser__browser_run_code_unsafe, mcp__pikiloom-browser__browser_wait_for, mcp__pikiloom-browser__browser_tabs
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, mcp__urdr-browser__browser_navigate, mcp__urdr-browser__browser_take_screenshot, mcp__urdr-browser__browser_snapshot, mcp__urdr-browser__browser_press_key, mcp__urdr-browser__browser_click, mcp__urdr-browser__browser_evaluate, mcp__urdr-browser__browser_type, mcp__urdr-browser__browser_run_code_unsafe, mcp__urdr-browser__browser_wait_for, mcp__urdr-browser__browser_tabs
 argument-hint: "blank for a full run | post-approved | channel:github|twitter|reddit | shadow"
 ---
 
@@ -11,7 +11,7 @@ argument-hint: "blank for a full run | post-approved | channel:github|twitter|re
 跨三渠道跑一轮完整推广，**严格执行 [`../_promo/orchestrate.md`](../_promo/orchestrate.md)**。
 这是给每日 cron 调用的单一入口；也可手动跑。所有话术来自 `_promo/pitch.md`，去重/护栏/度量来自共享核心。
 
-> 运行根目录：`cd /Users/admin/Desktop/project/pikiloom`。
+> 运行根目录：`cd /Users/admin/Desktop/project/urdr`。
 
 ## 参数
 

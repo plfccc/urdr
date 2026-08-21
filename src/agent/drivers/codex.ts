@@ -1584,7 +1584,7 @@ function getCodexSessions(workdir: string, limit?: number): SessionListResult {
   const sessionsDir = path.join(getHome(), '.codex', 'sessions');
   agentLog(
     `[sessions:codex] workdir=${resolvedWorkdir} sessionsDir=${sessionsDir} sessionsDirExists=${fs.existsSync(sessionsDir)} ` +
-    `pikiloom=${urdrSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
+    `urdr=${urdrSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
   );
   return { ok: true, sessions, error: null };
 }

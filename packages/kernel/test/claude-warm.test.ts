@@ -58,8 +58,8 @@ describe('ClaudeDriver warm pool (hermetic via fake multi-turn CLI)', () => {
   });
   afterEach(() => {
     driver?.dispose();
-    delete process.env.PIKILOOM_CLAUDE_WARM_IDLE_MS;
-    delete process.env.PIKILOOM_CLAUDE_WARM_MAX;
+    delete process.env.URDR_CLAUDE_WARM_IDLE_MS;
+    delete process.env.URDR_CLAUDE_WARM_MAX;
     fs.rmSync(tmp, { recursive: true, force: true });
   });
 
@@ -133,7 +133,7 @@ describe('ClaudeDriver warm pool (hermetic via fake multi-turn CLI)', () => {
   });
 
   it('idle TTL destroys a parked process', async () => {
-    process.env.PIKILOOM_CLAUDE_WARM_IDLE_MS = '60';
+    process.env.URDR_CLAUDE_WARM_IDLE_MS = '60';
     const d = new ClaudeDriver(fake, { warmPool: true });
     driver = d;
     const r1 = await d.run(turnInput(), ctxCollect().ctx);

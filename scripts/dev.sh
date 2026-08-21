@@ -8,8 +8,8 @@ LOG_FILE="${DEV_DIR}/dev.log"
 # Dev dashboard always binds this port. dev.sh frees it before (re)starting so a
 # restart deterministically rebinds the same port instead of drifting upward via
 # the server's EADDRINUSE retry. Read before the env scrub; override with
-# PIKILOOM_DEV_PORT if you really need a different one.
-DEV_PORT="${PIKILOOM_DEV_PORT:-3940}"
+# URDR_DEV_PORT if you really need a different one.
+DEV_PORT="${URDR_DEV_PORT:-3940}"
 
 # Neither pkill nor lsof reaches a native Windows process from Git Bash — pkill is often
 # not even on a non-interactive PATH, and lsof simply is not installed. Both greps silently
@@ -79,7 +79,7 @@ if [[ "${1:-}" == "--stop" ]]; then
 fi
 
 # Dev mode must stay on the local source tree.
-# Do not hop into the upstream production/self-bootstrap `npx pikiloom@latest` chain.
+# Do not hop into the upstream production/self-bootstrap `npx urdr@latest` chain.
 mkdir -p "${DEV_DIR}"
 
 # Decide whether to detach early.
@@ -94,17 +94,17 @@ mkdir -p "${DEV_DIR}"
 # from that subtree so the subsequent kill is safe.
 #
 # Priority:
-#   already detached (PIKILOOM_DEV_DETACHED=1)   -> no, we ARE the worker
-#   PIKILOOM_DEV_BACKGROUND=1                    -> yes
-#   PIKILOOM_DEV_FOREGROUND=1                    -> no
+#   already detached (URDR_DEV_DETACHED=1)   -> no, we ARE the worker
+#   URDR_DEV_BACKGROUND=1                    -> yes
+#   URDR_DEV_FOREGROUND=1                    -> no
 #   no controlling TTY (agent Bash tool, piped)  -> yes
 #   otherwise                                    -> no (interactive terminal)
 _should_detach=0
-if [[ "${PIKILOOM_DEV_DETACHED:-0}" == "1" ]]; then
+if [[ "${URDR_DEV_DETACHED:-0}" == "1" ]]; then
   _should_detach=0
-elif [[ "${PIKILOOM_DEV_BACKGROUND:-0}" == "1" ]]; then
+elif [[ "${URDR_DEV_BACKGROUND:-0}" == "1" ]]; then
   _should_detach=1
-elif [[ "${PIKILOOM_DEV_FOREGROUND:-0}" == "1" ]]; then
+elif [[ "${URDR_DEV_FOREGROUND:-0}" == "1" ]]; then
   _should_detach=0
 elif [[ ! -t 1 ]]; then
   _should_detach=1
@@ -128,7 +128,7 @@ import sys
 
 script, log_file, workdir, *args = sys.argv[1:]
 env = os.environ.copy()
-env["PIKILOOM_DEV_DETACHED"] = "1"
+env["URDR_DEV_DETACHED"] = "1"
 with open(os.devnull, "rb") as stdin, open(log_file, "ab", buffering=0) as log:
     proc = subprocess.Popen(
         ["bash", script, *args],
@@ -147,7 +147,7 @@ PY
       _bg_pid="(spawned)"
     fi
   else
-    nohup env PIKILOOM_DEV_DETACHED=1 bash "$0" "$@" </dev/null >>"${LOG_FILE}" 2>&1 &
+    nohup env URDR_DEV_DETACHED=1 bash "$0" "$@" </dev/null >>"${LOG_FILE}" 2>&1 &
     _bg_pid=$!
     disown "$_bg_pid" 2>/dev/null || true
   fi
@@ -155,7 +155,7 @@ PY
 [dev.sh] detached worker spawned (pid=${_bg_pid}); restart proceeds outside caller's process tree
 [dev.sh]   log:  ${LOG_FILE}     (tail -f to follow)
 [dev.sh]   stop: bash scripts/dev.sh --stop
-[dev.sh]   force foreground next time: PIKILOOM_DEV_FOREGROUND=1 npm run dev
+[dev.sh]   force foreground next time: URDR_DEV_FOREGROUND=1 npm run dev
 EOF
   exit 0
 fi
@@ -204,12 +204,12 @@ done < <(_dev_worker_pids)
 rm -f "${DEV_DIR}/dev.pid"
 
 # Remember whether this invocation is the detached worker, BEFORE the env
-# scrub below wipes PIKILOOM_DEV_DETACHED along with the rest of PIKILOOM_*.
+# scrub below wipes URDR_DEV_DETACHED along with the rest of URDR_*.
 # The flag controls whether we truncate the log (the worker must not — its
 # parent already did, and the worker's own stdout/stderr is being appended
 # to that file).
 _is_detached_worker=0
-[[ "${PIKILOOM_DEV_DETACHED:-0}" == "1" ]] && _is_detached_worker=1
+[[ "${URDR_DEV_DETACHED:-0}" == "1" ]] && _is_detached_worker=1
 
 # Dev isolates setting.json only. The managed browser profile intentionally
 # stays at ~/.urdr/browser/chrome-profile so dev and the main runtime reuse
@@ -220,18 +220,22 @@ _is_detached_worker=0
 # channel credentials, daemon flags, workdir overrides, etc. from the parent.
 # Use pattern-based unset to catch everything rather than maintaining an explicit list.
 #
+# The legacy prefixes have to be scrubbed too: hydrateLegacyEnv() copies PIKILOOM_* and
+# LOOMLET_* onto URDR_* at startup, so scrubbing only URDR_ would let an inherited variable
+# walk straight back in under its new name.
+#
 # Whitelist: user-set runtime switches for the Claude driver must survive the
-# scrub so the child runtime can see them. `PIKILOOM_CLAUDE_PRINT=1` forces
-# print mode (the new opt-out, since TUI is the default), `PIKILOOM_CLAUDE_TUI*`
+# scrub so the child runtime can see them. `URDR_CLAUDE_PRINT=1` forces
+# print mode (the new opt-out, since TUI is the default), `URDR_CLAUDE_TUI*`
 # covers the legacy on/off plus the `_DEBUG` / `_KEEP_API_KEY` sub-flags.
 while IFS= read -r _var; do
   unset "$_var"
-done < <(env | grep -oE '^(PIKILOOM_|CLAUDECODE|CLAUDE_CODE_|CLAUDE_MODEL|CLAUDE_PERMISSION_|CODEX_|GEMINI_|DEFAULT_AGENT|FEISHU_|TELEGRAM_|WEIXIN_)[^=]*' \
-  | grep -vE '^PIKILOOM_CLAUDE_(TUI|PRINT)' || true)
+done < <(env | grep -oE '^(URDR_|URDR_|LOOMLET_|CLAUDECODE|CLAUDE_CODE_|CLAUDE_MODEL|CLAUDE_PERMISSION_|CODEX_|DEFAULT_AGENT|FEISHU_|TELEGRAM_)[^=]*' \
+  | grep -vE '^(URDR|URDR|LOOMLET)_CLAUDE_(TUI|PRINT)' || true)
 
 # Set dev-specific env AFTER the cleanup so they are not wiped.
-export PIKILOOM_CONFIG="${DEV_DIR}/setting.json"
-export PIKILOOM_LOG_LEVEL="${PIKILOOM_LOG_LEVEL:-debug}"
+export URDR_CONFIG="${DEV_DIR}/setting.json"
+export URDR_LOG_LEVEL="${URDR_LOG_LEVEL:-debug}"
 
 echo $$ > "${DEV_DIR}/dev.pid"
 trap 'rm -f "${DEV_DIR}/dev.pid"' EXIT
@@ -246,14 +250,14 @@ fi
 
 # Rebuild only what changed. Both builds ran unconditionally on every launch —
 # ~6s of the ~16s startup — even when the edit was in src/ and neither output was
-# involved. Compare newest source mtime against newest output mtime; PIKILOOM_DEV_FORCE_BUILD=1
+# involved. Compare newest source mtime against newest output mtime; URDR_DEV_FORCE_BUILD=1
 # rebuilds regardless.
 # Stale if any source file is newer than the build's newest output. `find -newer` compares
 # in-process — the obvious `date -r` per file forks once per file and cost ~7s across these
 # trees, more than the ~6s of builds it was meant to avoid.
 _needs_build() { # $1 = output dir, rest = source paths
   local out="$1"; shift
-  [[ "${PIKILOOM_DEV_FORCE_BUILD:-0}" == "1" ]] && return 0
+  [[ "${URDR_DEV_FORCE_BUILD:-0}" == "1" ]] && return 0
   [[ -d "$out" ]] || return 0
 
   local newest_out

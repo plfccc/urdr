@@ -3,7 +3,7 @@ import { buildBrowserStatusResponse } from '../src/dashboard/routes/config.ts';
 
 const headlessNoChrome = {
   status: 'chrome_missing' as const,
-  profileDir: '/home/piki/.pikiloom/browser/chrome-profile',
+  profileDir: '/home/piki/.urdr/browser/chrome-profile',
   profileCreated: false,
   chromeInstalled: false,
   running: false,
@@ -14,15 +14,15 @@ const headlessNoChrome = {
 };
 
 describe('dashboard browser status — remote CDP mode (issue #16)', () => {
-  const prev = process.env.PIKILOOM_BROWSER_CDP_URL;
-  beforeEach(() => { delete process.env.PIKILOOM_BROWSER_CDP_URL; });
+  const prev = process.env.URDR_BROWSER_CDP_URL;
+  beforeEach(() => { delete process.env.URDR_BROWSER_CDP_URL; });
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_BROWSER_CDP_URL;
-    else process.env.PIKILOOM_BROWSER_CDP_URL = prev;
+    if (prev === undefined) delete process.env.URDR_BROWSER_CDP_URL;
+    else process.env.URDR_BROWSER_CDP_URL = prev;
   });
 
   it('surfaces remote endpoint when enabled, hides it when disabled, and returns null in local mode', async () => {
-    process.env.PIKILOOM_BROWSER_CDP_URL = 'http://chromium:9223';
+    process.env.URDR_BROWSER_CDP_URL = 'http://chromium:9223';
     const { browser: browser1 } = await buildBrowserStatusResponse({ browserEnabled: true } as any, headlessNoChrome);
     expect(browser1.enabled).toBe(true);
     expect(browser1.remoteCdpUrl).toBe('http://chromium:9223');
@@ -32,7 +32,7 @@ describe('dashboard browser status — remote CDP mode (issue #16)', () => {
     expect(browser2.enabled).toBe(false);
     expect(browser2.remoteCdpUrl).toBeNull();
 
-    delete process.env.PIKILOOM_BROWSER_CDP_URL;
+    delete process.env.URDR_BROWSER_CDP_URL;
     const { browser: browser3 } = await buildBrowserStatusResponse({ browserEnabled: true } as any, headlessNoChrome);
     expect(browser3.remoteCdpUrl).toBeNull();
     expect(browser3.status).toBe('chrome_missing');

@@ -24,14 +24,14 @@ import { Bot } from '../src/bot/bot.ts';
 import { captureEnv, makeTmpDir, restoreEnv } from './support/env.ts';
 import { makeStreamResult } from './support/stream-result.ts';
 
-const envSnapshot = captureEnv(['PIKILOOM_CONFIG', 'PIKILOOM_WORKDIR', 'DEFAULT_AGENT']);
+const envSnapshot = captureEnv(['URDR_CONFIG', 'URDR_WORKDIR', 'DEFAULT_AGENT']);
 
 beforeEach(() => {
   restoreEnv(envSnapshot);
   vi.clearAllMocks();
   const tmpConfig = makeTmpDir('bot-unit-config-');
-  process.env.PIKILOOM_CONFIG = `${tmpConfig}/setting.json`;
-  process.env.PIKILOOM_WORKDIR = makeTmpDir('bot-unit-workdir-');
+  process.env.URDR_CONFIG = `${tmpConfig}/setting.json`;
+  process.env.URDR_WORKDIR = makeTmpDir('bot-unit-workdir-');
   process.env.DEFAULT_AGENT = 'codex';
 });
 
@@ -139,7 +139,7 @@ describe('Bot task lifecycle (steer / stop / reset)', () => {
     const runtime = bot.upsertSessionRuntime({
       agent: 'claude',
       sessionId: 'sess-steer',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       workspacePath: null,
       modelId: null,
     });
@@ -183,7 +183,7 @@ describe('Bot task lifecycle (steer / stop / reset)', () => {
     const runtime = bot.upsertSessionRuntime({
       agent: 'claude',
       sessionId: 'sess-stop',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       workspacePath: null,
       modelId: null,
     });
@@ -236,7 +236,7 @@ describe('Bot task lifecycle (steer / stop / reset)', () => {
     const runtime = bot.upsertSessionRuntime({
       agent: 'claude',
       sessionId: 'sess-prev',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       workspacePath: null,
       modelId: null,
     });
@@ -278,7 +278,7 @@ describe('Bot task lifecycle (steer / stop / reset)', () => {
     const runtime = bot.upsertSessionRuntime({
       agent: 'claude',
       sessionId: 'sess-idle',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       workspacePath: null,
       modelId: null,
     });
@@ -349,7 +349,7 @@ describe('Bot selection switching (model / effort)', () => {
     const runtime = bot.upsertSessionRuntime({
       agent: 'claude',
       sessionId: 'sess-active',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       workspacePath: null,
       modelId: 'old-model',
     });
@@ -407,7 +407,7 @@ describe('Bot selection switching (model / effort)', () => {
     const cs = {
       agent: 'claude',
       sessionId: 'sess-live',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       modelId: 'claude-opus-4-8',
       thinkingEffort: 'max',
     };
@@ -424,7 +424,7 @@ describe('Bot selection switching (model / effort)', () => {
 
 describe('Bot thread-aware agent switching', () => {
   it('resumes the existing session for the target agent inside the same thread', () => {
-    const workdir = process.env.PIKILOOM_WORKDIR!;
+    const workdir = process.env.URDR_WORKDIR!;
     ensureManagedSession({
       agent: 'codex',
       workdir,
@@ -474,7 +474,7 @@ describe('Bot thread-aware agent switching', () => {
 describe('Bot external session control', () => {
   it('projects queued/running image attachments into stream snapshots', () => {
     const bot = new Bot() as any;
-    const workdir = process.env.PIKILOOM_WORKDIR!;
+    const workdir = process.env.URDR_WORKDIR!;
     const runtime = bot.upsertSessionRuntime({
       agent: 'codex',
       sessionId: 'sess-images',
@@ -516,7 +516,7 @@ describe('Bot external session control', () => {
 
   it('clears prior done artifacts when a new task enters the queue', () => {
     const bot = new Bot() as any;
-    const workdir = process.env.PIKILOOM_WORKDIR!;
+    const workdir = process.env.URDR_WORKDIR!;
     const runtime = bot.upsertSessionRuntime({
       agent: 'codex',
       sessionId: 'sess-artifacts',
@@ -567,7 +567,7 @@ describe('Bot external session control', () => {
     const submitted = bot.submitSessionTask({
       agent: 'codex',
       sessionId: 'sess-dashboard',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       prompt: 'continue',
     });
 
@@ -602,7 +602,7 @@ describe('Bot external session control', () => {
     const submitted = bot.submitSessionTask({
       agent: 'codex',
       sessionId: 'pending_dashboard',
-      workdir: process.env.PIKILOOM_WORKDIR!,
+      workdir: process.env.URDR_WORKDIR!,
       prompt: 'continue',
     });
 
@@ -636,8 +636,10 @@ describe('Bot external session control', () => {
 describe('Bot gitignore management', () => {
   it('keeps .urdr/skills tracked while ignoring managed runtime state', () => {
     const workdir = makeTmpDir('bot-unit-gitignore-');
+    // `.pikiloom/` is deliberate: it is a legacy entry ensureGitignore() should prune and
+    // replace with the current `.urdr/*` block, so it must keep the old spelling.
     fs.writeFileSync(path.join(workdir, '.gitignore'), '.env\n.pikiloom/\n');
-    process.env.PIKILOOM_WORKDIR = workdir;
+    process.env.URDR_WORKDIR = workdir;
 
     new Bot();
 

@@ -4,9 +4,9 @@ import os from 'node:os';
 import path from 'node:path';
 
 // Isolate HOME + config to a temp dir (read lazily per-call by the store).
-const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-acct-'));
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-acct-'));
 process.env.HOME = TMP;
-process.env.PIKILOOM_CONFIG = path.join(TMP, 'setting.json');
+process.env.URDR_CONFIG = path.join(TMP, 'setting.json');
 
 // Force inline-sealed credentials so the test never touches the OS keychain.
 vi.mock('../src/core/secrets/index.js', async (importOriginal) => {
@@ -96,7 +96,7 @@ describe('app token-account store', () => {
     expect(accounts.getActiveAccountId('claude')).toBeNull();
 
     // a record from the old config-dir implementation (no credential) is not a real account
-    const cfgPath = process.env.PIKILOOM_CONFIG!;
+    const cfgPath = process.env.URDR_CONFIG!;
     const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf-8'));
     cfg.accounts = cfg.accounts || {};
     cfg.accounts.byAgent = cfg.accounts.byAgent || {};

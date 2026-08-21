@@ -21,7 +21,7 @@ const GRID = '#8b949e';
 async function fetchStarredAt() {
   const headers = {
     Accept: 'application/vnd.github.star+json',
-    'User-Agent': 'pikiloom-star-history',
+    'User-Agent': 'urdr-star-history',
   };
   if (TOKEN) headers.Authorization = `Bearer ${TOKEN}`;
   const dates = [];

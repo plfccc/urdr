@@ -56,17 +56,17 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-const envSnapshot = captureEnv(['PIKILOOM_CONFIG', 'PIKILOOM_WORKDIR', 'TELEGRAM_BOT_TOKEN', 'DEFAULT_AGENT', 'PIKILOOM_RESTART_CMD', 'npm_config_yes']);
+const envSnapshot = captureEnv(['URDR_CONFIG', 'URDR_WORKDIR', 'TELEGRAM_BOT_TOKEN', 'DEFAULT_AGENT', 'URDR_RESTART_CMD', 'npm_config_yes']);
 
 beforeEach(() => {
   restoreEnv(envSnapshot);
   vi.clearAllMocks();
   const tmpDir = makeTmpDir('bot-tg-unit-');
-  process.env.PIKILOOM_CONFIG = `${makeTmpDir('bot-tg-config-')}/setting.json`;
+  process.env.URDR_CONFIG = `${makeTmpDir('bot-tg-config-')}/setting.json`;
   process.env.TELEGRAM_BOT_TOKEN = 'test-token';
-  process.env.PIKILOOM_WORKDIR = tmpDir;
+  process.env.URDR_WORKDIR = tmpDir;
   process.env.DEFAULT_AGENT = 'claude';
-  delete process.env.PIKILOOM_RESTART_CMD;
+  delete process.env.URDR_RESTART_CMD;
   delete process.env.npm_config_yes;
 });
 
@@ -138,8 +138,8 @@ describe('TelegramBot', () => {
 
       const connectSpy = vi.spyOn(TelegramChannel.prototype, 'connect').mockResolvedValue({
         id: 1,
-        username: 'pikiloom_test_bot',
-        displayName: 'Pikiloom Test Bot',
+        username: 'urdr_test_bot',
+        displayName: 'Urdr Test Bot',
       });
       const skipPendingSpy = vi.spyOn(TelegramChannel.prototype, 'skipPendingUpdatesOnNextListen').mockImplementation(() => {});
       const listenSpy = vi.spyOn(TelegramChannel.prototype, 'listen').mockImplementation(async () => {
@@ -213,7 +213,7 @@ describe('TelegramBot', () => {
     {
       const spawnMock = vi.mocked(spawn);
       const oldArgv = process.argv;
-      process.argv = ['node', 'pikiloom', '-c', 'telegram'];
+      process.argv = ['node', 'urdr', '-c', 'telegram'];
       const shutdownSpy = vi.spyOn(agentDriver, 'shutdownAllDrivers').mockImplementation(() => {});
 
       const defaultBot = createBot().bot;
@@ -227,7 +227,7 @@ describe('TelegramBot', () => {
         expect(shutdownSpy).toHaveBeenCalledTimes(1);
         expect(spawnMock).toHaveBeenCalledWith(
           'npx',
-          ['--yes', 'pikiloom@latest', '-c', 'telegram'],
+          ['--yes', 'urdr@latest', '-c', 'telegram'],
           expect.objectContaining({
             stdio: 'inherit',
             detached: true,
@@ -235,7 +235,7 @@ describe('TelegramBot', () => {
           }),
         );
 
-        process.env.PIKILOOM_RESTART_CMD = 'npx tsx src/cli.ts';
+        process.env.URDR_RESTART_CMD = 'npx tsx src/cli.ts';
         const customBot = createBot().bot;
         const customExitSpy = vi.spyOn(process, 'exit').mockImplementation((() => undefined) as any);
         const customStopKeepAliveSpy = vi.spyOn(customBot as any, 'stopKeepAlive').mockImplementation(() => {});
@@ -350,8 +350,8 @@ describe('TelegramBot', () => {
         sessions: [{
           sessionId,
           agent: 'claude',
-          workdir: process.env.PIKILOOM_WORKDIR!,
-          workspacePath: path.join(process.env.PIKILOOM_WORKDIR!, '.pikiloom', 'sessions', 'claude', sessionId, 'workspace'),
+          workdir: process.env.URDR_WORKDIR!,
+          workspacePath: path.join(process.env.URDR_WORKDIR!, '.urdr', 'sessions', 'claude', sessionId, 'workspace'),
           model: 'claude-opus-4-7',
           createdAt: new Date().toISOString(),
           title: 'history preview',
@@ -409,7 +409,7 @@ describe('TelegramBot', () => {
 
     {
       const { bot, ctx, sends } = createBot();
-      const workdir = process.env.PIKILOOM_WORKDIR!;
+      const workdir = process.env.URDR_WORKDIR!;
       ensureManagedSession({
         agent: 'claude',
         workdir,

@@ -8,7 +8,7 @@ import { searchNpmPackages } from './npm-search.js';
 // Skills live ONCE under the top-level dir's `skills/` (canonical), and each agent's native
 // skills dir (~/.claude/skills, ~/.agents/skills, or the per-workspace equivalents) is a
 // symlink to it. So a skill registered in one place is visible to every agent, and the kernel
-// owns the listing + discovery + search. Faithful, generalized port of pikiloom's skills.ts.
+// owns the listing + discovery + search. Faithful, generalized port of urdr's skills.ts.
 
 export interface SkillInfo {
   name: string;
@@ -54,7 +54,7 @@ export function parseSkillMeta(content: string): SkillMeta {
   let mcpRequires: string[] | undefined;
   const fm = content.match(/^---\s*\n([\s\S]*?)\n---/);
   if (fm) {
-    // Both frontmatter dialects: pikiloom's `label:` and the agent-native `name:`.
+    // Both frontmatter dialects: urdr's `label:` and the agent-native `name:`.
     const lm = fm[1].match(/^label:\s*(.+)/m) || fm[1].match(/^name:\s*(.+)/m);
     if (lm) label = lm[1].trim();
     const dm = fm[1].match(/^description:\s*(.+)/m);
@@ -128,7 +128,7 @@ export class SkillsManager {
     this.log = opts.log;
   }
 
-  /** The canonical skills dir for a scope, e.g. <workdir>/.pikiloom/skills or ~/.pikiloom/skills. */
+  /** The canonical skills dir for a scope, e.g. <workdir>/.urdr/skills or ~/.urdr/skills. */
   canonicalDir(scope: LoomScope, workdir?: string): string {
     return this.paths.skillsDir(scope, workdir);
   }

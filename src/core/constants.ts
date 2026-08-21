@@ -22,15 +22,14 @@ export const DASHBOARD_TIMEOUTS = {
 };
 
 export const STATE_DIR_NAME = '.urdr';
-// The env prefix stays PIKILOOM_: dozens of reads across the tree spell the variable names out
-// as literals (process.env.PIKILOOM_*), so renaming the prefix constant alone would silently
-// break them. URDR_* is accepted as an alias and hydrated onto PIKILOOM_* at startup.
-export const ENV_PREFIX = 'PIKILOOM_';
+export const ENV_PREFIX = 'URDR_';
 // Renaming the state dir is a one-way migration handled by migrateLegacyStateDir(): the first
 // launch renames ~/<legacy> to ~/.urdr, so existing config/sessions/credentials carry over.
 // Newest first — the migration takes the first one that exists.
 export const LEGACY_STATE_DIR_NAMES = ['.loomlet', '.pikiloom', '.pikiclaw'] as const;
-export const LEGACY_ENV_PREFIXES = ['URDR_', 'LOOMLET_', 'PIKICLAW_'] as const;
+// hydrateLegacyEnv() copies each of these onto ENV_PREFIX at startup, so a PIKILOOM_* or
+// LOOMLET_* variable already set in a shell, .env or compose file keeps working.
+export const LEGACY_ENV_PREFIXES = ['PIKILOOM_', 'LOOMLET_', 'PIKICLAW_'] as const;
 
 export const MANAGED_BROWSER_PROFILE_SUBPATH = path.join(STATE_DIR_NAME, 'browser', 'chrome-profile');
 
@@ -43,7 +42,7 @@ export const PLAYWRIGHT_MCP_BROWSER_ARGS = ['--browser', 'chrome', '--viewport-s
 // the "unsupported command-line flag" infobar that the first flag would otherwise trigger.
 export const MANAGED_BROWSER_STEALTH_ARGS = ['--disable-blink-features=AutomationControlled', '--test-type'] as const;
 
-export const PIKILOOM_BROWSER_CDP_URL_ENV = 'PIKILOOM_BROWSER_CDP_URL';
+export const URDR_BROWSER_CDP_URL_ENV = 'URDR_BROWSER_CDP_URL';
 
 export const DASHBOARD_PAGINATION = {
   defaultPageSize: 6,

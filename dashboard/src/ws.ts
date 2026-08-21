@@ -187,7 +187,7 @@ function openConnection() {
   const ep = getEndpoint();
   const cbs: PipeCbs = {
     onOpen: () => {
-      const hello: any = { type: 'hello', v: 1, client: { name: 'pikiloom-dashboard', platform: navigator.userAgent } };
+      const hello: any = { type: 'hello', v: 1, client: { name: 'urdr-dashboard', platform: navigator.userAgent } };
       if (token) hello.token = token;
       pipeSend(hello);
     },

@@ -9,7 +9,7 @@ import { claudeAnchorResolvable, claudeTranscriptTailAnchor, discoverClaudeNativ
 import { attachedFileNote, canLeadProcessGroup, contextPercent, createLineBuffer, imageMimeForFile, parseJsonLine, reapChild, spawnAgentCli, wireAbort } from './shared.js';
 
 // Real driver: shells the local `claude` CLI in stream-json mode and normalizes its
-// events into kernel DriverEvents. Faithful to pikiloom's claude.ts event shapes
+// events into kernel DriverEvents. Faithful to urdr's claude.ts event shapes
 // (system / stream_event{message_start,content_block_delta,message_delta} / assistant / result),
 // but fully self-contained. Proves "下层 Claude 不变".
 export interface ClaudeDriverOptions {
@@ -533,7 +533,7 @@ export function claudeResumeArgs(
   return args;
 }
 
-// ── Token usage / context projection (ported from pikiloom's claude driver) ──────
+// ── Token usage / context projection (ported from urdr's claude driver) ──────
 // Claude reports per-message usage; the live UI wants three derived signals the raw
 // counts don't carry: context-window %, cumulative context tokens, and this turn's
 // output. Computing them here (not just inputTokens/outputTokens) is what restores the
@@ -596,11 +596,11 @@ function claudeEffectiveContextWindow(advertised: number | null): number | null 
 }
 
 // Parse one claude stream-json event into kernel DriverEvents (pure + exported for
-// hermetic testing). Faithful to pikiloom's claudeParse shapes.
+// hermetic testing). Faithful to urdr's claudeParse shapes.
 export function handleClaudeEvent(ev: any, s: any, emit: (e: DriverEvent) => void): void {
   const t = ev.type || '';
   // Child events of a spawned sub-agent are tagged with parent_tool_use_id; route their
-  // tool_uses into that sub-agent rather than the main turn (mirrors pikiloom).
+  // tool_uses into that sub-agent rather than the main turn (mirrors urdr).
   const parentId: string | null = (typeof ev.parent_tool_use_id === 'string' && ev.parent_tool_use_id) ? ev.parent_tool_use_id : null;
   if (parentId) {
     const sub: UniversalSubAgent | undefined = s.subAgents?.get?.(parentId);
@@ -859,7 +859,7 @@ export function handleClaudeEvent(ev: any, s: any, emit: (e: DriverEvent) => voi
       if (sub) { applyClaudeSubAgentResult(sub, b, ev, s, emit); continue; }
       if (!tool) continue;
       const isError = !!b.is_error;
-      // File-shaped and task-list tools have no useful result detail (mirrors pikiloom): just mark done.
+      // File-shaped and task-list tools have no useful result detail (mirrors urdr): just mark done.
       const fileTool = tool.name === 'Read' || tool.name === 'Edit' || tool.name === 'Write'
         || tool.name === 'TodoWrite' || tool.name === 'TaskCreate' || tool.name === 'TaskUpdate';
       const detail = (isError || !fileTool) ? firstResultLine(b.content) : null;
@@ -923,20 +923,20 @@ export function handleClaudeEvent(ev: any, s: any, emit: (e: DriverEvent) => voi
 
 // How long, with no settle, to keep holding a turn open for a background task to finish and
 // trigger Claude's wake-up turn, before giving up (so a never-completing daemon doesn't hang
-// the turn forever). Override with PIKILOOM_CLAUDE_BG_HOLD_MS.
+// the turn forever). Override with URDR_CLAUDE_BG_HOLD_MS.
 const CLAUDE_BG_HOLD_CAP_DEFAULT_MS = 10 * 60_000;
 export function claudeBgHoldCapMs(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_BG_HOLD_MS);
+  const raw = Number(process.env.URDR_CLAUDE_BG_HOLD_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : CLAUDE_BG_HOLD_CAP_DEFAULT_MS;
 }
 // Sub-agent-backed background work (Task/Agent tool launches) gets a much longer hold: these
 // are finite model-driven jobs whose results the turn is genuinely waiting on — a research
 // fleet mapping two repos legitimately runs past the 10-minute daemon cap, and capping it
 // there discarded the agents' work and cut the turn mid-flight ("停止不再继续生成").
-// Override with PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS.
+// Override with URDR_CLAUDE_BG_AGENT_HOLD_MS.
 const CLAUDE_BG_AGENT_HOLD_CAP_DEFAULT_MS = 45 * 60_000;
 export function claudeBgAgentHoldCapMs(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS);
+  const raw = Number(process.env.URDR_CLAUDE_BG_AGENT_HOLD_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : CLAUDE_BG_AGENT_HOLD_CAP_DEFAULT_MS;
 }
 export function claudeTurnHasAgentBackground(s: any): boolean {
@@ -944,10 +944,10 @@ export function claudeTurnHasAgentBackground(s: any): boolean {
 }
 // When the hold cap fires while events are still flowing, defer and re-check on this cadence
 // instead of yanking an actively-working turn (the cap bounds SILENT stuck holds, nothing else).
-// Override with PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS (tests need sub-second rechecks).
+// Override with URDR_CLAUDE_BG_HOLD_RECHECK_MS (tests need sub-second rechecks).
 const CLAUDE_BG_HOLD_RECHECK_DEFAULT_MS = 30_000;
 export function claudeBgHoldRecheckMs(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS);
+  const raw = Number(process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : CLAUDE_BG_HOLD_RECHECK_DEFAULT_MS;
 }
 // Once every KNOWN background task has finished, how long Claude must stay quiet (no further
@@ -956,10 +956,10 @@ export function claudeBgHoldRecheckMs(): number {
 // completion can land before an earlier agent's wake-up result, so exiting at the first
 // pending==0 result would kill the still-undelivered wake-ups (the "background was running when
 // the process exited" failure). Refreshed on every event, so a still-streaming wake-up keeps it
-// alive. Override with PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS.
+// alive. Override with URDR_CLAUDE_BG_SETTLE_QUIET_MS.
 const CLAUDE_BG_SETTLE_QUIET_DEFAULT_MS = 15_000;
 export function claudeBgSettleQuietMs(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS);
+  const raw = Number(process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : CLAUDE_BG_SETTLE_QUIET_DEFAULT_MS;
 }
 // How long the model may stay COMPLETELY silent after a tool_result (control handed back to it,
@@ -970,7 +970,7 @@ export function claudeBgSettleQuietMs(): number {
 // tool via the leak-guard; mirasim#111). A too-long window only means a truly hung turn shows its
 // dead spinner longer, so the costs are asymmetric — err long. Effort-laddered: the deep-reasoning
 // rungs (high and up) think the longest. A still-running tool never trips this (it has no
-// tool_result yet). Override with PIKILOOM_CLAUDE_MODEL_STALL_MS (wins over the ladder).
+// tool_result yet). Override with URDR_CLAUDE_MODEL_STALL_MS (wins over the ladder).
 const CLAUDE_MODEL_STALL_DEFAULT_MS = 300_000;
 const CLAUDE_MODEL_STALL_DEEP_MS = 600_000;
 // Claude's INTERNAL telemetry breadcrumb prefix (see the result-error handler): Claude stamps
@@ -984,7 +984,7 @@ function claudeEventIsApiError(ev: any): boolean {
 }
 const CLAUDE_DEEP_REASONING_EFFORTS = new Set(['high', 'xhigh', 'max', 'ultra']);
 export function claudeModelStallMs(effort?: string | null): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS);
+  const raw = Number(process.env.URDR_CLAUDE_MODEL_STALL_MS);
   if (Number.isFinite(raw) && raw > 0) return raw;
   return effort && CLAUDE_DEEP_REASONING_EFFORTS.has(effort) ? CLAUDE_MODEL_STALL_DEEP_MS : CLAUDE_MODEL_STALL_DEFAULT_MS;
 }
@@ -993,14 +993,14 @@ export function claudeModelStallMs(effort?: string | null): number {
 // ONE recovery user message and let the CLI run a follow-up round in the same process, so the
 // closing reply the user is waiting for actually gets delivered instead of just being flagged.
 // Once per turn; the post-tool stall watchdog is the safety net if the CLI never responds.
-// The <pikiloom-recover> tag keeps the injected message out of pikiloom's transcript rendering.
-// Disable with PIKILOOM_CLAUDE_TRUNCATED_RECOVERY=0.
+// The <urdr-recover> tag keeps the injected message out of urdr's transcript rendering.
+// Disable with URDR_CLAUDE_TRUNCATED_RECOVERY=0.
 export const CLAUDE_TRUNCATED_RECOVERY_PROMPT =
-  '<pikiloom-recover>Your previous response ended after a tool call without a closing message. '
+  '<urdr-recover>Your previous response ended after a tool call without a closing message. '
   + 'Finish the reply now: state the outcome and anything the user still needs to know. '
-  + 'Do not re-run tools unless strictly necessary.</pikiloom-recover>';
+  + 'Do not re-run tools unless strictly necessary.</urdr-recover>';
 export function claudeTruncatedRecoveryEnabled(): boolean {
-  const v = String(process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY ?? '').trim().toLowerCase();
+  const v = String(process.env.URDR_CLAUDE_TRUNCATED_RECOVERY ?? '').trim().toLowerCase();
   return v !== '0' && v !== 'false' && v !== 'off';
 }
 // The CLI's resume-repair placeholder for a turn that never concluded: an assistant message with
@@ -1031,10 +1031,10 @@ export function claudeProducedRealOutput(s: any): boolean {
 }
 // How many times to re-issue the prompt when a resume comes back a pure no-op before giving up and
 // settling (see the result handler). Bounded so a genuinely dead session can't loop forever; 0
-// disables the recovery. Override with PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES.
+// disables the recovery. Override with URDR_CLAUDE_RESUME_NOOP_RETRIES.
 const CLAUDE_RESUME_NOOP_RETRY_DEFAULT = 3;
 export function claudeResumeNoopRetryLimit(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES);
+  const raw = Number(process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES);
   return Number.isFinite(raw) && raw >= 0 ? raw : CLAUDE_RESUME_NOOP_RETRY_DEFAULT;
 }
 // True when a claude `type:'user'` stream event carries at least one tool_result block — i.e. the
@@ -1295,10 +1295,10 @@ export function applyClaudeSubAgentResult(
 
 // Poll cadence for background sub-agent transcript tails. Observe-only disk reads off the hot
 // path; a whole tick with nothing new costs one stat per running sub. Override with
-// PIKILOOM_CLAUDE_SUBAGENT_POLL_MS (tests need fast ticks).
+// URDR_CLAUDE_SUBAGENT_POLL_MS (tests need fast ticks).
 const CLAUDE_SUB_TAIL_POLL_DEFAULT_MS = 1_500;
 export function claudeSubTailPollMs(): number {
-  const raw = Number(process.env.PIKILOOM_CLAUDE_SUBAGENT_POLL_MS);
+  const raw = Number(process.env.URDR_CLAUDE_SUBAGENT_POLL_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : CLAUDE_SUB_TAIL_POLL_DEFAULT_MS;
 }
 // Per-tick read cap so one monster transcript can't stall the loop; the rest lands next tick.
@@ -1443,7 +1443,7 @@ function emitClaudeImages(blocks: any[], s: any, emit: (e: DriverEvent) => void)
   }
 }
 
-// Claude's TodoWrite tool input -> a normalized UniversalPlan (ported from pikiloom).
+// Claude's TodoWrite tool input -> a normalized UniversalPlan (ported from urdr).
 export function todoWriteToPlan(input: any): UniversalPlan | null {
   if (!input || typeof input !== 'object') return null;
   const rawTodos = Array.isArray(input.todos) ? input.todos : [];
@@ -1465,7 +1465,7 @@ export function todoWriteToPlan(input: any): UniversalPlan | null {
 // assigns a stable task id (toolUseResult.task.id, or "Task #N" in the text). TaskUpdate flips
 // a task's status by id. We accumulate the list in driver state and re-emit the whole plan on
 // each change. Without this the kernel path never emits a plan event for Claude, so the
-// dashboard's task-list card never renders. Ported from pikiloom's legacy claude driver.
+// dashboard's task-list card never renders. Ported from urdr's legacy claude driver.
 
 // The assigned task id from a TaskCreate tool_result. Prefer the structured field; fall back
 // to parsing "Task #N" from a string result.
@@ -1521,7 +1521,7 @@ function applyTaskUpdateToTodoPlan(
   return { explanation: plan.explanation ?? null, steps };
 }
 
-// ── Tool-call summarization (ported from pikiloom's summarizeClaudeToolUse) ──────────
+// ── Tool-call summarization (ported from urdr's summarizeClaudeToolUse) ──────────
 // Turns a Claude tool_use {name,input} into a one-line human summary. The runtime's
 // activity projector joins these into snapshot.activity; the structured form lives in
 // toolCalls. Kept driver-local: knowing Claude's tool input shapes is the driver's job.

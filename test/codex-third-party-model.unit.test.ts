@@ -43,9 +43,9 @@ describe('recoverProfileIdForModel — recover a lost provider binding by model 
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-recover-'));
-    process.env.PIKILOOM_CONFIG = path.join(tmpDir, 'setting.json');
-    fs.writeFileSync(process.env.PIKILOOM_CONFIG, JSON.stringify({ models: {} }));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-recover-'));
+    process.env.URDR_CONFIG = path.join(tmpDir, 'setting.json');
+    fs.writeFileSync(process.env.URDR_CONFIG, JSON.stringify({ models: {} }));
   });
   afterEach(() => { fs.rmSync(tmpDir, { recursive: true, force: true }); });
 

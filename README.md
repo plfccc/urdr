@@ -47,9 +47,9 @@ Config and session state live in `~/.urdr/setting.json`. On first launch,
 `migrateLegacyStateDir()` renames an existing `~/.loomlet`, `~/.pikiloom` or `~/.pikiclaw` into
 place, so existing config, sessions, and credentials carry over untouched.
 
-Environment variables keep the `PIKILOOM_*` prefix — dozens of reads across the tree spell the
-names out as literals, so renaming the prefix alone would silently break them. `LOOMLET_*` is
-accepted as an alias and hydrated onto `PIKILOOM_*` at startup.
+Environment variables are `URDR_*`. The older `PIKILOOM_*`, `LOOMLET_*` and `PIKICLAW_*`
+prefixes still work — each is copied onto `URDR_*` at startup, so a variable already set in a
+shell, `.env` or compose file keeps taking effect.
 
 ## Quick start
 
@@ -104,4 +104,4 @@ Architecture and extension guides: `CLAUDE.md`, `ARCHITECTURE.md`, `INTEGRATION.
 
 ## License
 
-MIT — same as upstream pikiloom. See [LICENSE](LICENSE).
+MIT — same as upstream urdr. See [LICENSE](LICENSE).

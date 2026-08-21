@@ -5,20 +5,20 @@ import path from 'node:path';
 //
 // One explicitly-configurable root governs where the kernel keeps its session index,
 // skills registry and per-agent symlinks. It resolves in two scopes:
-//   - global:    ~/.<stateDirName>            (default ~/.pikiloom)
-//   - workspace: <workdir>/.<stateDirName>    (default <workdir>/.pikiloom)
+//   - global:    ~/.<stateDirName>            (default ~/.urdr)
+//   - workspace: <workdir>/.<stateDirName>    (default <workdir>/.urdr)
 //
-// The name defaults to 'pikiloom' (so the dotted dir is `.pikiloom`) and is overridable
+// The name defaults to 'urdr' (so the dotted dir is `.urdr`) and is overridable
 // per Loom via `createLoom({ stateDirName })`. Everything else (sessions, skills, mcp
 // config, native-agent symlinks) is derived from this one knob so a consuming app gets a
-// single, unified directory to manage — the same model pikiloom itself uses.
+// single, unified directory to manage — the same model urdr itself uses.
 
 export type LoomScope = 'global' | 'workspace';
 
 export interface LoomPaths {
-  /** The bare name (no leading dot), e.g. 'pikiloom'. */
+  /** The bare name (no leading dot), e.g. 'urdr'. */
   readonly stateDirName: string;
-  /** The dotted directory name, e.g. '.pikiloom'. */
+  /** The dotted directory name, e.g. '.urdr'. */
   readonly dirName: string;
   readonly home: string;
   /** ~/.<stateDirName> */
@@ -45,7 +45,7 @@ export interface LoomPaths {
 /** Normalize a state dir name to its bare form: strip a leading dot, trim. */
 export function normalizeStateDirName(name: string | null | undefined): string {
   const trimmed = (name ?? '').trim().replace(/^\.+/, '');
-  return trimmed || 'pikiloom';
+  return trimmed || 'urdr';
 }
 
 export function resolveLoomPaths(opts: { stateDirName?: string | null; home?: string } = {}): LoomPaths {

@@ -9,7 +9,7 @@ describe('ensureGitignore', () => {
   let gi: string;
 
   beforeEach(() => {
-    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-gi-'));
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-gi-'));
     gi = path.join(dir, '.gitignore');
   });
   afterEach(() => {

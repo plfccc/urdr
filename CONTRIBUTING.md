@@ -1,4 +1,4 @@
-# Contributing to pikiloom
+# Contributing to urdr
 
 Thanks for your interest in contributing! This guide will help you get started.
 
@@ -14,7 +14,7 @@ Thanks for your interest in contributing! This guide will help you get started.
 
 ```bash
 git clone https://github.com/xiaotonng/pikiloom.git
-cd pikiloom
+cd urdr
 npm install
 npm run build
 npm test
@@ -23,7 +23,7 @@ npm test
 ### Local development
 
 ```bash
-npm run dev    # starts pikiloom in --no-daemon mode, logs to ~/.pikiloom/dev/dev.log
+npm run dev    # starts urdr in --no-daemon mode, logs to ~/.urdr/dev/dev.log
 ```
 
 This gives you a live-reloading development server with the dashboard at `http://localhost:3939`.

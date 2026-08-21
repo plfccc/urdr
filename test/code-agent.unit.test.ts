@@ -36,7 +36,7 @@ import {
 } from '../src/agent/drivers/claude.ts';
 import { makeTmpDir, withTempHome } from './support/env.ts';
 
-const tmpDir = path.join(os.tmpdir(), 'pikiloom-test-' + process.pid);
+const tmpDir = path.join(os.tmpdir(), 'urdr-test-' + process.pid);
 const fakeBin = path.join(tmpDir, 'bin');
 
 function writeFakeScript(name: string, jsonLines: object[]) {
@@ -96,12 +96,12 @@ beforeEach(() => {
   // path.delimiter, not ':' — Windows separates PATH entries with ';', so a hardcoded colon
   // silently produced one unusable entry and the fakes were never found.
   process.env.PATH = `${fakeBin}${path.delimiter}${process.env.PATH}`;
-  process.env.PIKILOOM_CLAUDE_PRINT = '1';
+  process.env.URDR_CLAUDE_PRINT = '1';
   shutdownCodexServer();
 });
 
 afterEach(() => {
-  delete process.env.PIKILOOM_CLAUDE_PRINT;
+  delete process.env.URDR_CLAUDE_PRINT;
 });
 
 describe('buildCodexTurnInput and usage helpers', () => {
@@ -136,7 +136,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
         sessionId: 'sess-1',
         agent: 'codex',
         workdir: tmpDir,
-        workspacePath: '/tmp/pikiloom/workspace',
+        workspacePath: '/tmp/urdr/workspace',
         model: 'local-model',
         createdAt: '2026-03-16T00:00:00.000Z',
         title: 'local title',
@@ -173,7 +173,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
       title: 'native title',
       model: 'native-model',
       createdAt: '2026-03-16T00:01:00.000Z',
-      workspacePath: '/tmp/pikiloom/workspace',
+      workspacePath: '/tmp/urdr/workspace',
       running: true,
       runState: 'incomplete',
       runDetail: 'local detail',
@@ -188,7 +188,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
     const merged = mergeManagedAndNativeSessions([
       {
         sessionId: 'sess-eff', agent: 'claude', workdir: tmpDir,
-        workspacePath: '/tmp/pikiloom/workspace', model: 'claude-opus-4-8',
+        workspacePath: '/tmp/urdr/workspace', model: 'claude-opus-4-8',
         thinkingEffort: 'max', workflowEnabled: true,
         createdAt: '2026-03-16T00:00:00.000Z', title: 't',
         running: false, runState: 'completed', runDetail: null,
@@ -216,7 +216,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
         sessionId: 'sess-2',
         agent: 'claude',
         workdir: tmpDir,
-        workspacePath: '/tmp/pikiloom/workspace',
+        workspacePath: '/tmp/urdr/workspace',
         model: 'claude-opus-4-7',
         createdAt: '2026-03-16T00:00:00.000Z',
         title: 'stale title',
@@ -250,7 +250,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
     expect(merged).toHaveLength(1);
     expect(merged[0]).toMatchObject({
       sessionId: 'sess-2',
-      workspacePath: '/tmp/pikiloom/workspace',
+      workspacePath: '/tmp/urdr/workspace',
       runUpdatedAt: '2026-03-16T00:05:00.000Z',
       lastQuestion: 'new question',
       lastAnswer: 'new answer',
@@ -264,7 +264,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
         sessionId: 'sess-preview-1',
         agent: 'codex',
         workdir: tmpDir,
-        workspacePath: '/tmp/pikiloom/workspace',
+        workspacePath: '/tmp/urdr/workspace',
         model: 'o3',
         createdAt: '2026-03-20T10:00:00.000Z',
         title: 'managed title',
@@ -311,7 +311,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
         sessionId: 'sess-preview-2',
         agent: 'codex',
         workdir: tmpDir,
-        workspacePath: '/tmp/pikiloom/workspace',
+        workspacePath: '/tmp/urdr/workspace',
         model: 'o3',
         createdAt: '2026-03-20T10:00:00.000Z',
         title: 'managed title',
@@ -350,12 +350,12 @@ describe('buildCodexTurnInput and usage helpers', () => {
     expect(s.lastQuestion).toBe('native question (latest)');
     expect(s.lastAnswer).toBe('native answer (latest)');
     expect(s.lastMessageText).toBe('native answer (latest)');
-    expect(s.workspacePath).toBe('/tmp/pikiloom/workspace');
+    expect(s.workspacePath).toBe('/tmp/urdr/workspace');
     }
 
     await withTempHome(async (homeDir) => {
-      const workdir = makeTmpDir('pikiloom-workdir-');
-      const otherWorkdir = makeTmpDir('pikiloom-other-workdir-');
+      const workdir = makeTmpDir('urdr-workdir-');
+      const otherWorkdir = makeTmpDir('urdr-other-workdir-');
       const sessionsDir = path.join(homeDir, '.codex', 'sessions', '2026', '03', '28');
       fs.mkdirSync(sessionsDir, { recursive: true });
 
@@ -370,13 +370,13 @@ describe('buildCodexTurnInput and usage helpers', () => {
         id: 'sess-parent',
         timestamp: '2026-03-28T00:12:31.000Z',
         cwd: workdir,
-        originator: 'pikiloom',
+        originator: 'urdr',
       });
       writeRollout('rollout-child.jsonl', {
         id: 'sess-child',
         timestamp: '2026-03-28T00:13:16.000Z',
         cwd: workdir,
-        originator: 'pikiloom',
+        originator: 'urdr',
         source: {
           subagent: {
             thread_spawn: {
@@ -392,7 +392,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
         id: 'sess-other',
         timestamp: '2026-03-28T00:14:00.000Z',
         cwd: otherWorkdir,
-        originator: 'pikiloom',
+        originator: 'urdr',
       });
 
       const result = await getSessions({ agent: 'codex', workdir });
@@ -406,7 +406,7 @@ describe('buildCodexTurnInput and usage helpers', () => {
 describe('stageSessionFiles', () => {
   it('stages/migrates uploads, sets titles, promotes pending sessions, and keeps per-agent records distinct', () => {
     {
-    const uploadDir = makeTmpDir('pikiloom-upload-');
+    const uploadDir = makeTmpDir('urdr-upload-');
     const uploadPath = path.join(uploadDir, 'report.txt');
     fs.writeFileSync(uploadPath, 'hello');
 
@@ -472,8 +472,8 @@ describe('stageSessionFiles', () => {
     }
 
     {
-    const workdir = makeTmpDir('pikiloom-promote-');
-    const uploadDir = makeTmpDir('pikiloom-image-');
+    const workdir = makeTmpDir('urdr-promote-');
+    const uploadDir = makeTmpDir('urdr-image-');
     const uploadPath = path.join(uploadDir, 'shot.jpg');
     fs.writeFileSync(uploadPath, 'image-bytes');
 
@@ -2142,7 +2142,7 @@ exit 0`;
       expect(claudeUsage.windows[0].status).toBe('warning');
       expect(claudeUsage.windows[0].resetAfterSeconds).toBe(39 * 3600);
 
-      const emptyBin = makeTmpDir('pikiloom-empty-bin-');
+      const emptyBin = makeTmpDir('urdr-empty-bin-');
       const oldPath = process.env.PATH;
       process.env.PATH = emptyBin;
       try {

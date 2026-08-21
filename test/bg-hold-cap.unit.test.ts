@@ -20,11 +20,11 @@ import { composeKernelFinalPresentation } from '../src/agent/kernel-bridge.js';
 //   3. a 'background' settle WITH narration appends a visible note (incomplete=true).
 
 const BG_ENV = [
-  'PIKILOOM_CLAUDE_BG_HOLD_MS',
-  'PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS',
-  'PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS',
-  'PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS',
-  'PIKILOOM_CLAUDE_TRUNCATED_RECOVERY',
+  'URDR_CLAUDE_BG_HOLD_MS',
+  'URDR_CLAUDE_BG_AGENT_HOLD_MS',
+  'URDR_CLAUDE_BG_SETTLE_QUIET_MS',
+  'URDR_CLAUDE_BG_HOLD_RECHECK_MS',
+  'URDR_CLAUDE_TRUNCATED_RECOVERY',
 ] as const;
 
 function snapshotEnv(): Record<string, string | undefined> {
@@ -59,16 +59,16 @@ describe('hold-cap knobs', () => {
   afterEach(() => restoreEnv(snap));
 
   it('agent hold cap defaults to 45min and honors its env override', () => {
-    delete process.env.PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS;
+    delete process.env.URDR_CLAUDE_BG_AGENT_HOLD_MS;
     expect(claudeBgAgentHoldCapMs()).toBe(45 * 60_000);
-    process.env.PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS = '1234';
+    process.env.URDR_CLAUDE_BG_AGENT_HOLD_MS = '1234';
     expect(claudeBgAgentHoldCapMs()).toBe(1234);
   });
 
   it('hold recheck defaults to 30s and honors its env override', () => {
-    delete process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS;
+    delete process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS;
     expect(claudeBgHoldRecheckMs()).toBe(30_000);
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS = '150';
+    process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS = '150';
     expect(claudeBgHoldRecheckMs()).toBe(150);
   });
 });
@@ -120,11 +120,11 @@ describe('background hold cap (integration)', () => {
   afterEach(() => restoreEnv(snap));
 
   it('an agent-backed hold survives past the short daemon cap and delivers the wake-up', async () => {
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = '250';          // daemon cap: would fire long before the wake-up
-    process.env.PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS = '5000';   // agent cap: comfortably after it
-    process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = '120';
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS = '100';
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    process.env.URDR_CLAUDE_BG_HOLD_MS = '250';          // daemon cap: would fire long before the wake-up
+    process.env.URDR_CLAUDE_BG_AGENT_HOLD_MS = '5000';   // agent cap: comfortably after it
+    process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = '120';
+    process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS = '100';
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const bin = writeBgFakeClaude(`
   emit({ type: 'assistant', message: { role: 'assistant', content: [
     { type: 'text', text: '派出研究代理:' },
@@ -148,10 +148,10 @@ describe('background hold cap (integration)', () => {
   }, 10000);
 
   it('the cap still settles a genuinely silent daemon hold as background', async () => {
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = '250';
-    process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = '80';
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS = '100';
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    process.env.URDR_CLAUDE_BG_HOLD_MS = '250';
+    process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = '80';
+    process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS = '100';
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const bin = writeBgFakeClaude(`
   emit({ type: 'assistant', message: { role: 'assistant', content: [
     { type: 'text', text: '启动守护进程:' },
@@ -169,10 +169,10 @@ describe('background hold cap (integration)', () => {
   }, 10000);
 
   it('a cap firing while events still flow defers instead of cutting the turn', async () => {
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = '200';           // fires almost immediately
-    process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = '400';   // "recently active" window
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS = '120';
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    process.env.URDR_CLAUDE_BG_HOLD_MS = '200';           // fires almost immediately
+    process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = '400';   // "recently active" window
+    process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS = '120';
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const bin = writeBgFakeClaude(`
   emit({ type: 'assistant', message: { role: 'assistant', content: [
     { type: 'tool_use', id: 'toolu_sh', name: 'Bash', input: { command: 'work', run_in_background: true } },

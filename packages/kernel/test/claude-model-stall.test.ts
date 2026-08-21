@@ -65,11 +65,11 @@ describe('ClaudeDriver model-stall watchdog (severed-connection hang)', () => {
     // above cold `node` subprocess spawn latency (a cold fake turn is ~0.6–1.2s here), so a healthy
     // fake's reply clears the watchdog before it can misfire. Too tight and the test races the fake's
     // own startup, not the model.
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '2500';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '2500';
   });
   afterEach(() => {
     driver?.dispose();
-    delete process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
+    delete process.env.URDR_CLAUDE_MODEL_STALL_MS;
     fs.rmSync(tmp, { recursive: true, force: true });
   });
 
@@ -99,7 +99,7 @@ describe('ClaudeDriver model-stall watchdog (severed-connection hang)', () => {
     // `node` spawn to finish inside 2.5 s, which is a race against machine load rather than
     // against the model — under a loaded suite it misfires and the turn settles 'stalled'.
     // A window that cannot misfire keeps the assertion about the watchdog, which is the point.
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '60000';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '60000';
     const d = new ClaudeDriver(fake);
     driver = d;
     const r = await d.run(turnInput('healthy'), ctxCollect().ctx);

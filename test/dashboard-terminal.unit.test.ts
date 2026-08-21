@@ -13,14 +13,14 @@ const CHANNEL_ENV_KEYS = [
   'DINGTALK_CLIENT_ID', 'DINGTALK_CLIENT_SECRET', 'WECOM_BOT_ID', 'WECOM_BOT_SECRET',
 ] as const;
 
-const ISOLATION_ENV_KEYS = ['PIKILOOM_CONFIG', 'PIKILOOM_WORKDIR', 'DEFAULT_AGENT', ...CHANNEL_ENV_KEYS] as const;
+const ISOLATION_ENV_KEYS = ['URDR_CONFIG', 'URDR_WORKDIR', 'DEFAULT_AGENT', ...CHANNEL_ENV_KEYS] as const;
 
 function isolatedChannellessConfig(): void {
   for (const key of CHANNEL_ENV_KEYS) delete process.env[key];
   const path = `${makeTmpDir('dash-terminal-config-')}/setting.json`;
   fs.writeFileSync(path, JSON.stringify({ version: 1 }));
-  process.env.PIKILOOM_CONFIG = path;
-  process.env.PIKILOOM_WORKDIR = makeTmpDir('dash-terminal-workdir-');
+  process.env.URDR_CONFIG = path;
+  process.env.URDR_WORKDIR = makeTmpDir('dash-terminal-workdir-');
 }
 
 function agent(id: AgentInfo['agent'], installed: boolean): AgentInfo {

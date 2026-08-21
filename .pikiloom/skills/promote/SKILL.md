@@ -1,6 +1,6 @@
 ---
 name: promote
-description: GitHub 截流。在同领域项目（local coding agent ↔ IM / mobile / remote console）的 feature-request issue 下，自动发现→起草→自我批判→护栏→（按 posture）发布 pikiloom 回复，并记录+度量。话术统一来自 _promo/pitch.md；可由 _promo/orchestrate.md 无人值守驱动。
+description: GitHub 截流。在同领域项目（local coding agent ↔ IM / mobile / remote console）的 feature-request issue 下，自动发现→起草→自我批判→护栏→（按 posture）发布 urdr 回复，并记录+度量。话术统一来自 _promo/pitch.md；可由 _promo/orchestrate.md 无人值守驱动。
 version: 6.0.0
 ---
 
@@ -8,7 +8,7 @@ version: 6.0.0
 
 This skill targets the open issues of **same-space projects** (local coding agent ↔ IM / mobile /
 remote console) — where users have already self-identified as needing this category of tool. We share
-pikiloom as another option; we never position against the host project.
+urdr as another option; we never position against the host project.
 
 **This file holds GitHub-specific mechanics only** (which repos, which issues, how to post). All product
 copy, differentiators, honesty bounds, tone, language, skeleton, and anti-patterns come from
@@ -24,7 +24,7 @@ posting-posture / measurement come from the shared core:
 | 无人值守编排 + posture | `_promo/orchestrate.md` |
 | 旋钮 | `_promo/config.json` → `channels.github` |
 
-> 运行根目录：`cd /Users/admin/Desktop/project/pikiloom`。脚本前缀：`.pikiloom/skills/_promo/`。
+> 运行根目录：`cd /Users/admin/Desktop/project/urdr`。脚本前缀：`.urdr/skills/_promo/`。
 
 ## GitHub 渠道的铁律
 
@@ -36,20 +36,20 @@ posting-posture / measurement come from the shared core:
    要抓的轮廓。`guard.py` 会按 registry 里的历史强制拦截超限的仓。
 3. **不打上游本体仓**（`anthropics/claude-code` 等，见 `deny_repos`）—— 不是同类桥接，曝光最高、有官方
    triage、风险最大。历史误打了 14 条，停止。`guard.py` 直接 deny。
-4. **每条独立起草 + 必带披露行**（"I'm building / 我在做 pikiloom"）。披露既是诚实也是护身符；boilerplate
+4. **每条独立起草 + 必带披露行**（"I'm building / 我在做 urdr"）。披露既是诚实也是护身符；boilerplate
    翻译版仍是 boilerplate，`guard.py` 变体检查会拦。
 
 ---
 
 ## Step 1: 预检
 ```bash
-cd /Users/admin/Desktop/project/pikiloom
-python3 .pikiloom/skills/_promo/guard.py caps      # github 今日剩余配额；为 0 则今天不跑
+cd /Users/admin/Desktop/project/urdr
+python3 .urdr/skills/_promo/guard.py caps      # github 今日剩余配额；为 0 则今天不跑
 ```
 
 ## Step 2: 主路径 — 同领域项目 issue
 
-walk 下列同类项目的 issue tracker（pikiloom 原生支持 Telegram/Feishu/WeChat/Slack/Discord/DingTalk/WeCom，
+walk 下列同类项目的 issue tracker（urdr 原生支持 Telegram/Feishu/WeChat/Slack/Discord/DingTalk/WeCom，
 所有 IM-bridge 仓都是同渠道同类）。bucket 内并行，按时间排序，忽略 >90 天且无活动的。
 
 ### Bucket A — IM-channel peers（原生，契合度最高）
@@ -105,7 +105,7 @@ for q in "claude code billing" "claude code credits" "claude max api" "use claud
          "claude code subscription" "claude code mobile" "claude code telegram" "claude code 飞书" \
          "claude code 微信" "agent web dashboard" "run multiple coding agents"; do
   gh search issues "$q" --state open --limit 30 --json url,title,repository \
-    | jq -r '[.[] | select(.repository.name | test("trending|news|weekly|github-daily|awesome|digest|bulletin|pikiloom|pikiclaw"; "i") | not)
+    | jq -r '[.[] | select(.repository.name | test("trending|news|weekly|github-daily|awesome|digest|bulletin|urdr|pikiclaw"; "i") | not)
         | select(.repository.nameWithOwner | test("xiaotonng/") | not)]
         | .[] | "\(.url) | \(.title) | \(.repository.nameWithOwner)"'; done
 ```
@@ -117,23 +117,23 @@ for q in "claude code billing" "claude code credits" "claude max api" "use claud
 
 对每个候选 URL 先去重，再 `gh issue view <url>` 读全文再判断：
 ```bash
-python3 .pikiloom/skills/_promo/registry.py seen github "<issue_url>" && echo SKIP   # 已记录则跳过
+python3 .urdr/skills/_promo/registry.py seen github "<issue_url>" && echo SKIP   # 已记录则跳过
 ```
-**全部满足才选：** ① 是 feature-request / 用户提问（**不是**宿主实现相关的 bug）② pikiloom **今天就有**这个能力
+**全部满足才选：** ① 是 feature-request / 用户提问（**不是**宿主实现相关的 bug）② urdr **今天就有**这个能力
 （不要硬拗，读者会查）③ 线程还活着（近期活动，未 closed/wontfix/locked）④ 作者是用户而非 maintainer 在做路线规划。
-**任一命中即跳过：** bug 报告 / maintainer 已承诺修或有在飞 PR / 社区公告 / pikiloom 并无该能力 / 争议政治帖。
+**任一命中即跳过：** bug 报告 / maintainer 已承诺修或有在飞 PR / 社区公告 / urdr 并无该能力 / 争议政治帖。
 
-pikiloom 真正能解的痛点见 **pitch.md §2**（角度 0 billing 是头牌差异点；其余按 OP 痛点挑 1–2 个）。选 **3–6** 条最强候选。
+urdr 真正能解的痛点见 **pitch.md §2**（角度 0 billing 是头牌差异点；其余按 OP 痛点挑 1–2 个）。选 **3–6** 条最强候选。
 
 ## Step 5: 起草（子 agent，话术来自 pitch.md）
 
 委托子 agent 起草，**唯一内容契约 = [`../_promo/pitch.md`](../_promo/pitch.md)**：peer-position+orienter(§1) →
-out-of-box 主张(§8 step2，回答"装好是不是开箱即有") → 一句实现证据(§4) → `npx pikiloom@latest` →
+out-of-box 主张(§8 step2，回答"装好是不是开箱即有") → 一句实现证据(§4) → `npx urdr@latest` →
 `https://github.com/xiaotonng/pikiloom`。语言跟随 **issue 正文**(§6)，≤5 句，挑 1–2 个对得上的差异点(§2)。
 
 每条起草后记录：
 ```bash
-python3 .pikiloom/skills/_promo/registry.py add --channel github --url "<issue_url>" \
+python3 .urdr/skills/_promo/registry.py add --channel github --url "<issue_url>" \
   --status drafted --repo "<owner/repo>" --type <feature-request|question> --lang <en|zh|ja> \
   --title "<issue 标题>" --draft-file /tmp/promo_draft_<id>.txt
 ```
@@ -146,7 +146,7 @@ python3 .pikiloom/skills/_promo/registry.py add --channel github --url "<issue_u
 ## Step 7: 护栏 + 按 posture 发布
 
 ```bash
-python3 .pikiloom/skills/_promo/guard.py check --channel github --url "<issue_url>" \
+python3 .urdr/skills/_promo/guard.py check --channel github --url "<issue_url>" \
   --draft-file /tmp/promo_draft_<id>.txt        # exit 3 = deny（每仓上限/deny_repos/日配额/变体）；deny 则跳过
 POSTURE=$(python3 -c "import json;print(json.load(open('.pikiloom/skills/_promo/config.json'))['posture'])")
 ```
@@ -155,7 +155,7 @@ POSTURE=$(python3 -c "import json;print(json.load(open('.pikiloom/skills/_promo/
 - **auto**：直接发：
 ```bash
 gh issue comment "<issue_url>" --body-file /tmp/promo_draft_<id>.txt
-python3 .pikiloom/skills/_promo/registry.py mark-posted --channel github \
+python3 .urdr/skills/_promo/registry.py mark-posted --channel github \
   --url "<issue_url>" --post-url "<我们评论的 url>"      # 失败则 update --status failed
 ```
 > GitHub `gh` 发帖是三渠道里最可靠、最可逆的，建议 `auto` 从 github 先开。
@@ -163,9 +163,9 @@ python3 .pikiloom/skills/_promo/registry.py mark-posted --channel github \
 ## Step 8: 报告 + 度量 + 回访
 
 ```bash
-python3 .pikiloom/skills/_promo/registry.py stats
-python3 .pikiloom/skills/_promo/push_feishu.py --report-file /tmp/promo_report.md --title "🚀 GitHub Promote"
-python3 .pikiloom/skills/_promo/measure.py report
+python3 .urdr/skills/_promo/registry.py stats
+python3 .urdr/skills/_promo/push_feishu.py --report-file /tmp/promo_report.md --title "🚀 GitHub Promote"
+python3 .urdr/skills/_promo/measure.py report
 ```
 **回访**：≥24h 的评论若被 hide/lock，`registry.py update --channel github --url <u> --status hidden` —— 会触发
 `guard.py` 熔断，暂停该渠道。报告含：搜索/候选/已发/跳过/失败计数 + 下轮建议（如"Feishu 簇有 4 条新 open issue，7 天后再来"）。

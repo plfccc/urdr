@@ -22,7 +22,7 @@ const PNG_BYTES = Buffer.from(
 describe('attachAgentImage', () => {
   let tmpDir: string;
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-img-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-img-test-'));
   });
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -31,13 +31,13 @@ describe('attachAgentImage', () => {
   it('inlines small images, uses file:// sentinel above threshold, and returns null for missing files', () => {
     const smallFile = path.join(tmpDir, 'cover.png');
     fs.writeFileSync(smallFile, PNG_BYTES);
-    const inlined = attachAgentImage({ imagePath: smallFile, caption: 'pikiloom cover' });
+    const inlined = attachAgentImage({ imagePath: smallFile, caption: 'urdr cover' });
     expect(inlined).not.toBeNull();
     expect(inlined!.type).toBe('image');
     expect(inlined!.content.startsWith('data:image/png;base64,')).toBe(true);
     expect(inlined!.imagePath).toBe(smallFile);
     expect(inlined!.imageMime).toBe('image/png');
-    expect(inlined!.imageCaption).toBe('pikiloom cover');
+    expect(inlined!.imageCaption).toBe('urdr cover');
 
     const bigFile = path.join(tmpDir, 'big.png');
     fs.writeFileSync(bigFile, PNG_BYTES);
@@ -52,7 +52,7 @@ describe('attachAgentImage', () => {
 
 describe('attachInlineImage', () => {
   it('persists when requested, inlines as data URL otherwise, and rejects non-image MIME types', () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-img-test-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-img-test-'));
     const homeSnapshot = process.env.HOME;
     process.env.HOME = tmp;
     try {
@@ -84,7 +84,7 @@ describe('attachInlineImage', () => {
 
 describe('materializeImage & rewriteAttachmentBlocksForTransport', () => {
   it('materializes from imagePath/data URL, rejects non-images, and rewrites transport blocks', () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-img-test-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-img-test-'));
     const file = path.join(tmp, 'inline.png');
     fs.writeFileSync(file, PNG_BYTES);
     try {
@@ -168,13 +168,13 @@ describe('materializeImage & rewriteAttachmentBlocksForTransport', () => {
 
 describe('attachmentUrl', () => {
   it('builds an opaque, round-trippable attachment URL with an optional download name', () => {
-    const url = attachmentUrl('claude', 'sess-1', '/Users/admin/.pikiloom/attachments/claude/sess-1/delivered/x-out.zip', {
+    const url = attachmentUrl('claude', 'sess-1', '/Users/admin/.urdr/attachments/claude/sess-1/delivered/x-out.zip', {
       downloadName: 'out.zip',
     });
     const parsed = new URL(url, 'http://localhost');
     expect(parsed.pathname).toBe('/api/sessions/claude/sess-1/attachment');
     expect(decodeAttachmentPathParam(parsed.searchParams.get('p') || ''))
-      .toBe('/Users/admin/.pikiloom/attachments/claude/sess-1/delivered/x-out.zip');
+      .toBe('/Users/admin/.urdr/attachments/claude/sess-1/delivered/x-out.zip');
     expect(parsed.searchParams.get('n')).toBe('out.zip');
 
     const bare = new URL(attachmentUrl('claude', 'sess-1', '/tmp/a.png'), 'http://localhost');
@@ -186,7 +186,7 @@ describe('resolveAllowedAttachmentPath', () => {
   it('enforces the allowlist across single workdir, no workdir, and multi-workspace setups', () => {
     expect(resolveAllowedAttachmentPath('/etc/passwd')).toBeNull();
 
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-img-test-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-img-test-'));
     const file = path.join(tmp, 'asset.png');
     fs.writeFileSync(file, PNG_BYTES);
     try {
@@ -203,7 +203,7 @@ describe('resolveAllowedAttachmentPath', () => {
     fs.mkdirSync(scratch, { recursive: true });
     const wsA = fs.mkdtempSync(path.join(scratch, 'img-ws-a-'));
     const wsB = fs.mkdtempSync(path.join(scratch, 'img-ws-b-'));
-    const wsFile = path.join(wsB, '.pikiloom', 'sessions', 'claude', 's1', 'workspace', 'image.png');
+    const wsFile = path.join(wsB, '.urdr', 'sessions', 'claude', 's1', 'workspace', 'image.png');
     fs.mkdirSync(path.dirname(wsFile), { recursive: true });
     fs.writeFileSync(wsFile, PNG_BYTES);
     try {

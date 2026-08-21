@@ -33,15 +33,15 @@ describe('tool-activity path linkification (segmentPaths)', () => {
   const links = (text: string) => segmentPaths(text).filter(s => s.type === 'link') as Array<{ type: 'link'; locator: string; display: string }>;
 
   it('linkifies the path in a tool summary line', () => {
-    const found = links('Read /tmp/pikiloom-arch/v4c_mid.png');
+    const found = links('Read /tmp/urdr-arch/v4c_mid.png');
     expect(found).toHaveLength(1);
-    expect(found[0].locator).toBe('/tmp/pikiloom-arch/v4c_mid.png');
+    expect(found[0].locator).toBe('/tmp/urdr-arch/v4c_mid.png');
   });
 
   it('linkifies the quoted path value inside a tool-input JSON dump', () => {
-    const found = links('{ "file_path": "/tmp/pikiloom-arch/v4c_mid.png" }');
+    const found = links('{ "file_path": "/tmp/urdr-arch/v4c_mid.png" }');
     expect(found).toHaveLength(1);
-    expect(found[0].locator).toBe('/tmp/pikiloom-arch/v4c_mid.png');
+    expect(found[0].locator).toBe('/tmp/urdr-arch/v4c_mid.png');
   });
 
   it('preserves a line/column suffix for grep-style hits', () => {
@@ -56,7 +56,7 @@ describe('tool-activity path linkification (segmentPaths)', () => {
   });
 
   it('round-trips surrounding whitespace and newlines for unquoted text', () => {
-    const input = 'cd /tmp/pikiloom-arch\nsips arch_v4_1.png';
+    const input = 'cd /tmp/urdr-arch\nsips arch_v4_1.png';
     const rebuilt = segmentPaths(input).map(s => s.type === 'link' ? s.display : s.value).join('');
     expect(rebuilt).toBe(input);
   });

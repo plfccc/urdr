@@ -36,7 +36,7 @@
       "min_views": 5000,
       "max_age_hours": 48,
       "link_in_self_reply": true,
-      "_link_in_self_reply_why": "X downranks reach of posts containing external links. Main reply = pitch + `npx pikiloom@latest` (native, no link); GitHub link posted as a self-reply underneath."
+      "_link_in_self_reply_why": "X downranks reach of posts containing external links. Main reply = pitch + `npx urdr@latest` (native, no link); GitHub link posted as a self-reply underneath."
     },
     "reddit": {
       "enabled": true,
@@ -67,7 +67,7 @@
 
   "measure": {
     "github_repo": "xiaotonng/pikiloom",
-    "npm_pkg": "pikiloom",
+    "npm_pkg": "urdr",
     "correlate_window_hours": 48,
     "_traffic_note": "GitHub Traffic API keeps only 14 days; measure.py must run daily to persist history."
   }

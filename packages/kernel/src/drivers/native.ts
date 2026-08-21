@@ -8,7 +8,7 @@ import type { NativeSessionInfo } from '../contracts/driver.js';
 // Each coding-agent CLI keeps its OWN session transcripts in its own home dir, in its own
 // format. To present a single, unified session list (the kernel's managed sessions PLUS the
 // agent's native ones), the kernel reads those transcript stores directly. These are pure,
-// node-builtins-only readers — faithful, leaner ports of pikiloom's per-driver discovery.
+// node-builtins-only readers — faithful, leaner ports of urdr's per-driver discovery.
 //
 // `home` is injectable so this is hermetically testable; it defaults to os.homedir().
 

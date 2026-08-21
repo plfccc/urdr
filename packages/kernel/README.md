@@ -6,7 +6,7 @@ Turn heterogeneous coding agents (**Claude Code · Codex · Gemini · ACP/Hermes
 credentials, tools, prompts) are **injected ports** with working defaults.
 
 This is the reusable core that [pikiloom](https://github.com/xiaotonng/pikiloom) itself is
-built on. Drop it into any project and stand up a "pikiloom-like" backend in a few lines —
+built on. Drop it into any project and stand up a "urdr-like" backend in a few lines —
 **you never parse a CLI's output or learn each agent's wire format**; you read one
 `UniversalSnapshot` and call `prompt / stop / steer / interact`.
 
@@ -41,7 +41,7 @@ npm i @pikiloom/kernel
 | Rail | Driver method | Output | Use for |
 |------|---------------|--------|---------|
 | **Structured** | `driver.run(input, ctx)` | streamed `UniversalSnapshot` (text, reasoning, tool activity, plan, usage) | IM, Web dashboards, any UI that renders structured turns |
-| **Raw PTY** | `driver.tui(input)` | a real full-screen interactive process passed through a PTY | a local terminal app (`pikiloom code`-style); needs `node-pty` |
+| **Raw PTY** | `driver.tui(input)` | a real full-screen interactive process passed through a PTY | a local terminal app (`urdr code`-style); needs `node-pty` |
 
 ---
 
@@ -279,12 +279,12 @@ plugins are the composable per-capability layer on top.)
 ## Workspace: unified directory + session / skill / mcp management
 
 One explicitly-configurable **top-level directory** (`createLoom({ stateDirName })`, default
-`'pikiloom'` → `.pikiloom`) gives a consuming app the same "everything under one folder" model
-pikiloom uses, resolved in two scopes — global (`~/.pikiloom`) and per-workspace
-(`<workdir>/.pikiloom`). It's exposed off the `Loom`:
+`'urdr'` → `.urdr`) gives a consuming app the same "everything under one folder" model
+urdr uses, resolved in two scopes — global (`~/.urdr`) and per-workspace
+(`<workdir>/.urdr`). It's exposed off the `Loom`:
 
 ```ts
-const loom = createLoom({ drivers: [new ClaudeDriver(), new CodexDriver()], stateDirName: 'pikiloom' });
+const loom = createLoom({ drivers: [new ClaudeDriver(), new CodexDriver()], stateDirName: 'urdr' });
 
 // Unified, searchable session list — the kernel's MANAGED sessions (scoped per workspace by the
 // cwd they ran in) MERGED with each agent's OWN native sessions (claude/codex read their on-disk
@@ -294,7 +294,7 @@ await loom.sessions.list({ scope: 'global' });               // every workspace'
 await loom.sessions.search({ query: 'deploy', workdir });
 
 // Skills registry: one canonical dir, symlinked into every agent's skills dir.
-loom.skills.ensureLinks('workspace', workdir);   // <wd>/.claude/skills + .agents/skills → <wd>/.pikiloom/skills
+loom.skills.ensureLinks('workspace', workdir);   // <wd>/.claude/skills + .agents/skills → <wd>/.urdr/skills
 loom.skills.list({ workdir });                   // installed skills (workspace + global)
 await loom.skills.search('pdf');                 // installable skills (npm)
 
@@ -302,7 +302,7 @@ await loom.skills.search('pdf');                 // installable skills (npm)
 loom.mcp.recommended();                           // curated catalog
 await loom.mcp.search('postgres');                // MCP registry → npm
 
-loom.paths.skillsDir('global');                   // ~/.pikiloom/skills, etc.
+loom.paths.skillsDir('global');                   // ~/.urdr/skills, etc.
 ```
 
 A driver opts into native discovery by implementing
@@ -330,10 +330,10 @@ tests) and are NOT part of the public surface.
 ### Claude driver tuning (env)
 
 The claude driver's background-hold / stall / recovery heuristics ship sane defaults and can
-be tuned per deployment: `PIKILOOM_CLAUDE_BG_HOLD_MS`, `PIKILOOM_CLAUDE_BG_AGENT_HOLD_MS`,
-`PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS`, `PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS`,
-`PIKILOOM_CLAUDE_MODEL_STALL_MS`, `PIKILOOM_CLAUDE_TRUNCATED_RECOVERY` (=0 disables),
-`PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES`.
+be tuned per deployment: `URDR_CLAUDE_BG_HOLD_MS`, `URDR_CLAUDE_BG_AGENT_HOLD_MS`,
+`URDR_CLAUDE_BG_HOLD_RECHECK_MS`, `URDR_CLAUDE_BG_SETTLE_QUIET_MS`,
+`URDR_CLAUDE_MODEL_STALL_MS`, `URDR_CLAUDE_TRUNCATED_RECOVERY` (=0 disables),
+`URDR_CLAUDE_RESUME_NOOP_RETRIES`.
 
 ---
 

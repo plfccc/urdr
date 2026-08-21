@@ -1,7 +1,7 @@
 {
   "name": "urdr",
   "version": "0.1.0",
-  "description": "A layered, open Agent orchestrator — Telegram + Feishu terminals, Claude Code / Codex agents. Streamlined fork of pikiloom.",
+  "description": "A layered, open Agent orchestrator — Telegram + Feishu terminals, Claude Code / Codex agents. Streamlined fork of urdr.",
   "type": "module",
   "bin": {
     "urdr": "dist/cli/main.js"

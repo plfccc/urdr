@@ -737,7 +737,7 @@ export async function doClaudeTuiStream(opts: StreamOpts): Promise<StreamResult>
 
   let workDir: string;
   try {
-    workDir = fs.mkdtempSync(path.join(tmpdir(), 'pikiloom-claude-tui-'));
+    workDir = fs.mkdtempSync(path.join(tmpdir(), 'urdr-claude-tui-'));
   } catch (e: any) {
     return makeErrorResult(opts, start, `Failed to create temp dir: ${e?.message || e}`);
   }
@@ -909,7 +909,7 @@ export async function doClaudeTuiStream(opts: StreamOpts): Promise<StreamResult>
     if (typeof v === 'string') spawnEnv[k] = v;
   }
   scrubClaudeSessionContextEnv(spawnEnv);
-  if (process.env.PIKILOOM_CLAUDE_TUI_KEEP_API_KEY !== '1') {
+  if (process.env.URDR_CLAUDE_TUI_KEEP_API_KEY !== '1') {
     delete spawnEnv.ANTHROPIC_API_KEY;
     delete spawnEnv.ANTHROPIC_AUTH_TOKEN;
   }
@@ -931,7 +931,7 @@ export async function doClaudeTuiStream(opts: StreamOpts): Promise<StreamResult>
   }
   agentLog(`[claude-tui] pid=${proc.pid}`);
 
-  const dbg = process.env.PIKILOOM_CLAUDE_TUI_DEBUG === '1';
+  const dbg = process.env.URDR_CLAUDE_TUI_DEBUG === '1';
   let lastPtyDataAt = Date.now();
   const SCREEN_TAIL_MAX = 8192;
   const BYPASS_ACCEPT_MAX_ATTEMPTS = 3;

@@ -6,7 +6,7 @@ import { pathContainsSegment, spawnCli } from './platform.js';
 import { STATE_DIR_NAME } from './constants.js';
 
 export const PROCESS_RESTART_EXIT_CODE = 75;
-export const PROCESS_RESTART_STATE_FILE_ENV = 'PIKILOOM_RESTART_STATE_FILE';
+export const PROCESS_RESTART_STATE_FILE_ENV = 'URDR_RESTART_STATE_FILE';
 
 const DAEMON_PID_FILENAME = 'urdr.pid';
 
@@ -124,10 +124,10 @@ export function getDefaultRestartCmd(): string {
     const entry = argv1.includes(' ') ? `"${argv1}"` : argv1;
     return `${nodeBin} ${entry}`;
   }
-  return 'npx --yes pikiloom@latest';
+  return 'npx --yes urdr@latest';
 }
 
-export function buildRestartCommand(argv: string[], restartCmd = process.env.PIKILOOM_RESTART_CMD || getDefaultRestartCmd()) {
+export function buildRestartCommand(argv: string[], restartCmd = process.env.URDR_RESTART_CMD || getDefaultRestartCmd()) {
   const [bin, ...rawArgs] = shellSplit(restartCmd);
   return {
     bin,
@@ -292,7 +292,7 @@ function buildRestartEnvForSpawn(extraEnv: Record<string, string>) {
     ...extraEnv,
     npm_config_yes: process.env.npm_config_yes || 'true',
   } as Record<string, string>;
-  delete env.PIKILOOM_DAEMON_CHILD;
+  delete env.URDR_DAEMON_CHILD;
   delete env[PROCESS_RESTART_STATE_FILE_ENV];
   return env;
 }
@@ -326,7 +326,7 @@ export async function requestProcessRestart(opts: ProcessRestartOptions = {}): P
     await prepareRuntimesForRestart(log);
     await killChildProcesses(process.pid, { log });
 
-    if (process.env.PIKILOOM_DAEMON_CHILD === '1') {
+    if (process.env.URDR_DAEMON_CHILD === '1') {
       const restartStateFile = process.env[PROCESS_RESTART_STATE_FILE_ENV];
       if (restartStateFile) {
         if (Object.keys(extraEnv).length) writeRestartStateFile(restartStateFile, extraEnv);

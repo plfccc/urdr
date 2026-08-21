@@ -123,7 +123,7 @@ describe('buildCodexMcpAddArgs', () => {
   it('builds stdio/HTTP argv, threads bearer tokens, sanitizes names, and returns null for malformed entries', () => {
     const stdioArgs = buildCodexMcpAddArgs(
       {
-        name: 'pikiloom',
+        name: 'urdr',
         type: 'stdio',
         command: '/usr/bin/node',
         args: ['session-server.js'],
@@ -131,7 +131,7 @@ describe('buildCodexMcpAddArgs', () => {
       },
       {},
     );
-    expect(stdioArgs).toEqual(['mcp', 'add', 'pikiloom', '--env', 'FOO=bar', '--', '/usr/bin/node', 'session-server.js']);
+    expect(stdioArgs).toEqual(['mcp', 'add', 'urdr', '--env', 'FOO=bar', '--', '/usr/bin/node', 'session-server.js']);
 
     const bearerEnv: Record<string, string> = {};
     const httpArgs = buildCodexMcpAddArgs(
@@ -146,9 +146,9 @@ describe('buildCodexMcpAddArgs', () => {
     expect(httpArgs).toEqual([
       'mcp', 'add', 'notion',
       '--url', 'https://mcp.notion.com/mcp',
-      '--bearer-token-env-var', 'PIKILOOM_MCP_BEARER_NOTION',
+      '--bearer-token-env-var', 'URDR_MCP_BEARER_NOTION',
     ]);
-    expect(bearerEnv).toEqual({ PIKILOOM_MCP_BEARER_NOTION: 'tok-xyz' });
+    expect(bearerEnv).toEqual({ URDR_MCP_BEARER_NOTION: 'tok-xyz' });
 
     const noBearerEnv: Record<string, string> = {};
     const openArgs = buildCodexMcpAddArgs(
@@ -171,7 +171,7 @@ describe('buildCodexMcpAddArgs', () => {
       },
       sanitizeEnv,
     );
-    expect(Object.keys(sanitizeEnv)).toEqual(['PIKILOOM_MCP_BEARER_MY_FANCY_SERVER']);
+    expect(Object.keys(sanitizeEnv)).toEqual(['URDR_MCP_BEARER_MY_FANCY_SERVER']);
   });
 });
 
@@ -185,7 +185,7 @@ describe('buildGeminiMcpConfig', () => {
         headers: { Authorization: 'Bearer tok' },
       },
       {
-        name: 'pikiloom',
+        name: 'urdr',
         type: 'stdio',
         command: '/usr/bin/node',
         args: ['session-server.js'],
@@ -200,7 +200,7 @@ describe('buildGeminiMcpConfig', () => {
         headers: { Authorization: 'Bearer tok' },
         trust: true,
       },
-      pikiloom: {
+      urdr: {
         command: '/usr/bin/node',
         args: ['session-server.js'],
         env: { FOO: 'bar' },

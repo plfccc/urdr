@@ -6,19 +6,19 @@ in the loop** except the posture-defined circuit breaker. Discovery → filter �
 **autonomous adversarial critic**; safety is enforced by deterministic `guard.py`, not by judgment.
 
 All product copy comes from [`pitch.md`](./pitch.md). All knobs from [`config.json`](./config.json).
-Run everything from the project root: `cd /Users/admin/Desktop/project/pikiloom`.
-Script base: `.pikiloom/skills/_promo/` (call `python3 .pikiloom/skills/_promo/<x>.py`).
+Run everything from the project root: `cd /Users/admin/Desktop/project/urdr`.
+Script base: `.urdr/skills/_promo/` (call `python3 .urdr/skills/_promo/<x>.py`).
 
 ---
 
 ## Phase 0 — Preflight (always)
 
 ```bash
-cd /Users/admin/Desktop/project/pikiloom
-python3 .pikiloom/skills/_promo/measure.py pull        # persist today's metrics (14d window!)
+cd /Users/admin/Desktop/project/urdr
+python3 .urdr/skills/_promo/measure.py pull        # persist today's metrics (14d window!)
 KILL=$(python3 -c "import json;print(json.load(open('.pikiloom/skills/_promo/config.json'))['kill_switch'])")
 POSTURE=$(python3 -c "import json;print(json.load(open('.pikiloom/skills/_promo/config.json'))['posture'])")
-python3 .pikiloom/skills/_promo/guard.py caps          # see today's remaining quota per channel
+python3 .urdr/skills/_promo/guard.py caps          # see today's remaining quota per channel
 ```
 
 - If `kill_switch` is `True` → **STOP**. Push one Feishu card "promotion halted (kill switch)" and exit.
@@ -41,7 +41,7 @@ only enforces the cross-channel contract below.
 **Dedup is mandatory and deterministic** — for every candidate URL before drafting:
 
 ```bash
-python3 .pikiloom/skills/_promo/registry.py seen <channel> "<url>" && continue   # skip if seen
+python3 .urdr/skills/_promo/registry.py seen <channel> "<url>" && continue   # skip if seen
 ```
 
 Keep only candidates that pass the channel's hard filters (views/age/lang/type) **and** are new.
@@ -58,7 +58,7 @@ a swapped opener (that is what the variation guard and the spam classifiers catc
 Record each draft immediately (status `drafted`, stores the text for the variation check):
 
 ```bash
-python3 .pikiloom/skills/_promo/registry.py add --channel <c> --url "<target_url>" \
+python3 .urdr/skills/_promo/registry.py add --channel <c> --url "<target_url>" \
   --status drafted --repo "<repo_or_sub>" --type <feature-request|question|launch|discussion> \
   --lang <en|zh|ja> --audience <N> --title "<short>" --draft-file /tmp/draft_<id>.txt
 ```
@@ -68,13 +68,13 @@ python3 .pikiloom/skills/_promo/registry.py add --channel <c> --url "<target_url
 For each draft, score it against [`pitch.md`](./pitch.md) §10 anti-patterns. The critic is a
 sub-agent (or a focused self-review pass) that returns PASS or a list of violations. Rubric — fail on ANY:
 
-1. Marketing/vendor voice ("pikiloom is/can", "check out", "you should try") instead of "I'm building".
+1. Marketing/vendor voice ("urdr is/can", "check out", "you should try") instead of "I'm building".
 2. Compares to / criticizes the host project (even neutrally).
-3. Opens with implementation before the reader knows what pikiloom is; or leads with implementation before the out-of-box claim.
+3. Opens with implementation before the reader knows what urdr is; or leads with implementation before the out-of-box claim.
 4. Out-of-box claim generic, not pinned to the target's exact pain.
 5. >2 differentiators / reads as a feature list.
 6. Implementation > 1 sentence (tutorial, not a peer note).
-7. Over the channel length cap (§9); missing disclosure, `npx pikiloom@latest`, or the link where required.
+7. Over the channel length cap (§9); missing disclosure, `npx urdr@latest`, or the link where required.
 8. Addresses maintainer/mod; forbidden close.
 9. A claim outside the honesty bounds (§3) or a fabricated differentiator.
 
@@ -87,7 +87,7 @@ sub-agent (or a focused self-review pass) that returns PASS or a list of violati
 For every critic-passed draft, run the deterministic gate **first**:
 
 ```bash
-python3 .pikiloom/skills/_promo/guard.py check --channel <c> --url "<url>" --draft-file /tmp/draft_<id>.txt
+python3 .urdr/skills/_promo/guard.py check --channel <c> --url "<url>" --draft-file /tmp/draft_<id>.txt
 # exit 0 = allow, exit 3 = deny (reasons in JSON). On deny: registry.py update ... --status skipped; skip.
 ```
 
@@ -96,14 +96,14 @@ Then act on `POSTURE`:
 ### `shadow` (dry-run — default for first runs)
 - Do **not** post. Leave records at `drafted`.
 - Push the full batch report to Feishu (doc + card) so you can read what it *would* post:
-  `python3 .pikiloom/skills/_promo/push_feishu.py --report-file /tmp/promo_report.md --title "🌑 Shadow 预览"`
+  `python3 .urdr/skills/_promo/push_feishu.py --report-file /tmp/promo_report.md --title "🌑 Shadow 预览"`
 
 ### `batch` (post-unless-vetoed — recommended steady state)
 - Mark guard-passed drafts `approved`: `registry.py update --channel <c> --url <u> --status approved`.
 - Push ONE veto card (lists every approved target + draft):
   `push_feishu.py --report-file /tmp/promo_report.md --card-only --template orange --title "⏳ 即将自动发布 N 条 · {veto_window_hours}h 内回复 ABORT 取消"`
 - **Veto mechanism (deterministic, no IM parsing):** to cancel, the user flips `kill_switch:true`
-  or adds target URLs to `.pikiloom/skills/_promo/abort.txt` (one per line).
+  or adds target URLs to `.urdr/skills/_promo/abort.txt` (one per line).
 - A follow-up run scheduled `veto_window_hours` later (see [scheduling](#scheduling)) posts every
   `approved` record whose `drafted_at` is older than the window, not in `abort.txt`, and re-passing
   `guard.py check` (caps may have changed). Then notify (green card).
@@ -113,21 +113,21 @@ Then act on `POSTURE`:
 
 ### Posting mechanics (per channel)
 - **github:** `gh issue comment "<url>" --body-file /tmp/draft_<id>.txt`
-- **twitter:** browser (`snipe/SKILL.md` posting section) — main reply = pitch + `npx pikiloom@latest`; **GitHub link in a self-reply** (link-in-reply downranks reach).
+- **twitter:** browser (`snipe/SKILL.md` posting section) — main reply = pitch + `npx urdr@latest`; **GitHub link in a self-reply** (link-in-reply downranks reach).
 - **reddit:** browser (`reddit-snipe/SKILL.md` "浏览器发评论的操作要点") — Lexical paste gotchas apply.
 
 On success record the outcome; on failure record it and continue (never abort the whole batch):
 
 ```bash
-python3 .pikiloom/skills/_promo/registry.py mark-posted --channel <c> --url "<target>" --post-url "<our_comment_url>"
+python3 .urdr/skills/_promo/registry.py mark-posted --channel <c> --url "<target>" --post-url "<our_comment_url>"
 # failure: registry.py update --channel <c> --url "<target>" --status failed
 ```
 
 ## Phase 5 — Report + learn
 
 ```bash
-python3 .pikiloom/skills/_promo/registry.py stats
-python3 .pikiloom/skills/_promo/measure.py report      # -> markdown, append to the Feishu card
+python3 .urdr/skills/_promo/registry.py stats
+python3 .urdr/skills/_promo/measure.py report      # -> markdown, append to the Feishu card
 ```
 
 - Push the run summary (counts posted/skipped/failed per channel + the measure report) to Feishu.

@@ -79,16 +79,16 @@ describe('handleClaudeEvent result error derivation', () => {
 });
 
 describe('claudeTruncatedRecoveryEnabled', () => {
-  const prev = process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+  const prev = process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
-    else process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY = prev;
+    if (prev === undefined) delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
+    else process.env.URDR_CLAUDE_TRUNCATED_RECOVERY = prev;
   });
   it('defaults on; 0/false/off disable it', () => {
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     expect(claudeTruncatedRecoveryEnabled()).toBe(true);
     for (const v of ['0', 'false', 'off']) {
-      process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY = v;
+      process.env.URDR_CLAUDE_TRUNCATED_RECOVERY = v;
       expect(claudeTruncatedRecoveryEnabled()).toBe(false);
     }
   });
@@ -139,20 +139,20 @@ process.stdin.on('close', () => process.exit(0));
 }
 
 describe('truncated-turn self-heal (integration)', () => {
-  const prevRecovery = process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
-  const prevStall = process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
+  const prevRecovery = process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
+  const prevStall = process.env.URDR_CLAUDE_MODEL_STALL_MS;
   afterEach(() => {
-    if (prevRecovery === undefined) delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
-    else process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY = prevRecovery;
-    if (prevStall === undefined) delete process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
-    else process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = prevStall;
+    if (prevRecovery === undefined) delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
+    else process.env.URDR_CLAUDE_TRUNCATED_RECOVERY = prevRecovery;
+    if (prevStall === undefined) delete process.env.URDR_CLAUDE_MODEL_STALL_MS;
+    else process.env.URDR_CLAUDE_MODEL_STALL_MS = prevStall;
   });
 
   it('injects one recovery prompt and delivers the closing reply in the same process', async () => {
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const bin = writeFakeClaude(`
   const text = JSON.stringify(msg);
-  if (!text.includes('pikiloom-recover')) { emit({ type: 'result', subtype: 'success', is_error: false }); return; }
+  if (!text.includes('urdr-recover')) { emit({ type: 'result', subtype: 'success', is_error: false }); return; }
   emit({ type: 'stream_event', event: { type: 'content_block_delta', delta: { type: 'text_delta', text: 'Done — auto-delete is now enabled.' } } });
   emit({ type: 'result', subtype: 'success', is_error: false, stop_reason: 'end_turn', result: '' });
 `);
@@ -165,7 +165,7 @@ describe('truncated-turn self-heal (integration)', () => {
   }, 8000);
 
   it('settles stopReason "truncated" when recovery is disabled', async () => {
-    process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY = '0';
+    process.env.URDR_CLAUDE_TRUNCATED_RECOVERY = '0';
     const bin = writeFakeClaude('  emit({ type: "result", subtype: "success", is_error: false });');
     const driver = new ClaudeDriver(bin);
     const { result } = await runTurn(driver, { prompt: 'enable it', workdir: process.cwd() } as any);
@@ -175,7 +175,7 @@ describe('truncated-turn self-heal (integration)', () => {
   }, 8000);
 
   it('attempts recovery at most once — a still-dangling second result settles truncated', async () => {
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const bin = writeFakeClaude(`
   // Recovery round also comes back empty — must NOT loop.
   emit({ type: 'result', subtype: 'success', is_error: false, stop_reason: 'end_turn' });
@@ -192,7 +192,7 @@ describe('truncated-turn self-heal (integration)', () => {
     // was delivered live but vanished from the transcript on the next re-render. The fake
     // simulates the late flush with a 150ms-delayed marker file: it only survives a graceful
     // (stdin-end) shutdown.
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const dir = mkdtempSync(join(tmpdir(), 'kernel-flush-'));
     const marker = join(dir, 'flushed');
     const bin = join(dir, 'fake-claude.mjs');
@@ -222,7 +222,7 @@ process.stdin.resume();
   }, 8000);
 
   it('an error result with empty errors[] settles as an error (no silent ok, no recovery)', async () => {
-    delete process.env.PIKILOOM_CLAUDE_TRUNCATED_RECOVERY;
+    delete process.env.URDR_CLAUDE_TRUNCATED_RECOVERY;
     const dir = mkdtempSync(join(tmpdir(), 'kernel-err-'));
     const bin = join(dir, 'fake-claude.mjs');
     writeFileSync(bin, `#!/usr/bin/env node
@@ -324,7 +324,7 @@ describe('transcript rendering of a dangling turn', () => {
     });
   });
 
-  it('hides the driver-injected <pikiloom-recover> prompt from the transcript', async () => {
+  it('hides the driver-injected <urdr-recover> prompt from the transcript', async () => {
     await withTempHome(async (homeDir) => {
       const workdir = '/Users/test/recover';
       const projectDir = path.join(homeDir, '.claude', 'projects', '-Users-test-recover');
@@ -343,7 +343,7 @@ describe('transcript rendering of a dangling turn', () => {
       const rich = result.richMessages || [];
       const userMsgs = rich.filter(m => m.role === 'user').map(m => m.text);
       expect(userMsgs).toEqual(['do the thing']);
-      expect(rich.map(m => m.text).join('\n')).not.toContain('pikiloom-recover');
+      expect(rich.map(m => m.text).join('\n')).not.toContain('urdr-recover');
     });
   });
 
@@ -435,15 +435,15 @@ describe('recordDeliveredTurn', () => {
 // ── turn-end audit trail ────────────────────────────────────────────────────────────────────
 
 describe('turn-end audit log', () => {
-  const prev = process.env.PIKILOOM_CONFIG;
+  const prev = process.env.URDR_CONFIG;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CONFIG;
-    else process.env.PIKILOOM_CONFIG = prev;
+    if (prev === undefined) delete process.env.URDR_CONFIG;
+    else process.env.URDR_CONFIG = prev;
   });
 
   it('appends one JSON line per turn under the active config home', () => {
     const dir = makeTmpDir('turn-audit');
-    process.env.PIKILOOM_CONFIG = path.join(dir, 'setting.json');
+    process.env.URDR_CONFIG = path.join(dir, 'setting.json');
     appendTurnAudit({
       agent: 'claude', sessionId: 'sess-1', ok: true, stopReason: 'truncated',
       incomplete: true, error: null, elapsedS: 12.3, model: 'claude-fable-5', promptPreview: '你切换到 mirofish-ai 吧',

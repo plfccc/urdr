@@ -5,11 +5,11 @@ import { Bot } from '../src/bot/bot.ts';
 import { startDashboard, type DashboardServer } from '../src/dashboard/server.ts';
 import type { AgentInteraction, StreamResult } from '../src/agent/index.ts';
 
-const TMP = '/tmp/pikiloom-e2e-interaction';
+const TMP = '/tmp/urdr-e2e-interaction';
 fs.mkdirSync(`${TMP}/workdir`, { recursive: true });
 fs.writeFileSync(`${TMP}/setting.json`, '{}');
-process.env.PIKILOOM_CONFIG = `${TMP}/setting.json`;
-process.env.PIKILOOM_WORKDIR = `${TMP}/workdir`;
+process.env.URDR_CONFIG = `${TMP}/setting.json`;
+process.env.URDR_WORKDIR = `${TMP}/workdir`;
 process.env.DEFAULT_AGENT = 'codex';
 
 class TestBot extends Bot {

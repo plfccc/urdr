@@ -22,14 +22,14 @@ const KERNEL_AGENTS = new Set(['claude', 'codex', 'gemini', 'hermes']);
 
 // Generic ACP agents the kernel can drive via @pikiloom/kernel's AcpDriver. Hermes is its
 // own built-in preset; this registry is for ANY other ACP CLI (OpenCode, Zed, …). Extend
-// without a code edit via PIKILOOM_ACP_AGENTS='{"zed":{"command":"zed","args":["--acp"]}}'.
+// without a code edit via URDR_ACP_AGENTS='{"zed":{"command":"zed","args":["--acp"]}}'.
 const DEFAULT_ACP_AGENTS: Record<string, { command: string; args: string[] }> = {
   opencode: { command: 'opencode', args: ['acp'] },
 };
 export function acpAgentConfig(agent: string): { command: string; args: string[] } | null {
   if (DEFAULT_ACP_AGENTS[agent]) return DEFAULT_ACP_AGENTS[agent];
   try {
-    const extra = process.env.PIKILOOM_ACP_AGENTS ? JSON.parse(process.env.PIKILOOM_ACP_AGENTS) : null;
+    const extra = process.env.URDR_ACP_AGENTS ? JSON.parse(process.env.URDR_ACP_AGENTS) : null;
     const c = extra?.[agent];
     if (c && (c.command || agent)) return { command: String(c.command || agent), args: Array.isArray(c.args) ? c.args.map(String) : ['acp'] };
   } catch { /* malformed env → ignore */ }

@@ -54,7 +54,7 @@ const DAEMON_STRIP_ARGS = new Set(['--daemon', '--no-daemon']);
 
 async function runDaemon(userArgs: string[]): Promise<never> {
   const forwardedArgs = userArgs.filter(a => !DAEMON_STRIP_ARGS.has(a));
-  const restartCmd = process.env.PIKILOOM_RESTART_CMD;
+  const restartCmd = process.env.URDR_RESTART_CMD;
   const restartStateFile = createRestartStateFilePath(process.pid);
 
   writeDaemonPidFile(process.pid);
@@ -79,8 +79,8 @@ async function runDaemon(userArgs: string[]): Promise<never> {
       env: {
         ...process.env,
         ...extraEnv,
-        PIKILOOM_DAEMON_CHILD: '1',
-        PIKILOOM_RESTART_STATE_FILE: restartStateFile,
+        URDR_DAEMON_CHILD: '1',
+        URDR_RESTART_STATE_FILE: restartStateFile,
         npm_config_yes: 'true',
       },
     });
@@ -215,7 +215,7 @@ Usage:
   npx urdr stop                         # stop the running daemon
 
 Options:
-  -t, --token <token>       Channel auth token (env: PIKILOOM_TOKEN)
+  -t, --token <token>       Channel auth token (env: URDR_TOKEN)
   -a, --agent <agent>       AI agent: claude | codex  [default: codex]
   -m, --model <model>       Default model, switchable in chat via /models
   -w, --workdir <dir>       Working directory for the agent  [default: current process cwd]
@@ -233,12 +233,12 @@ Options:
   -h, --help                Print this help
 
 Environment variables (general):
-  PIKILOOM_TOKEN             Channel auth token (same as -t, channel-agnostic)
+  URDR_TOKEN             Channel auth token (same as -t, channel-agnostic)
   DEFAULT_AGENT              Default agent (same as -a)
-  PIKILOOM_WORKDIR           Working directory (same as -w)
-  PIKILOOM_TIMEOUT           Timeout in seconds (same as --timeout)
-  PIKILOOM_ALLOWED_IDS       Comma-separated chat/user ID whitelist
-  PIKILOOM_FULL_ACCESS       Default full-access behavior (true/false)
+  URDR_WORKDIR           Working directory (same as -w)
+  URDR_TIMEOUT           Timeout in seconds (same as --timeout)
+  URDR_ALLOWED_IDS       Comma-separated chat/user ID whitelist
+  URDR_FULL_ACCESS       Default full-access behavior (true/false)
 
 Environment variables (Telegram):
   TELEGRAM_BOT_TOKEN         Telegram bot token (from @BotFather)
@@ -284,7 +284,7 @@ Docs: https://github.com/xiaotonng/pikiloom
 }
 
 function persistWorkdir(args: Record<string, any>, userConfig: Partial<UserConfig>): Partial<UserConfig> {
-  if (process.env.PIKILOOM_DAEMON_CHILD) return userConfig;
+  if (process.env.URDR_DAEMON_CHILD) return userConfig;
   if (process.env[FROM_LAUNCHD_ENV]) return userConfig;
   const explicitWorkdir = typeof args.workdir === 'string' && args.workdir.trim()
     ? args.workdir.trim()
@@ -297,11 +297,11 @@ function persistWorkdir(args: Record<string, any>, userConfig: Partial<UserConfi
 }
 
 async function enterDaemonIfNeeded(args: Record<string, any>): Promise<void> {
-  if (args.daemon && !process.env.PIKILOOM_DAEMON_CHILD) {
+  if (args.daemon && !process.env.URDR_DAEMON_CHILD) {
     await runDaemon(process.argv.slice(2));
   }
   if (!args.daemon) {
-    delete process.env.PIKILOOM_DAEMON_CHILD;
+    delete process.env.URDR_DAEMON_CHILD;
   }
 }
 
@@ -448,8 +448,8 @@ async function runSetupPhase(
     const openBrowser =
       !args.server
       && !process.env[FROM_LAUNCHD_ENV]
-      && !envBool('PIKILOOM_DOCKER', false)
-      && envBool('PIKILOOM_OPEN_BROWSER', true);
+      && !envBool('URDR_DOCKER', false)
+      && envBool('URDR_OPEN_BROWSER', true);
     dashboard = await startDashboard({
       port: args.dashboardPort || 3939,
       open: openBrowser,
@@ -572,14 +572,14 @@ function applyRuntimeConfig(
     else if (ag === 'gemini') process.env.GEMINI_MODEL = args.model;
     else process.env.CLAUDE_MODEL = args.model;
   }
-  if (args.timeout != null) process.env.PIKILOOM_TIMEOUT = String(args.timeout);
+  if (args.timeout != null) process.env.URDR_TIMEOUT = String(args.timeout);
 
   if (args.safeMode) {
     process.env.CODEX_FULL_ACCESS = 'false';
     process.env.CLAUDE_PERMISSION_MODE = 'default';
     process.env.GEMINI_APPROVAL_MODE = 'default';
     process.env.GEMINI_SANDBOX = 'true';
-  } else if (args.fullAccess || envBool('PIKILOOM_FULL_ACCESS', true)) {
+  } else if (args.fullAccess || envBool('URDR_FULL_ACCESS', true)) {
     process.env.CODEX_FULL_ACCESS = 'true';
     process.env.CLAUDE_PERMISSION_MODE = 'bypassPermissions';
     process.env.GEMINI_APPROVAL_MODE = 'yolo';
@@ -621,7 +621,7 @@ export async function main() {
   if (await handleMcpServeMode()) return;
 
   // Cutover gate: LOOM_KERNEL_APP=1 boots the backend on @pikiloom/kernel (new version)
-  // instead of the legacy app. Non-PIKILOOM_ prefix so it survives dev.sh's env scrub.
+  // instead of the legacy app. Non-URDR_ prefix so it survives dev.sh's env scrub.
   if (process.env.LOOM_KERNEL_APP === '1') {
     const { runKernelApp } = await import('./kernel-app.js');
     await runKernelApp(process.argv.slice(2));

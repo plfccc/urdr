@@ -105,8 +105,8 @@ describe('claude -p process leak', () => {
     driver = null;
     pidFiles = [];
     // Sub-second so the quiet-settle branch is reachable inside a test.
-    process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = '150';
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS = '50';
+    process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = '150';
+    process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS = '50';
   });
   afterEach(() => {
     try { driver?.dispose(); } catch { /* the point of the sweep below */ }
@@ -117,12 +117,12 @@ describe('claude -p process leak', () => {
         }
       } catch { /* fixture never started */ }
     }
-    delete process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS;
-    delete process.env.PIKILOOM_CLAUDE_BG_HOLD_RECHECK_MS;
-    delete process.env.PIKILOOM_CLAUDE_WARM_IDLE_MS;
-    delete process.env.PIKILOOM_CLAUDE_WARM_MAX;
-    delete process.env.PIKILOOM_REAP_GRACE_MS;
-    delete process.env.PIKILOOM_REAP_FORCE_MS;
+    delete process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS;
+    delete process.env.URDR_CLAUDE_BG_HOLD_RECHECK_MS;
+    delete process.env.URDR_CLAUDE_WARM_IDLE_MS;
+    delete process.env.URDR_CLAUDE_WARM_MAX;
+    delete process.env.URDR_REAP_GRACE_MS;
+    delete process.env.URDR_REAP_FORCE_MS;
     delete process.env.PID_FILE;
     fs.rmSync(tmp, { recursive: true, force: true });
   });
@@ -184,7 +184,7 @@ describe('claude -p process leak', () => {
     // in-flight turn's CLI running: on shutdown nothing aborts running turns (Loom.stop stops
     // surfaces only), so this process got no signal at all and outlived the server.
     const pidFile = armPidFile('stubborn.pid');
-    process.env.PIKILOOM_REAP_FORCE_MS = '150';
+    process.env.URDR_REAP_FORCE_MS = '150';
     const d = new ClaudeDriver(write(STUBBORN), { warmPool: true });
     driver = d;
     const { ctx } = ctxCollect();

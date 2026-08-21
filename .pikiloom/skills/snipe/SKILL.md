@@ -1,14 +1,14 @@
 ---
 name: snipe
-description: Twitter/X 截流。在 coding/AI agent 工具的高流量推广帖下，自动发现→起草→自我批判→护栏→（按 posture）发布 pikiloom 回复，并记录+度量。内容话术统一来自 _promo/pitch.md；可由 _promo/orchestrate.md 无人值守驱动。
+description: Twitter/X 截流。在 coding/AI agent 工具的高流量推广帖下，自动发现→起草→自我批判→护栏→（按 posture）发布 urdr 回复，并记录+度量。内容话术统一来自 _promo/pitch.md；可由 _promo/orchestrate.md 无人值守驱动。
 user-invocable: true
-allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, mcp__pikiloom-browser__browser_navigate, mcp__pikiloom-browser__browser_take_screenshot, mcp__pikiloom-browser__browser_snapshot, mcp__pikiloom-browser__browser_press_key, mcp__pikiloom-browser__browser_click, mcp__pikiloom-browser__browser_evaluate, mcp__pikiloom-browser__browser_type, mcp__pikiloom-browser__browser_run_code_unsafe, mcp__pikiloom-browser__browser_wait_for, mcp__pikiloom-browser__browser_tabs
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, WebFetch, mcp__urdr-browser__browser_navigate, mcp__urdr-browser__browser_take_screenshot, mcp__urdr-browser__browser_snapshot, mcp__urdr-browser__browser_press_key, mcp__urdr-browser__browser_click, mcp__urdr-browser__browser_evaluate, mcp__urdr-browser__browser_type, mcp__urdr-browser__browser_run_code_unsafe, mcp__urdr-browser__browser_wait_for, mcp__urdr-browser__browser_tabs
 argument-hint: "[keywords] or blank for default sweep"
 ---
 
 # Snipe: Twitter/X 热帖截流
 
-在 coding agent / AI 开发工具领域的高流量推广帖下回复 pikiloom，截取流量拿 star。
+在 coding agent / AI 开发工具领域的高流量推广帖下回复 urdr，截取流量拿 star。
 
 **本 skill 只负责 Twitter 渠道的「发现 + 抽取 + 发布」机制。** 所有产品话术、差异点、诚实边界、
 语气/语言规则、回复骨架与反模式，统一来自 **[`../_promo/pitch.md`](../_promo/pitch.md)** —— 不在本文件
@@ -23,11 +23,11 @@ argument-hint: "[keywords] or blank for default sweep"
 | 无人值守编排 + posture | `_promo/orchestrate.md` |
 | 旋钮（caps / posture / kill switch） | `_promo/config.json` → `channels.twitter` |
 
-> 运行根目录：`cd /Users/admin/Desktop/project/pikiloom`。脚本前缀：`.pikiloom/skills/_promo/`。
+> 运行根目录：`cd /Users/admin/Desktop/project/urdr`。脚本前缀：`.urdr/skills/_promo/`。
 
 ## Twitter 渠道的两个铁律（来自实测 + 平台研究）
 
-1. **链接绝不放主回复正文。** X 对带外链的帖/回复显著降权。主回复 = 一句差异化 + `npx pikiloom@latest`
+1. **链接绝不放主回复正文。** X 对带外链的帖/回复显著降权。主回复 = 一句差异化 + `npx urdr@latest`
    （平台内原生文本，不触发降权）；**GitHub 链接放到对自己回复的自回复（self-reply）里**。
 2. **绝不复制同一段文案 / 同一条外链刷多帖** —— 这是 X 明文的封号信号。每条独立起草（`guard.py` 的
    变体检查会拦截过相似的草稿）。
@@ -38,8 +38,8 @@ argument-hint: "[keywords] or blank for default sweep"
 
 ### Step 1: 预检
 ```bash
-cd /Users/admin/Desktop/project/pikiloom
-python3 .pikiloom/skills/_promo/guard.py caps      # 看 twitter 今日剩余配额；为 0 则今天不跑
+cd /Users/admin/Desktop/project/urdr
+python3 .urdr/skills/_promo/guard.py caps      # 看 twitter 今日剩余配额；为 0 则今天不跑
 ```
 
 ### Step 2: 搜索高流量推广帖（浏览器）
@@ -61,12 +61,12 @@ claude code api cost / claude max subscription   (billing 段 = 最高转化，�
 
 ### Step 3: 筛选候选
 
-**硬门槛（全部满足）：** `views > 5000`；最近 48h 内；与 pikiloom 有功能交集；正在推广具体产品/工具
+**硬门槛（全部满足）：** `views > 5000`；最近 48h 内；与 urdr 有功能交集；正在推广具体产品/工具
 （有 `has_product_signal`）；不在 registry：
 ```bash
-python3 .pikiloom/skills/_promo/registry.py seen twitter "<tweet_url>" && echo SKIP   # 已记录则跳过
+python3 .urdr/skills/_promo/registry.py seen twitter "<tweet_url>" && echo SKIP   # 已记录则跳过
 ```
-**排除：** 自己(@sthnavy)的帖；纯新闻/讨论/提问；已是 pikiloom 用户；政治/争议。
+**排除：** 自己(@sthnavy)的帖；纯新闻/讨论/提问；已是 urdr 用户；政治/争议。
 
 **优先级：** ① 功能高度重叠的产品推广帖（截流最佳）② 同赛道不同切入点 ③ 泛 AI 工具帖。选 Top 3–5。
 
@@ -76,8 +76,8 @@ python3 .pikiloom/skills/_promo/registry.py seen twitter "<tweet_url>" && echo S
 差异点(§2，billing 命中优先) + 诚实边界(§3) + 语言跟随原帖(§6)。**Twitter 形态（pitch §9）：**
 
 ```
-{一句差异化，直击原帖产品短板或 pikiloom 独特优势 —— 必须 ground 在原帖具体内容上}
-npx pikiloom@latest
+{一句差异化，直击原帖产品短板或 urdr 独特优势 —— 必须 ground 在原帖具体内容上}
+npx urdr@latest
 ```
 （**正文到此为止，不含链接**。1–2 句最佳，绝不超 3 句。）
 
@@ -88,7 +88,7 @@ Open-source, runs local: https://github.com/xiaotonng/pikiloom
 
 每条起草后立即记录（存草稿文本供变体检查）：
 ```bash
-python3 .pikiloom/skills/_promo/registry.py add --channel twitter --url "<tweet_url>" \
+python3 .urdr/skills/_promo/registry.py add --channel twitter --url "<tweet_url>" \
   --status drafted --type launch --lang <en|zh> --audience <views> --title "<摘要>" \
   --draft-file /tmp/snipe_draft_<id>.txt
 ```
@@ -101,7 +101,7 @@ FAIL → 让子 agent 修一次；再 FAIL → `registry.py update --channel twi
 ### Step 6: 护栏 + 按 posture 发布
 
 ```bash
-python3 .pikiloom/skills/_promo/guard.py check --channel twitter --url "<tweet_url>" \
+python3 .urdr/skills/_promo/guard.py check --channel twitter --url "<tweet_url>" \
   --draft-file /tmp/snipe_draft_<id>.txt        # exit 3 = deny；deny 则 update --status skipped 跳过
 POSTURE=$(python3 -c "import json;print(json.load(open('.pikiloom/skills/_promo/config.json'))['posture'])")
 ```
@@ -112,14 +112,14 @@ POSTURE=$(python3 -c "import json;print(json.load(open('.pikiloom/skills/_promo/
 
 **浏览器发推机制（main reply + self-reply）：**
 1. `browser_navigate` 到 tweet_url。
-2. 点回复框，`browser_type` 主回复正文（差异化 + `npx pikiloom@latest`，**无链接**），提交。
+2. 点回复框，`browser_type` 主回复正文（差异化 + `npx urdr@latest`，**无链接**），提交。
 3. 提交后定位到刚发出的自己的回复，点它的「回复」，`browser_type` 自回复（GitHub 链接行），提交。
    X 会对链接自动生成卡片。
 4. **发送前后各截图核对**：发前确认正文不含 `github.com`；发后读 DOM 确认主回复无外链、自回复有链接，
    且文案只出现一次（防重复粘贴）。异常则不再操作，记 `failed` 让人工介入。
 5. 成功后记录：
 ```bash
-python3 .pikiloom/skills/_promo/registry.py mark-posted --channel twitter \
+python3 .urdr/skills/_promo/registry.py mark-posted --channel twitter \
   --url "<tweet_url>" --post-url "<我们主回复的 url>"
 ```
 
@@ -127,8 +127,8 @@ python3 .pikiloom/skills/_promo/registry.py mark-posted --channel twitter \
 
 把候选 + 草稿整理为 `/tmp/snipe_report.md`（每条含：作者/链接/views/likes/推广产品/交集/差异点/草稿），推飞书：
 ```bash
-python3 .pikiloom/skills/_promo/push_feishu.py --report-file /tmp/snipe_report.md --title "🎯 Snipe 候选"
-python3 .pikiloom/skills/_promo/measure.py report      # t.co referrer / star 关联，附在卡片后
+python3 .urdr/skills/_promo/push_feishu.py --report-file /tmp/snipe_report.md --title "🎯 Snipe 候选"
+python3 .urdr/skills/_promo/measure.py report      # t.co referrer / star 关联，附在卡片后
 ```
 输出 `OK:` 成功 / `SKIP:` 缺飞书凭证 / `ERROR:` 失败（兜底把报告贴进对话）。
 
@@ -137,4 +137,4 @@ python3 .pikiloom/skills/_promo/measure.py report      # t.co referrer / star �
 - **质量 > 数量**：每次 3–5 条候选即可；`guard.py` 会按 `config.json` 的 daily_cap / per_author / 变体兜底。
 - **不要固定搜某个产品名** —— 用场景关键词动态发现，这个领域每天有新工具。
 - **kill_switch / abort.txt 随时生效**；账号尽量用 Premium（链接容忍度 + 触达约 10×）。
-- 历史案例规律：原帖与 pikiloom 功能越接近，回复转化越高。
+- 历史案例规律：原帖与 urdr 功能越接近，回复转化越高。

@@ -22,7 +22,7 @@ export interface ModelLayer {
 // panel, so it lives here once instead of being re-fetched by each InputComposer on mount.
 let _modelLayerInFlight: Promise<ModelLayer | null> | null = null;
 
-const CACHE_KEY = 'pikiloom-store-cache';
+const CACHE_KEY = 'urdr-store-cache';
 
 interface CachedSlices {
   state: AppState | null;
@@ -49,7 +49,7 @@ let _toastId = 0;
 
 function getInitialTheme(): Theme {
   try {
-    const stored = localStorage.getItem('pikiloom-theme');
+    const stored = localStorage.getItem('urdr-theme');
     if (stored === 'light' || stored === 'dark') return stored;
   } catch {}
   return 'dark';
@@ -57,7 +57,7 @@ function getInitialTheme(): Theme {
 
 function getInitialLocale(): Locale {
   try {
-    const stored = localStorage.getItem('pikiloom-locale');
+    const stored = localStorage.getItem('urdr-locale');
     if (stored === 'en' || stored === 'zh-CN') return stored;
   } catch {}
   return 'zh-CN';
@@ -114,12 +114,12 @@ export const useStore = create<StoreState>()((set, get) => ({
 
   setTheme: (t) => {
     document.documentElement.dataset.theme = t;
-    try { localStorage.setItem('pikiloom-theme', t); } catch {}
+    try { localStorage.setItem('urdr-theme', t); } catch {}
     set({ theme: t });
   },
 
   setLocale: (l) => {
-    try { localStorage.setItem('pikiloom-locale', l); } catch {}
+    try { localStorage.setItem('urdr-locale', l); } catch {}
     set({ locale: l });
   },
 

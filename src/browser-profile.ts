@@ -6,7 +6,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import {
   MANAGED_BROWSER_PROFILE_SUBPATH,
   MANAGED_BROWSER_STEALTH_ARGS,
-  PIKILOOM_BROWSER_CDP_URL_ENV,
+  URDR_BROWSER_CDP_URL_ENV,
   PLAYWRIGHT_MCP_PACKAGE_NAME,
   PLAYWRIGHT_MCP_PACKAGE_SPEC,
   PLAYWRIGHT_MCP_BROWSER_ARGS,
@@ -86,7 +86,7 @@ function normalizeBrowserCdpEndpoint(endpoint: string): string {
 export function getConfiguredRemoteCdpUrl(
   env: Record<string, string | undefined> = process.env,
 ): string | null {
-  const raw = String(env[PIKILOOM_BROWSER_CDP_URL_ENV] || '').trim();
+  const raw = String(env[URDR_BROWSER_CDP_URL_ENV] || '').trim();
   if (!raw) return null;
   return normalizeBrowserCdpEndpoint(raw);
 }
@@ -555,10 +555,10 @@ export function getManagedBrowserStatus(): ManagedBrowserStatus {
     pid: runningState.pid,
     detail: chromeInstalled
       ? runningState.running
-        ? 'Managed browser is open for sign-in. pikiloom will close it automatically before browser automation starts.'
+        ? 'Managed browser is open for sign-in. urdr will close it automatically before browser automation starts.'
         : profileCreated
-        ? 'Managed browser profile is ready. Launch it to confirm login state. If it is still open later, pikiloom will close it automatically before browser automation starts.'
-        : 'Chrome is installed. Launch the managed browser once and sign in to the sites you need. If it is still open later, pikiloom will close it automatically before browser automation starts.'
+        ? 'Managed browser profile is ready. Launch it to confirm login state. If it is still open later, urdr will close it automatically before browser automation starts.'
+        : 'Chrome is installed. Launch the managed browser once and sign in to the sites you need. If it is still open later, urdr will close it automatically before browser automation starts.'
       : 'Chrome is not available on this machine. Install Google Chrome or Chromium to use browser automation.',
     chromeExecutable,
     launchCommand: chromeExecutable ? [chromeExecutable, ...getManagedBrowserLaunchArgs(profileDir)] : [],

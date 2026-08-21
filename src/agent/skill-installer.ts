@@ -27,7 +27,7 @@ const GLOBAL_SKILLS_DIR = path.join(os.homedir(), STATE_DIR_NAME, 'skills');
 const INSTALL_TIMEOUT_MS = 60_000;
 const REMOVE_TIMEOUT_MS = 10_000;
 
-const SKILL_LEDGER_FILE = '.pikiloom-skills-ledger.json';
+const SKILL_LEDGER_FILE = '.urdr-skills-ledger.json';
 
 export interface SkillLedgerEntry {
   source: string;

@@ -35,10 +35,10 @@ describe('claudeUserEventHasToolResult', () => {
 });
 
 describe('claudeModelStallMs', () => {
-  const prev = process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
+  const prev = process.env.URDR_CLAUDE_MODEL_STALL_MS;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
-    else process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = prev;
+    if (prev === undefined) delete process.env.URDR_CLAUDE_MODEL_STALL_MS;
+    else process.env.URDR_CLAUDE_MODEL_STALL_MS = prev;
   });
   // Subscription accounts stream nothing during extended thinking, and at the reasoning rungs a
   // legitimate silent think regularly exceeds 2 minutes — the old 120s default settled LIVE turns
@@ -46,21 +46,21 @@ describe('claudeModelStallMs', () => {
   // window is now effort-laddered and errs long (a hung turn showing its spinner longer is the
   // cheap side of the asymmetry).
   it('defaults to 5min for light rungs and 10min for deep-reasoning rungs', () => {
-    delete process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
+    delete process.env.URDR_CLAUDE_MODEL_STALL_MS;
     expect(claudeModelStallMs()).toBe(300_000);
     expect(claudeModelStallMs('low')).toBe(300_000);
     expect(claudeModelStallMs('medium')).toBe(300_000);
     for (const effort of ['high', 'xhigh', 'max', 'ultra']) expect(claudeModelStallMs(effort)).toBe(600_000);
   });
   it('honors a positive env override regardless of effort', () => {
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '5000';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '5000';
     expect(claudeModelStallMs()).toBe(5000);
     expect(claudeModelStallMs('xhigh')).toBe(5000);
   });
   it('ignores a non-positive / garbage override', () => {
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '-1';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '-1';
     expect(claudeModelStallMs()).toBe(300_000);
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = 'nope';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = 'nope';
     expect(claudeModelStallMs('max')).toBe(600_000);
   });
 });
@@ -85,14 +85,14 @@ process.stdin.on('close', () => process.exit(0));
 }
 
 describe('post-tool model-stall watchdog (integration)', () => {
-  const prev = process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
+  const prev = process.env.URDR_CLAUDE_MODEL_STALL_MS;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
-    else process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = prev;
+    if (prev === undefined) delete process.env.URDR_CLAUDE_MODEL_STALL_MS;
+    else process.env.URDR_CLAUDE_MODEL_STALL_MS = prev;
   });
 
   it('settles an incomplete "stalled" result when the model goes silent after a tool_result', async () => {
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '200';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '200';
     const bin = writeFakeClaude(`
 emit({ type: 'assistant', message: { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_1', name: 'Bash', input: { command: 'grep x a.txt' } }], stop_reason: 'tool_use' } });
 emit({ type: 'user', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: 'match', is_error: false }] } });
@@ -110,7 +110,7 @@ emit({ type: 'user', message: { role: 'user', content: [{ type: 'tool_result', t
     // delivery (the initial model wait), so its countdown starts before the fake binary's first
     // line is even read. A budget tight enough to expire during spawn fires before the reply lands
     // and this asserts a stall that production (300s/600s windows) would never see.
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '3000';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '3000';
     const bin = writeFakeClaude(`
 emit({ type: 'assistant', message: { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_1', name: 'Bash', input: { command: 'grep x a.txt' } }], stop_reason: 'tool_use' } });
 emit({ type: 'user', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: 'match', is_error: false }] } });

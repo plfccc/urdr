@@ -3,7 +3,7 @@
 A layered, open Agent orchestrator — a streamlined fork of [pikiloom](https://github.com/xiaotonng/pikiloom). **Not** "an IM bridge for coding agents" — IM is one of several pluggable terminals.
 
 Named for Urðr, first of the Norse Norns, who sits at the world tree and works out what
-becomes of things. Nothing in the code carries the old loom/pikiloom vocabulary.
+becomes of things. Nothing in the code carries the old loom/urdr vocabulary.
 
 **Four layers (top → bottom):**
 
@@ -21,9 +21,14 @@ Removed relative to upstream: the weixin / wecom / slack / discord / dingtalk ch
 so kernel is no longer a drop-in match for the published `@pikiloom/kernel`), the local-model
 catalog pages, and the marketing site. Merging from `upstream` will conflict in those areas.
 
-State dir is `~/.urdr`; `~/.loomlet`, `~/.pikiloom` and `~/.pikiclaw` are migrated on first launch by
-`migrateLegacyStateDir()`. The env prefix stays `PIKILOOM_*` because dozens of reads spell the
-variable names out as literals — `LOOMLET_*` is accepted as an alias and hydrated at startup.
+State dir is `~/.urdr`; `~/.loomlet`, `~/.pikiloom` and `~/.pikiclaw` are migrated on first
+launch by `migrateLegacyStateDir()`, which gates on `setting.json` rather than the directory
+existing — `dev.sh` creates `~/.urdr/dev` before the runtime starts.
+
+Env vars are `URDR_*`. `PIKILOOM_*`, `LOOMLET_*` and `PIKICLAW_*` are hydrated onto that prefix
+at startup (`hydrateLegacyEnv`), so anything already set in a shell or compose file keeps
+working. `dev.sh` scrubs all four prefixes — scrubbing only `URDR_` would let an inherited
+variable back in under its new name.
 
 ## Project Structure
 
@@ -166,8 +171,8 @@ node <repo>/node_modules/vitest/vitest.mjs run    # npx re-triggers the devEngin
 
 - Persistent config is `~/.urdr/setting.json`
 - The Dashboard is part of the normal runtime, not just a setup helper
-- This machine still runs the upstream pikiloom via `npx pikiloom@latest` (its own `~/.pikiloom` state); do not kill, replace, or "clean up" that process when the task only concerns urdr dev mode
-- `npm run dev` rewrites `~/.urdr/dev/dev.log` on each launch. When invoked without a TTY (any tool-call / piped invocation) it auto-detaches into the background — no need for `run_in_background:true`. Force foreground with `PIKILOOM_DEV_FOREGROUND=1`, background with `PIKILOOM_DEV_BACKGROUND=1`. Stop it with `bash scripts/dev.sh --stop`.
-- Dev mode isolates config: `PIKILOOM_CONFIG` points at `~/.urdr/dev/setting.json`, so the main `~/.urdr/setting.json` channels are NOT loaded. An empty `launching channels:` line in the dev log is expected unless that dev file has credentials of its own.
+- This machine still runs the upstream urdr via `npx urdr@latest` (its own `~/.urdr` state); do not kill, replace, or "clean up" that process when the task only concerns urdr dev mode
+- `npm run dev` rewrites `~/.urdr/dev/dev.log` on each launch. When invoked without a TTY (any tool-call / piped invocation) it auto-detaches into the background — no need for `run_in_background:true`. Force foreground with `URDR_DEV_FOREGROUND=1`, background with `URDR_DEV_BACKGROUND=1`. Stop it with `bash scripts/dev.sh --stop`.
+- Dev mode isolates config: `URDR_CONFIG` points at `~/.urdr/dev/setting.json`, so the main `~/.urdr/setting.json` channels are NOT loaded. An empty `launching channels:` line in the dev log is expected unless that dev file has credentials of its own.
 - `npm run dev` counts three `node.exe` processes on Windows for one runtime (`npx-cli.js` → `tsx/cli.mjs` → the worker). Only the innermost one binds the port; check `netstat -ano | grep :3940` rather than counting processes.
 - For full architecture / extension / testing guides, see `ARCHITECTURE.md`, `INTEGRATION.md`, `TESTING.md`.

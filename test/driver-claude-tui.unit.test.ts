@@ -13,26 +13,26 @@ describe('isClaudePrintModeForced — TUI is now the default; only opt-out flips
   });
 
   it('default false / PRINT truthy true / legacy TUI off true / legacy TUI=1 no-op', async () => {
-    await withEnv({ PIKILOOM_CLAUDE_PRINT: undefined, PIKILOOM_CLAUDE_TUI: undefined }, () => {
+    await withEnv({ URDR_CLAUDE_PRINT: undefined, URDR_CLAUDE_TUI: undefined }, () => {
       expect(module.isClaudePrintModeForced()).toBe(false);
     });
-    await withEnv({ PIKILOOM_CLAUDE_PRINT: '', PIKILOOM_CLAUDE_TUI: '' }, () => {
+    await withEnv({ URDR_CLAUDE_PRINT: '', URDR_CLAUDE_TUI: '' }, () => {
       expect(module.isClaudePrintModeForced()).toBe(false);
     });
 
     for (const v of ['1', 'true', 'yes', 'on', 'TRUE', 'Yes', ' 1 ']) {
-      await withEnv({ PIKILOOM_CLAUDE_PRINT: v, PIKILOOM_CLAUDE_TUI: undefined }, () => {
+      await withEnv({ URDR_CLAUDE_PRINT: v, URDR_CLAUDE_TUI: undefined }, () => {
         expect(module.isClaudePrintModeForced()).toBe(true);
       });
     }
 
     for (const v of ['0', 'false', 'no', 'off', 'FALSE', 'No', ' off ']) {
-      await withEnv({ PIKILOOM_CLAUDE_PRINT: undefined, PIKILOOM_CLAUDE_TUI: v }, () => {
+      await withEnv({ URDR_CLAUDE_PRINT: undefined, URDR_CLAUDE_TUI: v }, () => {
         expect(module.isClaudePrintModeForced()).toBe(true);
       });
     }
 
-    await withEnv({ PIKILOOM_CLAUDE_PRINT: undefined, PIKILOOM_CLAUDE_TUI: '1' }, () => {
+    await withEnv({ URDR_CLAUDE_PRINT: undefined, URDR_CLAUDE_TUI: '1' }, () => {
       expect(module.isClaudePrintModeForced()).toBe(false);
     });
   });
@@ -44,7 +44,7 @@ describe('Claude TUI driver — startup-failure fallback contract', () => {
 
   beforeEach(() => {
     onText.mockReset();
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-claude-tui-test-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-tui-test-'));
   });
 
   afterEach(() => {
@@ -52,7 +52,7 @@ describe('Claude TUI driver — startup-failure fallback contract', () => {
   });
 
   it('throws (not returns) when pty.spawn cannot find the claude binary — lets the dispatcher fall back to -p', async () => {
-    const isolatedPath = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-no-claude-'));
+    const isolatedPath = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-no-claude-'));
     const { doClaudeTuiStream } = await import('../src/agent/drivers/claude-tui.ts');
     try {
       let thrown: any = null;
@@ -96,14 +96,14 @@ describe('Claude TUI driver — upfront session-id promotion', () => {
 
   beforeEach(() => {
     onText.mockReset();
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-tui-promote-'));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-tui-promote-'));
   });
   afterEach(() => {
     try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
   });
 
   async function runWithBrokenSpawn(sessionId: string | null, onSessionId: (id: string) => void) {
-    const isolatedPath = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-no-claude-'));
+    const isolatedPath = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-no-claude-'));
     const { doClaudeTuiStream } = await import('../src/agent/drivers/claude-tui.ts');
     try {
       await Promise.race([
@@ -442,7 +442,7 @@ describe('Claude TUI driver — hook script', () => {
   let statePath: string;
 
   beforeEach(async () => {
-    workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-hook-test-'));
+    workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-hook-test-'));
     hookPath = path.join(workDir, 'hook.cjs');
     statePath = path.join(workDir, 'state.json');
     const HOOK_SCRIPT = `#!/usr/bin/env node
@@ -531,7 +531,7 @@ describe('Claude TUI driver — readJsonlIncrement', () => {
   let tmpFile: string;
 
   beforeEach(() => {
-    tmpFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-jsonl-')), 'session.jsonl');
+    tmpFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-jsonl-')), 'session.jsonl');
   });
 
   afterEach(() => {

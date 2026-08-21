@@ -7,7 +7,7 @@
 //   })
 //   await loom.start()
 //
-// pikiloom itself is just a consumer of this package.
+// urdr itself is just a consumer of this package.
 //
 // This barrel IS the public API (pinned by test/api-surface.test.ts). Driver-internal
 // parser/settle helpers are exported by their modules for white-box tests but are

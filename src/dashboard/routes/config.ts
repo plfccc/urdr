@@ -48,7 +48,7 @@ export async function buildBrowserStatusResponse(config = loadUserConfig(), brow
       detail: !gui.browserEnabled
         ? 'Browser automation is disabled. No browser MCP server will be injected into agent sessions. On macOS, operate your main browser directly with open, osascript, and screencapture when needed.'
         : remoteCdpUrl
-          ? `Attached to an external Chrome over CDP at ${remoteCdpUrl} (PIKILOOM_BROWSER_CDP_URL). pikiloom does not launch or manage a local browser in this mode — sign in to sites from the Chrome that owns this endpoint (e.g. your sidecar's web VNC).`
+          ? `Attached to an external Chrome over CDP at ${remoteCdpUrl} (URDR_BROWSER_CDP_URL). urdr does not launch or manage a local browser in this mode — sign in to sites from the Chrome that owns this endpoint (e.g. your sidecar's web VNC).`
           : browserState.detail,
     },
   };
@@ -389,7 +389,7 @@ app.post('/api/browser/setup', async (c) => {
       }, 400);
     }
     if (getConfiguredRemoteCdpUrl()) {
-      runtime.log('[browser] setup skipped: PIKILOOM_BROWSER_CDP_URL configured (external CDP, no local browser to launch)');
+      runtime.log('[browser] setup skipped: URDR_BROWSER_CDP_URL configured (external CDP, no local browser to launch)');
       return c.json({ ok: true, ...(await buildBrowserStatusResponse(config)) });
     }
     const launch = launchManagedBrowserSetup();

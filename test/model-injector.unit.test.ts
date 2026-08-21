@@ -15,9 +15,9 @@ describe('resolveAgentInjection — Claude BYOK ANTHROPIC_BASE_URL', () => {
   let cache: Map<string, any>;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-injector-'));
-    process.env.PIKILOOM_CONFIG = path.join(tmpDir, 'setting.json');
-    fs.writeFileSync(process.env.PIKILOOM_CONFIG, JSON.stringify({ models: {} }));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-injector-'));
+    process.env.URDR_CONFIG = path.join(tmpDir, 'setting.json');
+    fs.writeFileSync(process.env.URDR_CONFIG, JSON.stringify({ models: {} }));
     cache = (globalThis as any)[Symbol.for('urdr.providerModelsCache')]
       || new Map();
   });
@@ -115,9 +115,9 @@ describe('resolveAgentInjection — Codex routing (Responses-only)', () => {
   let cache: Map<string, any>;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-codex-'));
-    process.env.PIKILOOM_CONFIG = path.join(tmpDir, 'setting.json');
-    fs.writeFileSync(process.env.PIKILOOM_CONFIG, JSON.stringify({ models: {} }));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-codex-'));
+    process.env.URDR_CONFIG = path.join(tmpDir, 'setting.json');
+    fs.writeFileSync(process.env.URDR_CONFIG, JSON.stringify({ models: {} }));
     cache = (globalThis as any)[Symbol.for('urdr.providerModelsCache')] || new Map();
   });
   afterEach(() => { fs.rmSync(tmpDir, { recursive: true, force: true }); });
@@ -191,9 +191,9 @@ describe('resolveAgentInjection — per-session profile override (dashboard does
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-override-'));
-    process.env.PIKILOOM_CONFIG = path.join(tmpDir, 'setting.json');
-    fs.writeFileSync(process.env.PIKILOOM_CONFIG, JSON.stringify({ models: {} }));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-override-'));
+    process.env.URDR_CONFIG = path.join(tmpDir, 'setting.json');
+    fs.writeFileSync(process.env.URDR_CONFIG, JSON.stringify({ models: {} }));
   });
   afterEach(() => { fs.rmSync(tmpDir, { recursive: true, force: true }); });
   afterAll(() => { shutdownAnthropicBridge(); });

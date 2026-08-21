@@ -79,25 +79,25 @@ describe('claudeProducedRealOutput', () => {
 });
 
 describe('claudeResumeNoopRetryLimit', () => {
-  const prev = process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES;
+  const prev = process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES;
-    else process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = prev;
+    if (prev === undefined) delete process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES;
+    else process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = prev;
   });
   it('defaults to 3', () => {
-    delete process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES;
+    delete process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES;
     expect(claudeResumeNoopRetryLimit()).toBe(3);
   });
   it('honors an override, including 0 to disable', () => {
-    process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = '5';
+    process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = '5';
     expect(claudeResumeNoopRetryLimit()).toBe(5);
-    process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = '0';
+    process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = '0';
     expect(claudeResumeNoopRetryLimit()).toBe(0);
   });
   it('ignores a negative / garbage override', () => {
-    process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = '-2';
+    process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = '-2';
     expect(claudeResumeNoopRetryLimit()).toBe(3);
-    process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = 'nope';
+    process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = 'nope';
     expect(claudeResumeNoopRetryLimit()).toBe(3);
   });
 });
@@ -137,13 +137,13 @@ emit({ type: 'result', subtype: 'success', is_error: false, stop_reason: 'end_tu
 `;
 
 describe('no-op resume recovery (integration)', () => {
-  const prevRetries = process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES;
-  const prevStall = process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
+  const prevRetries = process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES;
+  const prevStall = process.env.URDR_CLAUDE_MODEL_STALL_MS;
   afterEach(() => {
-    if (prevRetries === undefined) delete process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES;
-    else process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = prevRetries;
-    if (prevStall === undefined) delete process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS;
-    else process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = prevStall;
+    if (prevRetries === undefined) delete process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES;
+    else process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = prevRetries;
+    if (prevStall === undefined) delete process.env.URDR_CLAUDE_MODEL_STALL_MS;
+    else process.env.URDR_CLAUDE_MODEL_STALL_MS = prevStall;
   });
 
   it('re-issues the prompt when a resume no-ops, then delivers the real answer', async () => {
@@ -196,8 +196,8 @@ describe('no-op resume recovery (integration)', () => {
   }, 8000);
 
   it('is bounded — a session that always no-ops settles empty instead of looping forever', async () => {
-    process.env.PIKILOOM_CLAUDE_RESUME_NOOP_RETRIES = '2';
-    process.env.PIKILOOM_CLAUDE_MODEL_STALL_MS = '400';
+    process.env.URDR_CLAUDE_RESUME_NOOP_RETRIES = '2';
+    process.env.URDR_CLAUDE_MODEL_STALL_MS = '400';
     // Every stdin message answered with an empty no-op result: the driver re-injects up to the
     // limit, then gives up and settles (must terminate, not hang).
     const bin = writeFakeClaude(

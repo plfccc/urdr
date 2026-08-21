@@ -85,7 +85,7 @@ export interface DriverResult {
 
 // ---- TUI mode (the second, orthogonal shape) ----
 // run() yields a structured snapshot (for Web/IM). tui() yields a raw, full-screen
-// interactive process to passthrough over a PTY (for a terminal app like `pikiloom code`).
+// interactive process to passthrough over a PTY (for a terminal app like `urdr code`).
 // Same driver registry, two outputs: structured frames vs raw bytes.
 
 export interface TuiInput {

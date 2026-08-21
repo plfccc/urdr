@@ -25,7 +25,7 @@ const server = http.createServer((req, res) => {
   res.writeHead(404); res.end('not found');
 });
 
-const web = new WebSurface({ server, name: 'pikiloom-kernel' });
+const web = new WebSurface({ server, name: 'urdr-kernel' });
 const loom = createLoom({
   appNamespace: 'loom-console',
   drivers: [useReal ? new ClaudeDriver() : new EchoDriver()],

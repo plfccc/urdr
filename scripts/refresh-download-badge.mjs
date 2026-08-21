@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { writeFileSync } from 'node:fs';
 
-const PACKAGES = ['pikiloom', 'pikiclaw'];
+const PACKAGES = ['urdr', 'pikiclaw'];
 const OUT = new URL('../docs/downloads.json', import.meta.url);
 
 async function monthlyInstalls(pkg) {

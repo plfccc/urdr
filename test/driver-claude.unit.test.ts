@@ -98,7 +98,7 @@ describe('Claude usage resolution', () => {
   beforeEach(() => {
     vi.resetModules();
     execSyncMock.mockReset();
-    homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-claude-usage-'));
+    homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-usage-'));
     process.env.HOME = homeDir;
   });
 
@@ -146,7 +146,7 @@ describe('Claude usage resolution', () => {
 
     vi.resetModules();
     execSyncMock.mockReset();
-    homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-claude-usage-'));
+    homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-usage-'));
     process.env.HOME = homeDir;
 
     {
@@ -215,7 +215,7 @@ describe('Claude context fallback', () => {
   it('derives context window via 1M fallback and accumulates turnOutputTokens across calls', async () => {
     {
     const { doClaudeStream } = await import('../src/agent/index.ts');
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-claude-context-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-context-'));
     const fakeBin = path.join(tmpDir, 'bin');
     fs.mkdirSync(fakeBin, { recursive: true });
     process.env.PATH = `${fakeBin}:${process.env.PATH}`;
@@ -256,7 +256,7 @@ describe('Claude context fallback', () => {
 
     {
     const { doClaudeStream } = await import('../src/agent/index.ts');
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-claude-turnout-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-claude-turnout-'));
     const fakeBin = path.join(tmpDir, 'bin');
     fs.mkdirSync(fakeBin, { recursive: true });
     process.env.PATH = `${fakeBin}:${process.env.PATH}`;
@@ -323,7 +323,7 @@ describe('Claude session-context env scrub', () => {
   });
 });
 
-describe('normalizeClaudeSessionEntrypoint — surface Pikiloom sessions in --resume + VSCode ext', () => {
+describe('normalizeClaudeSessionEntrypoint — surface Urdr sessions in --resume + VSCode ext', () => {
   it('flips entrypoint sdk-cli→cli in the transcript and leaves an already-clean file untouched', async () => {
     const { normalizeClaudeSessionEntrypoint, claudeProjectDirName } = await import('../src/agent/drivers/claude.ts');
     const os = await import('node:os');

@@ -23,10 +23,10 @@ describe('delivered-artifact manifest', () => {
   let workdir: string;
 
   beforeEach(() => {
-    home = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-artifacts-home-'));
+    home = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-artifacts-home-'));
     homeSnapshot = process.env.HOME;
     process.env.HOME = home;
-    workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'pikiloom-artifacts-wd-'));
+    workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'urdr-artifacts-wd-'));
   });
   afterEach(() => {
     fs.rmSync(home, { recursive: true, force: true });

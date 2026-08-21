@@ -89,17 +89,17 @@ export function sigterm(proc: ChildProcess | null | undefined): void {
 }
 
 /** How long a reaped child may take to honour stdin EOF before it earns a SIGTERM.
- *  Override with PIKILOOM_REAP_GRACE_MS. */
+ *  Override with URDR_REAP_GRACE_MS. */
 const REAP_GRACE_DEFAULT_MS = 15_000;
 export function reapGraceMs(): number {
-  const raw = Number(process.env.PIKILOOM_REAP_GRACE_MS);
+  const raw = Number(process.env.URDR_REAP_GRACE_MS);
   return Number.isFinite(raw) && raw >= 0 ? raw : REAP_GRACE_DEFAULT_MS;
 }
 /** How long it may then take to honour SIGTERM before it earns a SIGKILL.
- *  Override with PIKILOOM_REAP_FORCE_MS (tests need a sub-second escalation). */
+ *  Override with URDR_REAP_FORCE_MS (tests need a sub-second escalation). */
 const REAP_FORCE_DEFAULT_MS = 10_000;
 export function reapForceMs(): number {
-  const raw = Number(process.env.PIKILOOM_REAP_FORCE_MS);
+  const raw = Number(process.env.URDR_REAP_FORCE_MS);
   return Number.isFinite(raw) && raw > 0 ? raw : REAP_FORCE_DEFAULT_MS;
 }
 

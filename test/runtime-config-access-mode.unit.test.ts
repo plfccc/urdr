@@ -7,7 +7,7 @@ import {
 } from '../src/core/config/runtime-config.js';
 
 describe('resolveClaudeAccessMode', () => {
-  const ENV_KEYS = ['PIKILOOM_CLAUDE_PRINT', 'PIKILOOM_CLAUDE_TUI'] as const;
+  const ENV_KEYS = ['URDR_CLAUDE_PRINT', 'URDR_CLAUDE_TUI'] as const;
   let saved: Record<string, string | undefined>;
 
   beforeEach(() => {
@@ -29,21 +29,21 @@ describe('resolveClaudeAccessMode', () => {
   it('honours the persisted config field over everything', () => {
     expect(resolveClaudeAccessMode({ claudeAccessMode: 'api' })).toBe('api');
     expect(resolveClaudeAccessMode({ claudeAccessMode: 'subscription' })).toBe('subscription');
-    process.env.PIKILOOM_CLAUDE_PRINT = '1';
+    process.env.URDR_CLAUDE_PRINT = '1';
     expect(resolveClaudeAccessMode({ claudeAccessMode: 'subscription' })).toBe('subscription');
   });
 
   it('falls back to env when config is unset', () => {
-    process.env.PIKILOOM_CLAUDE_PRINT = '1';
+    process.env.URDR_CLAUDE_PRINT = '1';
     expect(resolveClaudeAccessMode({})).toBe('api');
-    delete process.env.PIKILOOM_CLAUDE_PRINT;
-    process.env.PIKILOOM_CLAUDE_TUI = '0';
+    delete process.env.URDR_CLAUDE_PRINT;
+    process.env.URDR_CLAUDE_TUI = '0';
     expect(resolveClaudeAccessMode({})).toBe('api');
   });
 
-  it('PIKILOOM_CLAUDE_PRINT takes precedence over a stale legacy TUI var', () => {
-    process.env.PIKILOOM_CLAUDE_PRINT = '0';
-    process.env.PIKILOOM_CLAUDE_TUI = '0';
+  it('URDR_CLAUDE_PRINT takes precedence over a stale legacy TUI var', () => {
+    process.env.URDR_CLAUDE_PRINT = '0';
+    process.env.URDR_CLAUDE_TUI = '0';
     expect(claudeAccessModeEnv()).toBe('subscription');
     expect(resolveClaudeAccessMode({})).toBe('subscription');
   });
@@ -54,10 +54,10 @@ describe('resolveClaudeAccessMode', () => {
 
   it('setClaudeAccessModeEnv round-trips through the env reader', () => {
     setClaudeAccessModeEnv('api');
-    expect(process.env.PIKILOOM_CLAUDE_PRINT).toBe('1');
+    expect(process.env.URDR_CLAUDE_PRINT).toBe('1');
     expect(claudeAccessModeEnv()).toBe('api');
     setClaudeAccessModeEnv('subscription');
-    expect(process.env.PIKILOOM_CLAUDE_PRINT).toBe('0');
+    expect(process.env.URDR_CLAUDE_PRINT).toBe('0');
     expect(claudeAccessModeEnv()).toBe('subscription');
   });
 });

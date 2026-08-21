@@ -109,7 +109,7 @@ async function resizeToTemp(src: string, maxEdge: number): Promise<string | null
   if (resizer === 'none') return null;
   const srcExt = extname(src).toLowerCase();
   const outExt = srcExt === '.webp' ? '.png' : srcExt;
-  const out = path.join(os.tmpdir(), `pikiloom-att-${randomUUID().slice(0, 8)}${outExt}`);
+  const out = path.join(os.tmpdir(), `urdr-att-${randomUUID().slice(0, 8)}${outExt}`);
   try {
     if (resizer === 'sips') {
       const format = srcExt === '.webp' ? ['-s', 'format', 'png'] : [];

@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { toUrdrPlan } from '../src/agent/kernel-bridge.js';
 
-// Regression: the kernel emits plan steps keyed { text }, but pikiloom's StreamPlan and the whole
+// Regression: the kernel emits plan steps keyed { text }, but urdr's StreamPlan and the whole
 // dashboard pipeline (pikichannel adapter -> ws.ts -> PlanProgressCard) key them { step }. The
 // bridge must translate at the seam, else the task list renders the progress count but blank rows
 // (the codex "0/4 项任务已完成" with empty dots bug).
 describe('kernel-bridge toUrdrPlan (text -> step)', () => {
-  it('maps kernel { text } plan steps to pikiloom { step }', () => {
+  it('maps kernel { text } plan steps to urdr { step }', () => {
     const out = toUrdrPlan({
       explanation: 'doing work',
       steps: [
@@ -44,7 +44,7 @@ describe('kernel-bridge toUrdrPlan (text -> step)', () => {
     expect(toUrdrPlan({})).toBeNull();
   });
 
-  it('accepts an already-pikiloom-shaped { step } plan idempotently', () => {
+  it('accepts an already-urdr-shaped { step } plan idempotently', () => {
     const out = toUrdrPlan({ explanation: null, steps: [{ step: 'already', status: 'completed' }] });
     expect(out).toEqual({ explanation: null, steps: [{ step: 'already', status: 'completed' }] });
   });

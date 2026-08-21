@@ -184,41 +184,41 @@ describe('regression: 3 parallel agents finishing together must NOT kill the las
 });
 
 describe('claudeBgHoldCapMs', () => {
-  const prev = process.env.PIKILOOM_CLAUDE_BG_HOLD_MS;
+  const prev = process.env.URDR_CLAUDE_BG_HOLD_MS;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CLAUDE_BG_HOLD_MS;
-    else process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = prev;
+    if (prev === undefined) delete process.env.URDR_CLAUDE_BG_HOLD_MS;
+    else process.env.URDR_CLAUDE_BG_HOLD_MS = prev;
   });
   it('defaults to 10 minutes', () => {
-    delete process.env.PIKILOOM_CLAUDE_BG_HOLD_MS;
+    delete process.env.URDR_CLAUDE_BG_HOLD_MS;
     expect(claudeBgHoldCapMs()).toBe(10 * 60_000);
   });
   it('honors a positive override', () => {
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = '120000';
+    process.env.URDR_CLAUDE_BG_HOLD_MS = '120000';
     expect(claudeBgHoldCapMs()).toBe(120_000);
   });
   it('ignores a non-positive / non-numeric override', () => {
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = 'nonsense';
+    process.env.URDR_CLAUDE_BG_HOLD_MS = 'nonsense';
     expect(claudeBgHoldCapMs()).toBe(10 * 60_000);
-    process.env.PIKILOOM_CLAUDE_BG_HOLD_MS = '0';
+    process.env.URDR_CLAUDE_BG_HOLD_MS = '0';
     expect(claudeBgHoldCapMs()).toBe(10 * 60_000);
   });
 });
 
 describe('claudeBgSettleQuietMs', () => {
-  const prev = process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS;
+  const prev = process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS;
   afterEach(() => {
-    if (prev === undefined) delete process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS;
-    else process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = prev;
+    if (prev === undefined) delete process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS;
+    else process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = prev;
   });
   it('defaults to 15 seconds', () => {
-    delete process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS;
+    delete process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS;
     expect(claudeBgSettleQuietMs()).toBe(15_000);
   });
   it('honors a positive override and ignores a bad one', () => {
-    process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = '3000';
+    process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = '3000';
     expect(claudeBgSettleQuietMs()).toBe(3_000);
-    process.env.PIKILOOM_CLAUDE_BG_SETTLE_QUIET_MS = '0';
+    process.env.URDR_CLAUDE_BG_SETTLE_QUIET_MS = '0';
     expect(claudeBgSettleQuietMs()).toBe(15_000);
   });
 });

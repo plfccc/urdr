@@ -1275,7 +1275,7 @@ function getClaudeSessions(workdir: string, limit?: number): SessionListResult {
   const projectDir = path.join(getHome(), '.claude', 'projects', claudeProjectDirName(resolvedWorkdir));
   agentLog(
     `[sessions:claude] workdir=${resolvedWorkdir} projectDir=${projectDir} projectDirExists=${fs.existsSync(projectDir)} ` +
-    `pikiloom=${urdrSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
+    `urdr=${urdrSessions.length} native=${nativeSessions.length} merged=${sessions.length}`
   );
   return { ok: true, sessions, error: null };
 }
@@ -2281,9 +2281,9 @@ export function buildClaudeClearGoalPrompt(): string {
 }
 
 export function isClaudePrintModeForced(): boolean {
-  const print = (process.env.PIKILOOM_CLAUDE_PRINT ?? '').trim().toLowerCase();
+  const print = (process.env.URDR_CLAUDE_PRINT ?? '').trim().toLowerCase();
   if (print === '1' || print === 'true' || print === 'yes' || print === 'on') return true;
-  const tui = (process.env.PIKILOOM_CLAUDE_TUI ?? '').trim().toLowerCase();
+  const tui = (process.env.URDR_CLAUDE_TUI ?? '').trim().toLowerCase();
   if (tui === '0' || tui === 'false' || tui === 'no' || tui === 'off') return true;
   return false;
 }

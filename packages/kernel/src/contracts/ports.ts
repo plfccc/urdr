@@ -103,7 +103,7 @@ export interface InteractionHandler {
 
 // ---- Catalog: discovery of WHAT is available, as opaque descriptors ----
 // So an upper app can build its composer (model/effort/tool/skill pickers) without
-// hardcoding any of them. The app supplies these from its own SSOT (e.g. pikiloom's
+// hardcoding any of them. The app supplies these from its own SSOT (e.g. urdr's
 // runtime-config / catalog/* / mcp / skills); the kernel bakes in zero model knowledge.
 // Per-agent capabilities are NOT here — they are derived from the driver registry.
 
