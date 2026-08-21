@@ -31,7 +31,7 @@ import {
   CODEX_STREAM_HARD_KILL_GRACE_MS,
   SESSION_RUNNING_THRESHOLD_MS,
 } from '../../core/constants.js';
-import { getHome } from '../../core/platform.js';
+import { getHome, spawnCli } from '../../core/platform.js';
 
 const CODEX_APPSERVER_SPAWN_TIMEOUT_MS = _CODEX_APPSERVER_SPAWN_TIMEOUT_MS;
 
@@ -72,9 +72,11 @@ export class CodexAppServer {
       if (!overrides.some(entry => /^features\.goals\s*=/.test(entry))) overrides.push('features.goals=true');
       for (const c of overrides) args.push('-c', c);
       agentLog(`[codex-rpc] spawning: codex ${args.join(' ')}`);
-      const proc = spawn('codex', args, {
+      // spawnCli, not shell:true — it resolves the Windows shim without concatenating argv
+      // into a command line (Node's DEP0190), which matters because `args` carries -c config
+      // overrides built from user settings.
+      const proc = spawnCli('codex', args, {
         stdio: ['pipe', 'pipe', 'pipe'],
-        shell: true,
         detached: process.platform !== 'win32',
         env: this.extraEnv ? { ...process.env, ...this.extraEnv } : process.env,
       });
@@ -85,7 +87,7 @@ export class CodexAppServer {
       this.ready = false;
 
       proc.stderr?.on('data', (c: Buffer) => { agentLog(`[codex-rpc][stderr] ${c.toString().trim().slice(0, 200)}`); });
-      proc.stdout.on('data', (chunk: Buffer) => {
+      proc.stdout?.on('data', (chunk: Buffer) => {
         this.buf += chunk.toString('utf-8');
         const lines = this.buf.split('\n');
         this.buf = lines.pop() || '';

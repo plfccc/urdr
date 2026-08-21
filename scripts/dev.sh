@@ -57,20 +57,22 @@ _kill_tree() {
 # decision, so the flag is never forwarded to the worker as a runtime argument.
 if [[ "${1:-}" == "--stop" ]]; then
   _stopped=0
+  # Port first (cheap netstat), then one CIM sweep for anything unbound — same reasoning as
+  # the restart path below, which is where the per-call cost actually shows up.
   for _pass in '' force; do
     while IFS= read -r _pid; do
       [[ -z "$_pid" ]] && continue
       _kill_tree "$_pid" "$_pass"
       _stopped=1
-    done < <(_dev_worker_pids)
-    while IFS= read -r _pid; do
-      [[ -z "$_pid" ]] && continue
-      _kill_tree "$_pid" "$_pass"
-      _stopped=1
     done < <(_port_listener_pids "${DEV_PORT}")
-    [[ -z "$(_dev_worker_pids)$(_port_listener_pids "${DEV_PORT}")" ]] && break
+    [[ -z "$(_port_listener_pids "${DEV_PORT}" | head -1)" ]] && break
     sleep 0.5
   done
+  while IFS= read -r _pid; do
+    [[ -z "$_pid" ]] && continue
+    _kill_tree "$_pid" force
+    _stopped=1
+  done < <(_dev_worker_pids)
   rm -f "${DEV_DIR}/dev.pid"
   if (( _stopped )); then echo "[dev.sh] dev runtime stopped"; else echo "[dev.sh] nothing to stop"; fi
   exit 0
@@ -167,40 +169,38 @@ fi
 # Kill any previous dev processes (npm -> bash -> tsx -> node tree)
 _killed=0
 # 1) Kill previous dev workers, matched on their tsx command line.
-while IFS= read -r _pid; do
-  [[ -z "$_pid" ]] && continue
-  _kill_tree "$_pid"
-  _killed=1
-done < <(_dev_worker_pids)
-
-# 2) Kill whatever else is still listening on the dev dashboard port.
+# Order matters for speed: the port lookup is netstat (~75ms), the worker lookup is a
+# PowerShell CIM query (~510ms). A live dev runtime always holds ${DEV_PORT}, so killing the
+# listener covers the normal case and the CIM sweep is only needed for a worker that somehow
+# is not bound — check the cheap thing first and skip the expensive one when nothing is left.
 while IFS= read -r _pid; do
   [[ -z "$_pid" ]] && continue
   _kill_tree "$_pid"
   _killed=1
 done < <(_port_listener_pids "${DEV_PORT}")
 
+# Bounded wait for the port to release, so we always rebind ${DEV_PORT} rather than letting
+# the server drift to ${DEV_PORT}+1 on EADDRINUSE.
 if (( _killed )); then
   echo "[dev.sh] killed previous dev process(es), waiting for port ${DEV_PORT} to free..."
-  # Bounded wait for the port to actually release, so we always rebind ${DEV_PORT}
-  # rather than letting the server drift to ${DEV_PORT}+1 on EADDRINUSE.
   for _i in $(seq 1 30); do
-    _port_pid=$(_port_listener_pids "${DEV_PORT}" | head -1)
-    [[ -z "$_port_pid" ]] && break
+    [[ -z "$(_port_listener_pids "${DEV_PORT}" | head -1)" ]] && break
     sleep 0.2
   done
-  # Last resort: force-kill anything still holding the port.
   while IFS= read -r _pid; do
     [[ -z "$_pid" ]] && continue
     _kill_tree "$_pid" force
   done < <(_port_listener_pids "${DEV_PORT}")
-  # And any worker that ignored the polite signal.
-  while IFS= read -r _pid; do
-    [[ -z "$_pid" ]] && continue
-    _kill_tree "$_pid" force
-  done < <(_dev_worker_pids)
-  sleep 0.3
 fi
+
+# Sweep for unbound stragglers — one CIM query, and only when the port is already clear.
+while IFS= read -r _pid; do
+  [[ -z "$_pid" ]] && continue
+  _kill_tree "$_pid" force
+  _killed=1
+done < <(_dev_worker_pids)
+
+(( _killed )) && sleep 0.3
 rm -f "${DEV_DIR}/dev.pid"
 
 # Remember whether this invocation is the detached worker, BEFORE the env
@@ -244,16 +244,55 @@ if (( ! _is_detached_worker )); then
   : > "${LOG_FILE}"
 fi
 
+# Rebuild only what changed. Both builds ran unconditionally on every launch —
+# ~6s of the ~16s startup — even when the edit was in src/ and neither output was
+# involved. Compare newest source mtime against newest output mtime; PIKILOOM_DEV_FORCE_BUILD=1
+# rebuilds regardless.
+# Stale if any source file is newer than the build's newest output. `find -newer` compares
+# in-process — the obvious `date -r` per file forks once per file and cost ~7s across these
+# trees, more than the ~6s of builds it was meant to avoid.
+_needs_build() { # $1 = output dir, rest = source paths
+  local out="$1"; shift
+  [[ "${PIKILOOM_DEV_FORCE_BUILD:-0}" == "1" ]] && return 0
+  [[ -d "$out" ]] || return 0
+
+  local newest_out
+  newest_out=$(find "$out" -type f -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+  [[ -n "$newest_out" ]] || return 0
+
+  # Any source newer than that reference file means the output is behind.
+  [[ -n "$(find "$@" -type f \
+      \( -name '*.ts' -o -name '*.tsx' -o -name '*.css' -o -name '*.html' -o -name '*.json' \) \
+      -newer "$newest_out" -print -quit 2>/dev/null)" ]]
+}
+
+_maybe_build() {
+  if _needs_build packages/kernel/dist packages/kernel/src; then npm run build:kernel
+  else echo "[dev.sh] kernel up to date, skipping build"; fi
+  if _needs_build dashboard/dist dashboard/src dashboard/index.html; then npm run build:dashboard
+  else echo "[dev.sh] dashboard up to date, skipping build"; fi
+}
+
+# `node node_modules/tsx/dist/cli.mjs`, not `npx tsx`: npx spends ~2.7s re-resolving a
+# package that is already in node_modules (measured 3.3s vs 0.4s for a trivial script).
+# Falls back to npx if that entry point ever moves.
+_TSX_CLI="node_modules/tsx/dist/cli.mjs"
+_run_runtime() {
+  if [[ -f "${_TSX_CLI}" ]]; then
+    node "${_TSX_CLI}" src/cli/main.ts --no-daemon --dashboard-port "${DEV_PORT}" "$@"
+  else
+    npx tsx src/cli/main.ts --no-daemon --dashboard-port "${DEV_PORT}" "$@"
+  fi
+}
+
 if (( _is_detached_worker )); then
   {
-    npm run build:kernel
-    npm run build:dashboard
-    npx tsx src/cli/main.ts --no-daemon --dashboard-port "${DEV_PORT}" "$@"
+    _maybe_build
+    _run_runtime "$@"
   } >>"${LOG_FILE}" 2>&1
 else
   {
-    npm run build:kernel
-    npm run build:dashboard
-    npx tsx src/cli/main.ts --no-daemon --dashboard-port "${DEV_PORT}" "$@"
+    _maybe_build
+    _run_runtime "$@"
   } 2>&1 | node scripts/retained-tee.mjs "${LOG_FILE}"
 fi
